@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = samsara
+omit = samsara/openstack/*
+
+[report]
+ignore_errors = True
