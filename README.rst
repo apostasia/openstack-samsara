@@ -2,7 +2,7 @@
 samsara
 ===============================
 
-OpenStack Samsaraa: An Energy Aware Architecture for VM Consolidation
+OpenStack Samsara: An Energy Aware Architecture for VM Consolidation
 
 Please feel here a long description which must be at least 3 lines wrapped on
 80 cols, so that distribution package maintainers can use it in their packages.
