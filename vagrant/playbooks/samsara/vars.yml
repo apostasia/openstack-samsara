@@ -6,6 +6,9 @@
 # OpenStack Samsara user password
 samsara_password: samsara
 
+# OpenStack Samsara database user password
+samsara_database_password: samsara
+
 #
 # Environments
 #

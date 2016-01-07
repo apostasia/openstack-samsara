@@ -4,3 +4,28 @@
 - name: Restart Postgres
   sudo: yes
   service: name=postgresql state=restarted
+
+
+  #
+  # OpenStack Services
+  #
+
+- name: Restart Nova Controller Services
+  sudo: yes
+  service: name={{ item }} state=restarted
+  with_items:
+      - nova-api
+      - nova-cert
+      - nova-consoleauth
+      - nova-scheduler
+      - nova-conductor
+      - nova-novncproxy
+
+- name: Restart Nova Compute Services
+  sudo: yes
+  service: name={{ item }} state=restarted
+  with_items:
+      - nova-compute
+      - nova-network
+      - nova-api-metadata
+      - libvirt-bin

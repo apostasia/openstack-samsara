@@ -44,7 +44,7 @@
   shell: su -s /bin/sh -c "nova-manage db sync" nova
   run_once: true
 
-- name: Restart Nova Services
+- name: Restart Nova Controller Services
   sudo: yes
   service: name={{ item }} state=restarted
   with_items:

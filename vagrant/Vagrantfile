@@ -11,6 +11,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     if Vagrant.has_plugin?("vagrant-cachier")
       config.cache.scope = :machine
+      config.cache.enable :apt
+      config.cache.enable :apt_lists
     end
 
     # Disable automatic box update checking. If you disable this, then
@@ -41,11 +43,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.synced_folder "../", "/home/vagrant/samsara", create:true
 
     # Fake root
-    config.vm.synced_folder "../fake_root/etc/samsara", "/etc/samsara", create:true
+    # config.vm.synced_folder "../fake_root/etc/samsara", "/etc/samsara", create:true
     config.vm.synced_folder "../fake_root/var/lib/samsara", "/var/lib/samsara", create:true
-    config.vm.synced_folder "../fake_root/var/lock/samsara", "/var/lock/samsara", create:true
-    config.vm.synced_folder "../fake_root/var/log/samsara", "/var/log/samsara", create:true
-    config.vm.synced_folder "../fake_root/var/run/samsara", "/var/run/samsara", create:true
+    # config.vm.synced_folder "../fake_root/var/lock/samsara", "/var/lock/samsara", create:true
+    # config.vm.synced_folder "../fake_root/var/log/samsara", "/var/log/samsara", create:true
+    # config.vm.synced_folder "../fake_root/var/run/samsara", "/var/run/samsara", create:true
 
     #############################################
     # Criação do ambiente de teste do OpenStack
@@ -61,7 +63,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Define openstack nodes
     nodes = [
-        { name: 'controller', os_mgmt_ip: '172.16.0.10', os_flat_ip: '172.16.1.10', cpu: '2', memory: '2048' },
+        { name: 'controller', os_mgmt_ip: '172.16.0.10', os_flat_ip: '172.16.1.10', cpu: '2', memory: '3072' },
 
         { name: 'compute-001', os_mgmt_ip: '172.16.0.21', os_flat_ip: '172.16.1.21', cpu: '1', memory: '1024' },
 
@@ -130,8 +132,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             all_group = controller_group + compute_group
 
             config.vm.provision 'ansible' do |ansible|
-                ansible.playbook = 'playbooks/openstack/playbook.yml'
-                ansible.verbose = 'vvvv'
+                #ansible.playbook = 'playbooks/openstack/playbook.yml'
+                ansible.playbook = 'playbooks/samsara/playbook.yml'
+                #ansible.verbose = 'vvvv'
+                ansible.verbose = true
                 ansible.groups = {
                 'controller_group' => ["controller"],
                 'compute_group' => compute_group,

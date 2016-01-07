@@ -43,16 +43,23 @@
       regexp: '^#auth_tcp = "sasl"'
       line: 'auth_tcp = "none"'
 
-- name: Enable libvirt TCP listen
+- name: Enable libvirt TCP listen - /etc/init/libvirt-bin.conf
   lineinfile:
       dest:  "/etc/init/libvirt-bin.conf"
       regexp: 'env\slibvirtd_opts="-d"'
       line: 'env libvirtd_opts="-d -l"'
 
-- name: Restart Nova Services
+- name: Enable libvirt TCP listen - /etc/default/libvirt-bin
+  lineinfile:
+      dest:  "/etc/default/libvirt-bin"
+      regexp: 'libvirtd_opts="-d"'
+      line: 'libvirtd_opts="-d -l"'
+
+- name: Restart Nova Compute Services
   sudo: yes
   service: name={{ item }} state=restarted
   with_items:
+      - nova-compute
       - nova-network
       - nova-api-metadata
       - libvirt-bin

@@ -5,9 +5,8 @@
 # a quickstart development environment that doesn't pollute an engineer's own
 # machine.
 #
-# The vagrant vm's IP address is assumed to be 192.168.99.11
 - hosts: all
-  gather_facts: no
+  gather_facts: yes
   sudo: true
   vars_files:
       - vars.yml
@@ -35,18 +34,30 @@
 
     # Reboot if required.
     - name: Reboot system if required
+      sudo: yes
       command: shutdown -r now 'Rebooting to complete system upgrade'
            removes=/var/run/reboot-required
+      async: 0
+      poll: 0
+      ignore_errors: true
       register: rebooted
+
+    # - name: Wait for VM Reboot.
+    #   sudo: no
+    #   local_action: wait_for
+    #                 port=2222
+    #                 host="{{ ansible_default_ipv4.address }}"
+    #                 # search_regex=OpenSSH
+    #                 delay=10
+    #                 timeout=120
+    #   when: rebooted.changed
 
     - name: Wait for VM Reboot.
       sudo: no
-      local_action: wait_for
-                    port=22
-                    host="{{ ansible_default_ipv4.address }}"
-                    search_regex=OpenSSH
+      local_action: wait_for host={{ inventory_hostname }}
+                    state=started
                     delay=10
-                    timeout=900
+                    timeout=60
       when: rebooted.changed
 
     # Add OpenStack Repositories
@@ -54,9 +65,7 @@
       shell: sudo add-apt-repository -y cloud-archive:kilo
 
     - name: Update packages
-      apt: update_cache=yes
-           upgrade=dist
-           cache_valid_time=86400
+      apt: update_cache=yes upgrade=dist cache_valid_time=86400
 
     - name: "Build hosts file"
       lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}" state=present

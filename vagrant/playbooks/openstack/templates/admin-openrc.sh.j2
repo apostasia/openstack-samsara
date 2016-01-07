@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # To use an OpenStack cloud you need to authenticate against the Identity
@@ -12,13 +11,24 @@
 # OpenStack API is version 2.0. For example, your cloud provider may implement
 # Image API v1.1, Block Storage API v2, and Compute API v2.0. OS_AUTH_URL is
 # only for the Identity API served through keystone.
-export OS_AUTH_URL=http://controller:5000/v2.0
+export OS_AUTH_URL=http://controller:35357/v3
 
 # With the addition of Keystone we have standardized on the term **tenant**
 # as the entity that owns the resources.
-export OS_TENANT_ID=default
-export OS_TENANT_NAME="admin"
-export OS_PROJECT_NAME="admin"
+unset OS_TENANT_ID
+unset OS_TENANT_NAME
+unset OS_PROJECT_NAME
+unset OS_PROJECT_DOMAIN_ID
+unset OS_USER_DOMAIN_ID
+unset OS_USERNAME
+
+export OS_PROJECT_DOMAIN_ID=default
+export OS_USER_DOMAIN_ID=default
+export OS_PROJECT_NAME=admin
+export OS_TENANT_NAME=admin
+export OS_AUTH_URL=http://controller:35357/v3
+
+
 
 # In addition to the owning entity (tenant), OpenStack stores the entity
 # performing the action as the **user**.

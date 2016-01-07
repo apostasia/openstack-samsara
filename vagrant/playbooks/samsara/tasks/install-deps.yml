@@ -1,4 +1,17 @@
 ############################################################################
+# Install all the needed packages in one go.
+############################################################################
+- name: Install Required Packages
+  apt: name={{item}}
+       state=present
+  with_items:
+  - python-pip
+  - python-dev
+  - python-oslo.config
+  - git
+  - htop
+
+############################################################################
 # Install Required PIP Packages
 ############################################################################
 - name: Install Required PIP Packages

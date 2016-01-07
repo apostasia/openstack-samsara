@@ -17,3 +17,11 @@
 #   environment: "{{ admin_env }}"
 #   command: openstack endpoint create --publicurl http://controller:8774/v2/%\(tenant_id\)s --internalurl http://controller:8774/v2/%\(tenant_id\)s --adminurl http://controller:8774/v2/%\(tenant_id\)s --region RegionOne compute
 #   run_once: true
+
+- name: Create Nano flavor
+  environment: "{{ admin_env }}"
+  shell: nova flavor-create --is-public true m1.nano auto 256 1 1
+
+- name: Create Pico flavor
+  environment: "{{ admin_env }}"
+  shell: nova flavor-create --is-public true m1.pico auto 128 1 1

@@ -1,0 +1,7 @@
+- name: Copy Samsara Controller config file
+  template:
+      src: "samsara-controller.conf.j2"
+      dest: "/etc/samsara/samsara.conf"
+      owner: root
+      group: root
+      mode: 0644
