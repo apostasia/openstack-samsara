@@ -16,41 +16,56 @@
 
 """Database setup and migration commands."""
 
-from oslo_config import cfg
-from stevedore import driver
+from samsara.db.sqlalchemy import migration
 
-_IMPL = None
-
-
-def get_backend():
-    global _IMPL
-    if not _IMPL:
-        cfg.CONF.import_opt('backend', 'oslo_db.options', group='database')
-        _IMPL = driver.DriverManager("ironic.database.migration_backend",
-                                     cfg.CONF.database.backend).driver
-    return _IMPL
+IMPL = migration
 
 
-def upgrade(version=None):
+def db_sync(version=None, database='main'):
     """Migrate the database to `version` or the most recent version."""
-    return get_backend().upgrade(version)
+    return IMPL.db_sync(version=version, database=database)
 
 
-def downgrade(version=None):
-    return get_backend().downgrade(version)
+def db_expand(dryrun=False, database='main'):
+    """Expand database schema."""
+    return IMPL.db_expand(dryrun=dryrun, database=database)
 
 
-def version():
-    return get_backend().version()
+def db_migrate(dryrun=False, database='main'):
+    """Migrate database schema."""
+    return IMPL.db_migrate(dryrun=dryrun, database=database)
 
 
-def stamp(version):
-    return get_backend().stamp(version)
+def db_contract(dryrun=False, database='main'):
+    """Contract database schema."""
+    return IMPL.db_contract(dryrun=dryrun, database=database)
 
 
-def revision(message, autogenerate):
-    return get_backend().revision(message, autogenerate)
+def db_version(database='main'):
+    """Display the current database version."""
+    return IMPL.db_version(database=database)
 
 
-def create_schema():
-    return get_backend().create_schema()
+def db_initial_version(database='main'):
+    """The starting version for the database."""
+    return IMPL.db_initial_version(database=database)
+
+
+def db_null_instance_uuid_scan(delete=False):
+    """Utility for scanning the database to look for NULL instance uuid rows.
+
+    Scans the backing nova database to look for table entries where
+    instances.uuid or instance_uuid columns are NULL (except for the
+    fixed_ips table since that can contain NULL instance_uuid entries by
+    design). Dumps the tables that have NULL instance_uuid entries or
+    optionally deletes them based on usage.
+
+    This tool is meant to be used in conjunction with the 267 database
+    migration script to detect and optionally cleanup NULL instance_uuid
+    records.
+
+    :param delete: If true, delete NULL instance_uuid records found, else
+                   just query to see if they exist for reporting.
+    :returns: dict of table name to number of hits for NULL instance_uuid rows.
+    """
+    return IMPL.db_null_instance_uuid_scan(delete=delete)

@@ -1,0 +1,7 @@
+# samsara-rootwrap command filters for power states manipulation
+# This file should be owned by (and only-writeable by) the root user
+
+[Filters]
+# samsara/actuactor/actuactor.py
+pm-sleep: CommandFilter, pm-sleep, root
+

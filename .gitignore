@@ -1,54 +1,39 @@
-*.py[cod]
+*.aux
 
-# C extensions
-*.so
+*.backup
 
-# Packages
-*.egg
-*.egg-info
-dist
-build
-.eggs
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
-lib
-lib64
+*.bak
 
-# Installer logs
-pip-log.txt
+*.bbl
 
-# Unit test / coverage reports
-.coverage
-.tox
-nosetests.xml
-.testrepository
-.venv
+*.blg
 
-# Translations
-*.mo
+*.db
 
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
+*.fdb_latexmk
 
-# Complexity
-output/*.html
-output/*/index.html
+*.fls
 
-# Sphinx
-doc/build
+*.gz
 
-# pbr generates these
-AUTHORS
-ChangeLog
+*.log
 
-# Editors
+*.nav
+
+*.out
+
+*.snm
+
+*.synctex.gz
+
+*.toc
+
 *~
-.*.swp
-.*sw?
+
+.DS_Store
+
+# Vagrant and VirtualBox stuffs
+
+*/.vagrant/
+
+*.vdi
