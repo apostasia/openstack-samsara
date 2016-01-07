@@ -1,0 +1,144 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = '2'
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    config.vm.box = 'ubuntu/trusty64'
+
+    all_group = []
+
+    if Vagrant.has_plugin?("vagrant-cachier")
+      config.cache.scope = :machine
+    end
+
+    # Disable automatic box update checking. If you disable this, then
+    # boxes will only be checked for updates when the user runs
+    # `vagrant box outdated`. This is not recommended.
+    config.vm.box_check_update = false
+    config.vm.boot_timeout = 120
+
+    # Create a forwarded port mapping which allows access to a specific port
+    # within the machine from a port on the host machine. In the example below,
+    # accessing "localhost:8080" will access port 80 on the guest machine.
+    # config.vm.network "forwarded_port", guest: 80, host: 8080
+
+
+    # If true, then any SSH connections made will enable agent forwarding.
+    # Default value: false
+    # config.ssh.forward_agent = true
+
+    # Share an additional folder to the guest VM. The first argument is
+    # the path on the host to the actual folder. The second argument is
+    # the path on the guest to mount the folder. And the optional third
+    # argument is a set of non-required options.
+    # config.vm.synced_folder "../data", "/vagrant_data"
+
+    # config.vm.synced_folder "/vagrant", "/Users/vilnei/Projects/Vagrant/OpenStack",{:mount_options => ['dmode=777','fmode=777']}
+
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+    config.vm.synced_folder "../", "/home/vagrant/samsara", create:true
+
+    # Fake root
+    config.vm.synced_folder "../fake_root/etc/samsara", "/etc/samsara", create:true
+    config.vm.synced_folder "../fake_root/var/lib/samsara", "/var/lib/samsara", create:true
+    config.vm.synced_folder "../fake_root/var/lock/samsara", "/var/lock/samsara", create:true
+    config.vm.synced_folder "../fake_root/var/log/samsara", "/var/log/samsara", create:true
+    config.vm.synced_folder "../fake_root/var/run/samsara", "/var/run/samsara", create:true
+
+    #############################################
+    # Criação do ambiente de teste do OpenStack
+    #############################################
+
+    # Forescout NAC workaround
+    config.vm.usable_port_range = 2800..2900
+    controller_group = []
+
+    #
+    # Configuração dos Compute Nodes
+    #
+
+    # Define openstack nodes
+    nodes = [
+        { name: 'controller', os_mgmt_ip: '172.16.0.10', os_flat_ip: '172.16.1.10', cpu: '2', memory: '2048' },
+
+        { name: 'compute-001', os_mgmt_ip: '172.16.0.21', os_flat_ip: '172.16.1.21', cpu: '1', memory: '1024' },
+
+        { name: 'compute-002', os_mgmt_ip: '172.16.0.22', os_flat_ip: '172.16.1.22', cpu: '1', memory: '1024' }
+    ]
+
+    compute_group = []
+
+    nodes.each do |node|
+        # Definição das computer node 01
+        config.vm.define node[:name], primary: true do |node_config|
+            # Hostname
+            node_config.vm.hostname = node[:name]
+
+            # Rede bridge (eth0) - Vagrant
+            # Rede interna (eth1) - OpenStack Management e Floating IP
+            # compute.vm.network :public_network, ip: "192.168.160.30", :netmask => "255.255.255.0", bridge: 'en1: Wi-Fi (AirPort)'
+            node_config.vm.network :private_network, ip: node[:os_mgmt_ip], netmask: '255.255.255.0' # casa
+
+            # Rede Fixa (eth2) - OpenStack Network - Flat Network - o Vagrant exige configuração de rede - vai ser sobrescrita depois.
+            node_config.vm.network :private_network, ip: node[:os_flat_ip], netmask: '255.255.255.0', auto_config: false
+
+            if node[:name] == 'controller'
+                controller_group = ['controller']
+
+                # Horizon access
+                node_config.vm.network 'forwarded_port', guest: 80, host: 8081
+
+                # PostgreSQL
+                node_config.vm.network 'forwarded_port', guest: 5432, host: 5432
+            else
+                compute_group << node[:name]
+            end
+
+            #
+            # Configurações da máquina
+            #
+            node_config.vm.provider :virtualbox do |vbox|
+                # Memory - default 1GB
+                vbox.customize ['modifyvm', :id, '--memory', node[:memory]]
+
+                # CPU Number - default: 1
+                vbox.customize ['modifyvm', :id, '--cpus', node[:cpu]]
+
+                # Configuração - OpenStack Networking - Legacy (eth2)
+                vbox.customize ['modifyvm', :id, '--nic3', 'intnet']
+
+                #
+                # Gluster Volume
+                #
+                #
+                #    gluster_volume = node_config.vm.hostname + "-gluster-volume-disk.vdi"
+                #
+                #    # Cria um disco de 20GB
+                #    vbox.customize ["createhd", "--filename", gluster_volume, "--size", 2000 * 1024]
+                #
+                #    # Vincula o disco a máquina
+                #    vbox.customize ['storageattach', :id, '--storagectl', 'SATAController', '--port', 1, '--device', 0, '--type', 'hdd','--medium', gluster_volume]
+
+                # GUI
+                vbox.gui = true
+            end
+        end
+        # Start provision after all nodes up
+        if node[:name] == 'controller'
+            all_group = controller_group + compute_group
+
+            config.vm.provision 'ansible' do |ansible|
+                ansible.playbook = 'playbooks/openstack/playbook.yml'
+                ansible.verbose = 'vvvv'
+                ansible.groups = {
+                'controller_group' => ["controller"],
+                'compute_group' => compute_group,
+                'all' => ["compute-001","compute-002", "controller"]
+                }
+
+            end
+        end
+    end
+end

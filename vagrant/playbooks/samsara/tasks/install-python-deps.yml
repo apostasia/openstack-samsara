@@ -1,0 +1,13 @@
+############################################################################
+# Install Required PIP Packages
+############################################################################
+- name: Install Required PIP Packages
+  pip: name={{item}}
+  with_items:
+  - openstacksdk
+  - oslo.config
+  - oslo.log
+  - oslo.messaging
+  - psutil
+  - subprocess32
+  - dataset

@@ -1,0 +1,12 @@
+- name: Install RabbitMQ package
+  sudo: yes
+  apt: pkg=rabbitmq-server state=installed update_cache=yes
+
+# Add user to server and assign full access control
+- rabbitmq_user: user={{ rabbitmq.user }}
+                 password={{ rabbitmq.password }}
+                 vhost=/
+                 configure_priv=.*
+                 read_priv=.*
+                 write_priv=.*
+                 state=present

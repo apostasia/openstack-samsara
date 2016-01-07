@@ -1,0 +1,37 @@
+# - name: Add GlusterFS Official Repositories
+#   apt_repository: repo='ppa:gluster/glusterfs-3.5' update_cache=yes
+#   # Install xfsprogs package
+#
+# - name: Install xfsprogs package
+#   sudo: yes
+#   apt: pkg=xfsprogs state=installed update_cache=yes
+#
+# - name: Install GlusterFS package
+#   sudo: yes
+#   apt: pkg=glusterfs-server state=installed update_cache=yes
+
+- name: Create gluster volume
+  sudo: yes
+  # gluster_volume: name="vm-instances" brick="/export/gluster/brick"
+  #                 cluster={{groups.compute_group | join(",")}}
+  #                 replicas={{groups.compute_group | count()}}
+  #                 state=present
+  # run_once: true
+  gluster_volume: name="vm-instances" brick="/export/gluster/brick"
+                  cluster="172.16.0.21,172.16.0.22"
+                  replicas=2
+                  state=present
+                  force=true
+  run_once: true
+
+- name: Start Gluster volume
+  gluster_volume: name="vm-instances" state=started
+
+- name: Add Gluster Brick to FSTAB
+  sudo: yes
+  shell: |
+      su -c "cat >> /etc/fstab << EOF
+          # GlusterFS - work directory
+          localhost:vm-instances  /var/lib/nova/instances glusterfs defaults,_netdev 0 2
+      EOF
+      "

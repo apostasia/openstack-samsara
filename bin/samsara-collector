@@ -1,0 +1,3 @@
+#!/bin/bash
+APPDIR="$HOME/samsara/samsara"
+/usr/bin/python $APPDIR/cmd/collector.py --config-file $APPDIR/conf/samsara.conf

@@ -1,0 +1,36 @@
+- name: Install NFS Server package
+  sudo: yes
+  apt: pkg=nfs-kernel-server state=installed
+
+- name: Create Folder to store Nova instances
+  sudo: yes
+  command: mkdir -p /var/lib/nova/instances
+
+- name: Add Nova instances folder to /etc/exports
+  sudo: yes
+  shell: |
+    su -c "cat >> /etc/exports << EOF
+                # Nova instances folder - work directory
+                /var/lib/nova/instances 172.16.0.10/255.255.255.0(rw,sync,fsid=0,no_root_squash)
+            EOF
+            "
+
+- name: Restart NFS/IMAP Services
+  sudo: yes
+  service: name={{ item }} state=restarted
+  with_items:
+      - nfs-kernel-server
+      - idmapd
+
+# This enable the ‘execute/search’ bit on your shared directory to allow qemu to be able to use the images within the directories
+- name: Change Nova instances folder permissions.
+  file: path=/var/lib/nova/instances mode="o+x"
+
+- name: Add Nova instances folder to FSTAB
+  sudo: yes
+  shell: |
+    su -c "cat >> /etc/fstab << EOF
+                # NFS - Nova work directory
+                172.16.0.10:/ /var/lib/instances nfs4 defaults 0 0
+            EOF
+            "

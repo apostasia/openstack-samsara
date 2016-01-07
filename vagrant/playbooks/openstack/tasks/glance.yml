@@ -1,0 +1,80 @@
+- name: Create glance user
+  environment: "{{ keystone_env }}"
+  command: openstack user create --password "{{ openstack_users.glance_password }}" glance
+  register: check_glance_create_user
+  changed_when: False
+
+- name: Add admin role to glance user and service project
+  environment: "{{ keystone_env }}"
+  command: openstack role add --project service --user glance admin
+  register: check_glance_add_glance_to_admin_role
+  changed_when: False
+
+- name: Create Service Entity Glance
+  environment: "{{ keystone_env }}"
+  command: openstack service create --name glance --description "OpenStack Image service" image
+  register: check_glance_identity
+  changed_when: False
+
+- name: Create Glance Service Endpoint
+  environment: "{{ keystone_env }}"
+  command: openstack endpoint create --publicurl http://controller:9292 --internalurl http://controller:9292 --adminurl http://controller:9292 --region RegionOne image
+  register: check_glance_endpoint
+  changed_when: False
+
+- name: Install Glance packages
+  sudo: yes
+  apt: pkg={{ item }} state=installed update_cache=yes
+  with_items:
+      - glance
+      - python-glanceclient
+
+- name: Copy Glance Registry config file
+  template:
+      src: "glance-registry.conf"
+      dest: "/etc/glance/glance-registry.conf"
+      owner: root
+      group: root
+      mode: 0644
+
+- name: Copy Glance API config file
+  template:
+      src: "glance-api.conf"
+      dest: "/etc/glance/glance-api.conf"
+      owner: root
+      group: root
+      mode: 0644
+
+- name:  Glance DB Populate
+  sudo: yes
+  shell: su -s /bin/sh -c "glance-manage db_sync" glance
+  register: check_glance_db_populate
+  changed_when: False
+
+- name: Restart Glance Registry
+  sudo: yes
+  service: name=glance-registry state=restarted
+
+- name: Restart Glance API
+  sudo: yes
+  service: name=glance-api state=restarted
+
+- name: Get Cirros Image
+  shell: wget -P /tmp http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+  register: check_cirros_download
+  changed_when: False
+
+- name: Create Image for Cirros
+  environment: "{{ admin_env }}"
+  shell: glance image-create --name "cirros-0.3.4-x86_64" --file /tmp/cirros-0.3.4-x86_64-disk.img --disk-format "qcow2" --container-format "bare" --progress --visibility public
+  register: check_cirros_create
+  changed_when: False
+
+- name: Get Glance Image List
+  environment: "{{ admin_env }}"
+  command: glance image-list
+
+- name: Remove Cirros Image
+  shell: rm /tmp/cirros-0.3.4-x86_64-disk.img
+  register: check_remove_cirros
+  changed_when: False

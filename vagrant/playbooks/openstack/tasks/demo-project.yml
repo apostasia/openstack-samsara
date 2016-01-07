@@ -1,0 +1,11 @@
+# Create a demo project
+- name: Create Demo Project
+  environment: "{{ admin_env }}"
+  command: openstack project create --description "Demo Test Project" demo
+  run_once: true
+
+# Create Demo User
+- name: Create Demo user
+  environment: "{{ admin_env }}"
+  command: openstack user create --project demo --password "demo" demo
+  run_once: true

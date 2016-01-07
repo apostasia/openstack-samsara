@@ -1,0 +1,19 @@
+- name: Create samsara user
+  environment: "{{ admin_env }}"
+  command: openstack user create --password "{{ samsara_password }}" samsara
+  run_once: true
+
+- name: Add admin role to nova user and service project
+  environment: "{{ admin_env }}"
+  command: openstack role add --project service --user samsara admin
+  run_once: true
+
+- name: Create Service Entity Nova
+  environment: "{{ admin_env }}"
+  command: openstack service create --name samsara --description "OpenStack Samsara" workload
+  run_once: true
+
+# - name: Create Nova Service Endpoint
+#   environment: "{{ admin_env }}"
+#   command: openstack endpoint create --publicurl http://controller:8774/v2/%\(tenant_id\)s --internalurl http://controller:8774/v2/%\(tenant_id\)s --adminurl http://controller:8774/v2/%\(tenant_id\)s --region RegionOne compute
+#   run_once: true

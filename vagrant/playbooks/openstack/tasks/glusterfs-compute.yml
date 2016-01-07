@@ -1,0 +1,49 @@
+# - name: Create Label Partition
+#   sudo: yes
+#   command: parted /dev/sdb mklabel msdos
+#   run_once: true
+#
+# - name: Create XFS Partition.
+#   sudo: yes
+#   command: parted /dev/sdb mkpart primary 512 100%
+#   register: check_create_partition
+#   changed_when: False
+#
+# - name: Create a XFS filesystem on /dev/sdb1.
+#   filesystem: fstype=xfs dev=/dev/sdb1
+#   register: check_create_xfs_filesystem
+#   changed_when: False
+#
+# - name: Create Gluster Brick
+#   sudo: yes
+#   command: su -c "mkdir -p /export/gluster && mount /dev/sdb1 /export/gluster && mkdir -p /export/gluster/brick"
+#   run_once: true
+#
+# - name: Add Gluster Brick to FSTAB
+#   sudo: yes
+#   shell: |
+#     cat >> /etc/fstab << EOF
+#         # GlusterFS
+#         /dev/sdb1 /export/gluster xfs defaults 0 2
+#     EOF
+#   run_once: true
+
+  - name: Create Gluster Brick
+    sudo: yes
+    command: mkdir -p /export/gluster/brick
+    run_once: true
+
+  - name: Create Gluster Brick
+    sudo: yes
+    command: mkdir -p /var/lib/nova/instances
+    run_once: true
+
+  - name: Add Gluster Brick to FSTAB
+    sudo: yes
+    shell: |
+        su -c "cat >> /etc/fstab << EOF
+            # GlusterFS - work directory
+            localhost:vm-instances  /var/lib/nova/instances glusterfs defaults,_netdev 0 2
+        EOF
+        "
+    run_once: true

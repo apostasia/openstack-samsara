@@ -1,0 +1,10 @@
+# Add the user samsara
+- name: Create Samsara user
+  user: name=samsara comment="OpenStack Samsara" group=samsara system=yes createhome=no
+
+# # Create a 2048-bit SSH key for user samsara in ~jsmith/.ssh/id_rsa
+# - name: Create SSH key
+#   user: name=samsara generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa
+
+- name: Creates /etc/samsara directory
+  file: path=/etc/samsara state=directory owner=samsara group=samsara mode=0775 recurse=yes

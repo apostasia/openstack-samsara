@@ -1,0 +1,117 @@
+- name: Disable Keystone autostart
+  sudo: yes
+  shell: su -c 'echo "manual" > /etc/init/keystone.override'
+
+- name: Install packages
+  sudo: yes
+  apt: pkg={{ item }} state=installed update_cache=yes
+  with_items:
+      - keystone
+      - python-openstackclient
+      - apache2
+      - libapache2-mod-wsgi
+      - memcached
+      - python-memcache
+
+- name: Copy Keystone config file
+  template:
+      src: "keystone.conf"
+      dest: "/etc/keystone/keystone.conf"
+      owner: root
+      group: root
+      mode: 0644
+
+- name:  Keystone DB Populate
+  sudo: yes
+  shell: su -s /bin/sh -c "keystone-manage db_sync" keystone
+  run_once: true
+
+- name: Refs to Controller Node
+  lineinfile:
+      dest:  "/etc/apache2/apache2.conf"
+      regexp: "^ServerName "
+      line: "ServerName controller"
+
+- name: Copy Keystone WSGI site file
+  template:
+      src: "wsgi-keystone.conf"
+      dest: "/etc/apache2/sites-available/wsgi-keystone.conf"
+      owner: keystone
+      group: keystone
+      mode: 0755
+  notify: restart apache
+  
+- name: Enable WSGI Site
+  sudo: yes
+  command: a2ensite wsgi-keystone
+  notify: restart apache
+
+- name: Create directory for WSGI components
+  file:
+      path: "/var/www/cgi-bin/keystone"
+      state: directory
+      owner: keystone
+      group: keystone
+      mode: 0755
+  notify: restart apache
+
+- name: Copy Keystone WSGI main File
+  template:
+      src: "main"
+      dest: "/var/www/cgi-bin/keystone/main"
+      owner: keystone
+      group: keystone
+      mode: 0755
+  notify: restart apache
+- name: Copy Keystone WSGI admin file
+  template:
+      src: "admin"
+      dest: "/var/www/cgi-bin/keystone/admin"
+      owner: keystone
+      group: keystone
+      mode: 0755
+  notify: restart apache
+
+- name: restart apache
+  sudo: yes
+  service: name=apache2 state=restarted
+
+- name: Create Keystone Service Entity
+  environment: "{{ keystone_env }}"
+  command: openstack service create --name keystone --description "OpenStack Identity" identity
+  run_once: true
+
+- name: Create Keystone Service Endpoint
+  environment: "{{ keystone_env }}"
+  command: openstack endpoint create --publicurl http://controller:5000/v2.0 --internalurl http://controller:5000/v2.0 --adminurl http://controller:35357/v2.0 --region RegionOne identity
+  run_once: true
+
+- name: Create Admin Project
+  environment: "{{ keystone_env }}"
+  command: openstack project create --description "Admin Project" admin
+  run_once: true
+
+- name: Create admin user
+  environment: "{{ keystone_env }}"
+  command: openstack user create --password "{{ openstack_users.admin_password }}" admin
+  run_once: true
+
+- name: Create admin role
+  environment: "{{ keystone_env }}"
+  command: openstack role create admin
+  run_once: true
+
+- name: Add admin role to admin user and admin project
+  environment: "{{ keystone_env }}"
+  command: openstack role add --project admin --user admin admin
+  run_once: true
+
+- name: Create Service project
+  environment: "{{ keystone_env }}"
+  command: openstack project create --description "Service Project" service
+  run_once: true
+
+- name: Create user role
+  environment: "{{ keystone_env }}"
+  command: openstack role create user
+  run_once: true

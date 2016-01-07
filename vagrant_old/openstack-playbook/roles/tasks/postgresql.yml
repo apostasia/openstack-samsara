@@ -1,0 +1,46 @@
+- name: Install packages
+  sudo: yes
+  apt: pkg={{ item }} state=installed update_cache=yes
+  with_items:
+      - postgresql
+      - libpq-dev # Required for Ansible to interact with postgres
+      - python-psycopg2 # Required for Ansible to interact with postgres
+
+- name: Restart Postgres
+  sudo: yes
+  service: name=postgresql state=restarted
+
+
+###############################################################################
+#
+###############################################################################
+
+- name: Create Databases
+  sudo: yes
+  sudo_user: postgres
+  postgresql_db: name={{ item }}
+  with_items:
+      - keystone
+      - glance
+      - nova
+      - samsara
+
+- name: Create Users
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: name={{ item.db_user }} password={{ item.db_password }} state=present role_attr_flags=NOSUPERUSER,CREATEDB
+  with_items:
+      - {db_user: 'keystone', db_password:'samsara999'}
+      - {db_user: 'glance', db_password:'samsara999'}
+      - {db_user: 'nova', db_password:'samsara999'}
+      - {db_user: 'samsara', db_password:'samsara999'}
+
+- name: Provide users with DB permissions
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: user={{ item.db_user }} db={{ item.db_name }} priv=ALL
+  with_items:
+      - {db_user: 'keystone', db_name:'keystone'}
+      - {db_user: 'glance', db_name:'glance'}
+      - {db_user: 'nova', db_name:'nova'}
+      - {db_user: 'samsara', db_name:'samsara'}

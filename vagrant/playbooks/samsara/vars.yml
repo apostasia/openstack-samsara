@@ -1,0 +1,50 @@
+---
+###########################################################
+# OpenStack Samsara Configuration                                 #
+###########################################################
+
+# OpenStack Samsara user password
+samsara_password: samsara
+
+#
+# Environments
+#
+keystone_env:
+    OS_TOKEN: "57d82"
+    OS_URL: "http://controller:35357/v2.0"
+
+admin_env:
+    OS_REGION_NAME: RegionOne
+    OS_PROJECT_DOMAIN_ID: default
+    OS_USER_DOMAIN_ID: default
+    OS_PROJECT_NAME: admin
+    OS_TENANT_NAME: admin
+    OS_USERNAME: admin
+    OS_PASSWORD: samsara
+    OS_AUTH_URL: "http://controller:35357/v3"
+    OS_IMAGE_API_VERSION: 2
+    OS_VOLUME_API_VERSION: 2
+
+user_env:
+    OS_REGION_NAME: RegionOne
+    OS_PROJECT_DOMAIN_ID: default
+    OS_USER_DOMAIN_ID: default
+    OS_PROJECT_NAME: samsara-test
+    OS_TENANT_NAME: samsara-test
+    OS_USERNAME: samsara-user
+    OS_PASSWORD: samsara
+    OS_AUTH_URL: "http://controller:35357/v3"
+    OS_IMAGE_API_VERSION: 2
+    OS_VOLUME_API_VERSION: 2
+
+
+#
+# Nova Controller
+#
+
+#
+# Nova Compute
+#
+
+# qemu for vagrant or kvm for baremetal deploy
+virt_type_option: qemu

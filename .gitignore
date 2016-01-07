@@ -32,6 +32,12 @@
 
 .DS_Store
 
+*.pip
+
+*.pyc
+
+*.cache
+
 # Vagrant and VirtualBox stuffs
 
 */.vagrant/

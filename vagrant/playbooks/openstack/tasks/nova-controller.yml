@@ -1,0 +1,56 @@
+- name: Create nova user
+  environment: "{{ admin_env }}"
+  command: openstack user create --password "{{ openstack_users.nova_password }}" nova
+  run_once: true
+
+- name: Add admin role to nova user and service project
+  environment: "{{ admin_env }}"
+  command: openstack role add --project service --user nova admin
+  run_once: true
+
+- name: Create Service Entity Nova
+  environment: "{{ admin_env }}"
+  command: openstack service create --name nova --description "OpenStack Compute" compute
+  run_once: true
+
+- name: Create Nova Service Endpoint
+  environment: "{{ admin_env }}"
+  command: openstack endpoint create --publicurl http://controller:8774/v2/%\(tenant_id\)s --internalurl http://controller:8774/v2/%\(tenant_id\)s --adminurl http://controller:8774/v2/%\(tenant_id\)s --region RegionOne compute
+  run_once: true
+
+- name: Install Nova Controller packages
+  sudo: yes
+  apt: pkg={{ item }} state=installed update_cache=yes
+  with_items:
+      - nova-api
+      - nova-cert
+      - nova-conductor
+      - nova-consoleauth
+      - nova-novncproxy
+      - nova-scheduler
+      - python-novaclient
+
+- name: Copy Nova config file
+  template:
+      src: "nova.conf"
+      dest: "/etc/nova/nova.conf"
+      owner: root
+      group: root
+      mode: 0644
+
+- name: Nova DB Populate
+  sudo: yes
+  environment: "{{ admin_env }}"
+  shell: su -s /bin/sh -c "nova-manage db sync" nova
+  run_once: true
+
+- name: Restart Nova Services
+  sudo: yes
+  service: name={{ item }} state=restarted
+  with_items:
+      - nova-api
+      - nova-cert
+      - nova-consoleauth
+      - nova-scheduler
+      - nova-conductor
+      - nova-novncproxy
