@@ -21,6 +21,9 @@
   - oslo.config
   - oslo.log
   - oslo.messaging
+  - oslo.reports
+  - oslo.i18n>=2.1.0
+  - oslo.versionedobjects
   - psutil
   - subprocess32
   - dataset

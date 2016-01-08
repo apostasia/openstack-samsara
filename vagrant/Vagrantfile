@@ -44,7 +44,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Setup to run Samsara
     config.vm.synced_folder "../bin", "/opt/samsara/bin", create:true
-    config.vm.synced_folder "../samsara", "/opt/samsara", create:true
+    config.vm.synced_folder "../", "/opt/samsara", create:true
 
     # Fake root
     # config.vm.synced_folder "../fake_root/etc/samsara", "/etc/samsara", create:true
@@ -140,11 +140,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 # GUI
                 vbox.gui = true
             end
+
+            # config.vm.provision "shell", run: "always", inline: <<-SHELL
+            #     ### Create configuration for host-only adapter. In my case eth1
+            #     # Clear previous setting
+            #     rm -f /etc/network/interfaces.d/eth1.cfg
+            #     # Create new setting
+            #     echo "auto eth1" >> /etc/network/interfaces.d/eth1.cfg
+            #     echo "iface eth1 inet static" >> /etc/network/interfaces.d/eth1.cfg
+            #     # ip address should be the same as in a private_network
+            #     echo "address #{node[:os_mgmt_ip]}" >> /etc/network/interfaces.d/eth1.cfg
+            #     echo "netmask 255.255.255.0" >> /etc/network/interfaces.d/eth1.cfg
+            #     # Restart adapter for apply new setting
+            #     ifdown eth1 && ifup eth1
+            # SHELL
+
         end
 
         #
         # Provision
         #
+
+
 
         # Start provision after all nodes up
         all_group = controller_group + compute_group
