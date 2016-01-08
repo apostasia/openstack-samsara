@@ -25,11 +25,14 @@
       - include: tasks/install-deps.yml
       - include: tasks/database-server.yml
       - include: tasks/openstack-config-setup.yml
+      - include: tasks/samsara-controller-config.yml
 
 - hosts: compute_group
   sudo: true
   vars_files:
       - vars.yml
+      - ../openstack/vars.yml
   tasks:
       - include: tasks/install-deps.yml
       - include: tasks/rootwrap-config.yml
+      - include: tasks/samsara-compute-config.yml
