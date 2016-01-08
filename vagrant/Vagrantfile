@@ -18,8 +18,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Disable automatic box update checking. If you disable this, then
     # boxes will only be checked for updates when the user runs
     # `vagrant box outdated`. This is not recommended.
-    config.vm.box_check_update = false
-    config.vm.boot_timeout = 120
+    config.vm.box_check_update = true
+    config.vm.boot_timeout = 240
 
     # Create a forwarded port mapping which allows access to a specific port
     # within the machine from a port on the host machine. In the example below,
@@ -42,6 +42,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.synced_folder ".", "/vagrant", disabled: true
     config.vm.synced_folder "../", "/home/vagrant/samsara", create:true
 
+    # Setup to run Samsara
+    config.vm.synced_folder "../bin", "/opt/samsara/bin", create:true
+    config.vm.synced_folder "../samsara", "/opt/samsara", create:true
+
     # Fake root
     # config.vm.synced_folder "../fake_root/etc/samsara", "/etc/samsara", create:true
     config.vm.synced_folder "../fake_root/var/lib/samsara", "/var/lib/samsara", create:true
@@ -62,6 +66,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #
 
     # Define openstack nodes
+
     nodes = [
         { name: 'controller', os_mgmt_ip: '172.16.0.10', os_flat_ip: '172.16.1.10', cpu: '2', memory: '3072' },
 
@@ -79,9 +84,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             node_config.vm.hostname = node[:name]
 
             # Rede bridge (eth0) - Vagrant
+            #node_config.vm.network :private_network, ip: node[:vb_ip]
+
             # Rede interna (eth1) - OpenStack Management e Floating IP
             # compute.vm.network :public_network, ip: "192.168.160.30", :netmask => "255.255.255.0", bridge: 'en1: Wi-Fi (AirPort)'
-            node_config.vm.network :private_network, ip: node[:os_mgmt_ip], netmask: '255.255.255.0' # casa
+            node_config.vm.network :private_network, ip: node[:os_mgmt_ip], netmask: '255.255.255.0'
 
             # Rede Fixa (eth2) - OpenStack Network - Flat Network - o Vagrant exige configuração de rede - vai ser sobrescrita depois.
             node_config.vm.network :private_network, ip: node[:os_flat_ip], netmask: '255.255.255.0', auto_config: false
@@ -108,8 +115,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 # CPU Number - default: 1
                 vbox.customize ['modifyvm', :id, '--cpus', node[:cpu]]
 
+                ### Change network card to PCnet-FAST III
+                # For NAT adapter - Fix cloud-init stuck
+                vbox.customize ["modifyvm", :id, "--nictype1", "Am79C973"]
+
+                # For host-only adapter
+                vbox.customize ["modifyvm", :id, "--nictype2", "Am79C973"]
+
                 # Configuração - OpenStack Networking - Legacy (eth2)
-                vbox.customize ['modifyvm', :id, '--nic3', 'intnet']
+                vbox.customize ['modifyvm', :id, '--nic3', 'intnet', "--nictype3", "Am79C973"]
 
                 #
                 # Gluster Volume
@@ -127,22 +141,37 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 vbox.gui = true
             end
         end
+
+        #
+        # Provision
+        #
+
         # Start provision after all nodes up
-        if node[:name] == 'controller'
-            all_group = controller_group + compute_group
+        all_group = controller_group + compute_group
 
-            config.vm.provision 'ansible' do |ansible|
-                #ansible.playbook = 'playbooks/openstack/playbook.yml'
-                ansible.playbook = 'playbooks/samsara/playbook.yml'
-                #ansible.verbose = 'vvvv'
-                ansible.verbose = true
-                ansible.groups = {
-                'controller_group' => ["controller"],
-                'compute_group' => compute_group,
-                'all' => ["compute-001","compute-002", "controller"]
-                }
+        # OpenStack
+        config.vm.provision "openstack", type: "ansible" do |ansible|
+            ansible.playbook = 'playbooks/openstack/playbook.yml'
+            #ansible.verbose = 'vvvv'
+            ansible.verbose = true
+            ansible.groups = {
+            'controller_group' => ["controller"],
+            'compute_group' => compute_group,
+            'all' => ["compute-001","compute-002", "controller"]
+            }
+        end
 
-            end
+        # Samsara
+        config.vm.provision "samsara", type: "ansible" do |ansible|
+            ansible.playbook = 'playbooks/samsara/playbook.yml'
+            #ansible.verbose = 'vvvv'
+            ansible.verbose = true
+            ansible.groups = {
+            'controller_group' => ["controller"],
+            'compute_group' => compute_group,
+            'all' => ["compute-001","compute-002", "controller"]
+            }
+
         end
     end
 end

@@ -1,3 +1,12 @@
 - name: change hosts
   sudo: yes
   template: src=hosts.j2 dest=/etc/hosts
+
+
+- name: Config eth1 interface
+  sudo: yes
+  template: src=eth1.cfg.j2 dest=/etc/network/interfaces.d/eth1.cfg
+
+- name: Restart eth1 interface
+  sudo: yes
+  shell: ifdown eth1 && ifup eth1

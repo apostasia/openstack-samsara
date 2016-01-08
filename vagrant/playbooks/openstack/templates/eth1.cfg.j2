@@ -1,0 +1,4 @@
+auto eth1
+iface eth1 inet static
+address "{{ ansible_eth1.ipv4.address }}"
+netmask 255.255.255.0
