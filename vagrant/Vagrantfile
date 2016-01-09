@@ -190,5 +190,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             }
 
         end
+
+        # Samsara - Update
+        config.vm.provision "samsara-update", type: "ansible" do |ansible|
+            ansible.playbook = 'playbooks/samsara/playbook-update.yml'
+            #ansible.verbose = 'vvvv'
+            ansible.verbose = true
+            ansible.groups = {
+            'controller_group' => ["controller"],
+            'compute_group' => compute_group,
+            'all' => ["compute-001","compute-002", "controller"]
+            }
+
+        end
     end
 end

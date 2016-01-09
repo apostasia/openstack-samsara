@@ -17,7 +17,6 @@
 """Starter script for Samsara Collector Agent."""
 
 import sys
-sys.path.append('/home/vagrant/samsara')
 import eventlet
 
 from oslo_config import cfg

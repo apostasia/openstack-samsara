@@ -13,6 +13,24 @@ Note that this is a hard requirement.
 * Source: http://git.openstack.org/cgit/openstack/samsara
 * Bugs: http://bugs.launchpad.net/openstack-samsara
 
+
+Instalation
+-----------
+
+
+* Build package:
+
+python setup.py build
+
+* Instalation
+
+sudo python setup.py install
+
+* Uninstall
+
+sudo pip uninstall samsara
+
+
 Features
 --------
 

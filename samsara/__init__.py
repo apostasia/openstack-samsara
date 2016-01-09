@@ -14,6 +14,4 @@
 import sys
 import pbr.version
 
-sys.path.append('/home/vagrant/samsara')
-
-#__version__ = pbr.version.VersionInfo('samsara').version_string()
+__version__ = pbr.version.VersionInfo('samsara').version_string()
