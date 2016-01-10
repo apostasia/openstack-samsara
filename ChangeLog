@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Impl Local Meanager and clean some stuffs
 * Implementação do collector a arquitetura
 * Refactory
 * fix playboos and restart collector dev
