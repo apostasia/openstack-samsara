@@ -11,26 +11,14 @@
 # limitations under the License.
 
 import itertools
-import samsara.cmd.collector
-import samsara.cmd.global_controller
-import samsara.cmd.local_controller
 
-import samsara.common.baserpc
-import samsara.common.exception
-import samsara.paths
-import samsara.common.service
-import samsara.utils
+import samsara.context_aware.contexts_repository
 
 def list_opts():
     return [
-        ('DEFAULT',
-         itertools.chain(
-            samsara.paths.path_opts,
-            samsara.common.service.service_opts,
-         )),
-        # ('database', samsara.db.sqlalchemy.api.oslo_db_options.database_opts),
-        ('upgrade_levels',
-         itertools.chain(
-             [samsara.common.baserpc.rpcapi_cap_opt],
-         )),
-]
+        # ('DEFAULT',
+        #  itertools.chain(
+        #      #[<samsara.module>]
+        #  )),
+        ('contexts_repository', samsara.context_aware.contexts_repository.contexts_repository_opts),
+    ]

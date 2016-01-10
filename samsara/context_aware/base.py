@@ -16,14 +16,14 @@ import abc
 
 class BaseEntity(object):
     __metaclass__  = abc.ABCMeta
- 
+
 class BaseContext(object):
     __metaclass__  = abc.ABCMeta
-    
+
     # self.tag          = ""
     # self.timestamp    = ""
     # self.context_vars = {}
-    
+
     @abc.abstractmethod
     def getContext():
         "Return an tuple with context vars and values"
@@ -37,25 +37,38 @@ class BaseSituation(object):
 
 class BaseSensor(object):
     __metaclass__  = abc.ABCMeta
-    
+
     @abc.abstractmethod
     def __init__(self):
         pass
-    
+
     @abc.abstractmethod
     def read_value(self):
          """Returns the sensor value."""
-         
+
 class BaseContextsRepository(object):
     __metaclass__  = abc.ABCMeta
-    
+
     @abc.abstractmethod
     def store_context():
         "Store context on contexts repository"
         raise NotImplementedError()
-    
+
     @abc.abstractmethod
     def retrieve_context():
         "Retrives an stored context"
         raise NotImplementedError()
-    
+
+
+    class BaseContextAnalizer(object):
+        __metaclass__  = abc.ABCMeta
+
+        @abc.abstractmethod
+        def store_context():
+            "Store context on contexts repository"
+            raise NotImplementedError()
+
+        @abc.abstractmethod
+        def retrieve_context():
+            "Retrives an stored context"
+            raise NotImplementedError()

@@ -26,8 +26,14 @@ from oslo_serialization import jsonutils
 from oslo_service import periodic_task
 from oslo_utils import importutils
 
+from samsara.context_aware import entities
+from samsara.context_aware import sensors
+from samsara.context_aware import contexts
+from samsara.context_aware import contexts_repository
+
 #from samsara.common import exception
 from samsara.common import manager
+from samsara.common import rpc
 
 
 
@@ -35,7 +41,7 @@ LOG = logging.getLogger(__name__)
 
 local_controller_opts = [
     cfg.IntOpt('task_period',
-               default=60,
+               default=10,
                help='How often (in seconds) to run periodic tasks in '
                     'the scheduler driver of your choice. '
                     'Please note this is likely to interact with the value '
@@ -55,19 +61,32 @@ class LocalControllerManager(manager.Manager):
         super(LocalControllerManager, self).__init__(service_name='local-controller',
                                                *args, **kwargs)
 
-    def get_host_info(self, context, host_name, instance_uuids):
-        return [last_ctx['created_at'] for last_ctx in ctx_repository.retrieve_last_n_contexts('host_resources_usage', 2)]
 
+        # Get Notifier
+        self.notifier = rpc.get_notifier('local-controller')
 
+        # Get local contexts repository
+        self.ctx_repository = contexts_repository.LocalContextsRepository()
 
 
     @periodic_task.periodic_task(spacing=CONF.task_period,
-                              run_immediately=True)
-    def _update_host_info(self, context):
-        print ("Update host info")
+                          run_immediately=True)
+
+    def get_host_info(self, context):
+        print ("Get Context host info")
+        for last_ctx in self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', 2):
+            last_ctx['created_at']
 
 
-
+    # @periodic_task.periodic_task(spacing=CONF.task_period,
+    #                           run_immediately=True)
+    # def _update_host_info(self, context):
+    #     print ("Update host info")
+    #     body = {'cpu_allocation_ratio': 30 }
+    #     self.notifier.info(context, 'update_host_info', body)
+    #
+    #
+    #
     #  @periodic_task.periodic_task(spacing=CONF.task_period,
     #                               run_immediately=True)
     #  def _run_periodic_tasks(self, context):

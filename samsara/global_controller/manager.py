@@ -35,7 +35,7 @@ LOG = logging.getLogger(__name__)
 
 global_controller_opts = [
     cfg.IntOpt('task_period',
-               default=60,
+               default=10,
                help='How often (in seconds) to run periodic tasks in '
                     'the scheduler driver of your choice. '
                     'Please note this is likely to interact with the value '
@@ -61,8 +61,13 @@ class GlobalControllerManager(manager.Manager):
 
     @periodic_task.periodic_task(spacing=CONF.task_period,
                                  run_immediately=True)
-    def _run_periodic_tasks(self, context):
+    def listen_notify(self, context):
         self.driver.run_periodic_tasks(context)
+
+    # @periodic_task.periodic_task(spacing=CONF.task_period,
+    #                              run_immediately=True)
+    # def _run_periodic_tasks(self, context):
+    #     self.driver.run_periodic_tasks(context)
 #
 #     @messaging.expected_exceptions(exception.NoValidHost)
 #     def select_destinations(self, context, request_spec, filter_properties):

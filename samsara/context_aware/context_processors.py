@@ -12,10 +12,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
- 
+
 import abc
 from context_aware import base
 
 
+class HostContextProcessor(object):
 
-    
+    def __init__(self):
+        self.ctx_repository = contexts_repository.LocalContextsRepository()

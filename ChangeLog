@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Implementação do collector a arquitetura
 * Refactory
 * fix playboos and restart collector dev
 * Fix unable vagrant network after reload vm

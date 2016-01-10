@@ -23,7 +23,7 @@ from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_reports import guru_meditation_report as gmr
 
-from samsara.common import config
+from samsara import config
 from samsara.common import service
 #from samsara import utils
 from samsara import version

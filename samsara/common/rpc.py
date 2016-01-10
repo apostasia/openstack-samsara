@@ -61,7 +61,7 @@ def init(conf):
     exmods = get_allowed_exmods()
     TRANSPORT = messaging.get_transport(conf,
                                         allowed_remote_exmods=exmods,
-                                        aliases=TRANSPORT_ALIASES)    
+                                        aliases=TRANSPORT_ALIASES)
     serializer = RequestContextSerializer(JsonPayloadSerializer())
     NOTIFIER = messaging.Notifier(TRANSPORT, serializer=serializer)
 

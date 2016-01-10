@@ -39,16 +39,17 @@ from samsara.drivers import virt
 LOG = logging.getLogger(__name__)
 
 collector_manager_opts = [
-    cfg.IntOpt('task_period',
+    cfg.IntOpt('host_collect_context_period',
                default=10,
-               help='How often (in seconds) to run periodic tasks in '
-                    'the scheduler driver of your choice. '
-                    'Please note this is likely to interact with the value '
-                    'of service_down_time, but exactly how they interact '
-                    'will depend on your choice of scheduler driver.'),
+               help='How often (in seconds) to run periodic host contexts collect.'),
+
+    cfg.IntOpt('instances_collect_context_period',
+               default=10,
+               help='How often (in seconds) to run periodic instances contexts collect.'
+               ),
 ]
 CONF = cfg.CONF
-CONF.register_opts(collector_manager_opts)
+CONF.register_opts(collector_manager_opts, 'collector')
 
 virt_driver      = virt.LibvirtDriver()
 
@@ -64,7 +65,7 @@ class CollectorManager(manager.Manager):
         LOG.info('Create context repository')
         self.ctx_repository = contexts_repository.LocalContextsRepository()
 
-    @periodic_task.periodic_task(spacing=CONF.task_period, run_immediately=True)
+    @periodic_task.periodic_task(spacing=CONF.collector.host_collect_context_period, run_immediately=True)
     def _get_host_context(self,context):
         """ Get Host Contexts and store into repository"""
 
@@ -83,7 +84,7 @@ class CollectorManager(manager.Manager):
         LOG.info('Get Host Contexts and store into repository')
 
 
-    @periodic_task.periodic_task(spacing=CONF.task_period, run_immediately=True)
+    @periodic_task.periodic_task(spacing=CONF.collector.instances_collect_context_period, run_immediately=True)
     def _get_instances_context(self,context):
         """ Get Virtual Machine Resource Usage Contexts and store into repository"""
 
