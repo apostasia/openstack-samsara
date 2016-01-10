@@ -21,7 +21,6 @@ import oslo_messaging as messaging
 from oslo_serialization import jsonutils
 
 from samsara.common import exception
-from samsara.openstack.common.i18n import _
 from samsara import objects
 from samsara.objects import base as objects_base
 from samsara.common import rpc
@@ -68,7 +67,7 @@ class LocalControllerAPI(object):
         serializer = objects_base.SamsaraObjectSerializer()
         self.client = rpc.get_client(target, version_cap=version_cap,
                                      serializer=serializer)
-                                     
+
     def get_host_info(self, ctxt, host):
         version = '1.0'
         cctxt = self.client.prepare(server=host, version=version)
@@ -86,5 +85,3 @@ class LocalControllerAPI(object):
     #     cctxt = self.client.prepare(server=_compute_host(None, instance),
     #             version=version)
     #     cctxt.cast(ctxt, 'pause_instance', instance=instance)
-
-    

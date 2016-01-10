@@ -14,7 +14,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""Starter script for Samsara Collector Agent."""
+"""Starter script for Samsara Local Controller."""
 
 import sys
 import eventlet
@@ -26,9 +26,11 @@ from oslo_reports import guru_meditation_report as gmr
 from samsara.common import config
 from samsara.common import service
 #from samsara import utils
+from samsara import objects
+from samsara import version
 
 CONF = cfg.CONF
-# CONF.import_opt('samsara_global_controller_topic', 'samsara.global_controller.rpcapi') # import conf from module
+CONF.import_opt('samsara_local_controller_topic', 'samsara.local_controller.rpcapi') # import conf from module
 
 logging.register_options(CONF)
 
@@ -36,11 +38,12 @@ logging.register_options(CONF)
 def main():
     config.parse_args(sys.argv)
     eventlet.monkey_patch()
-
+    objects.register_all()
 
     gmr.TextGuruMeditation.setup_autorun(version)
 
-    server = service.Service.create(binary='samsara-collector')
+    server = service.Service.create(binary='samsara-local_controller',
+                                    topic=CONF.samsara_local_controller_topic)
 
     service.serve(server)
     service.wait()

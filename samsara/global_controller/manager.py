@@ -33,7 +33,7 @@ from samsara import objects
 
 LOG = logging.getLogger(__name__)
 
-global_controller_opts = [ 
+global_controller_opts = [
     cfg.IntOpt('task_period',
                default=60,
                help='How often (in seconds) to run periodic tasks in '
@@ -54,15 +54,15 @@ class GlobalControllerManager(manager.Manager):
     def __init__(self, *args, **kwargs):
         super(GlobalControllerManager, self).__init__(service_name='samsara-global_controller',
                                                *args, **kwargs)
-                                               
+
     def get_host_info(self,context):
         chablau = "Chablau"
         return jsonutils.to_primitive(chablau)
 
-    # @periodic_task.periodic_task(spacing=CONF.task_period,
-#                                  run_immediately=True)
-#     def _run_periodic_tasks(self, context):
-#         self.driver.run_periodic_tasks(context)
+    @periodic_task.periodic_task(spacing=CONF.task_period,
+                                 run_immediately=True)
+    def _run_periodic_tasks(self, context):
+        self.driver.run_periodic_tasks(context)
 #
 #     @messaging.expected_exceptions(exception.NoValidHost)
 #     def select_destinations(self, context, request_spec, filter_properties):

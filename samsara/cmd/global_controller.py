@@ -17,7 +17,6 @@
 """Starter script for Samsara Global Controller."""
 
 import sys
-sys.path.append('/home/vagrant/samsara')
 import eventlet
 
 from oslo_config import cfg
@@ -45,8 +44,8 @@ def main():
 
     server = service.Service.create(binary='samsara-global_controller',
                                     topic=CONF.samsara_global_controller_topic)
-    
+
     service.serve(server)
     service.wait()
 if __name__ == "__main__":
-    sys.exit(main()) 
+    sys.exit(main())

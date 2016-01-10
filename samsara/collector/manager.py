@@ -16,7 +16,7 @@
 #    under the License.
 
 """
-Samsara Local Controller Manager
+Samsara Collector Manager
 """
 
 from oslo_config import cfg
@@ -26,14 +26,19 @@ from oslo_serialization import jsonutils
 from oslo_service import periodic_task
 from oslo_utils import importutils
 
+#from samsara.common import config
 #from samsara.common import exception
 from samsara.common import manager
 
-
+from samsara.context_aware import entities
+from samsara.context_aware import sensors
+from samsara.context_aware import contexts
+from samsara.context_aware import contexts_repository
+from samsara.drivers import virt
 
 LOG = logging.getLogger(__name__)
 
-local_controller_opts = [
+collector_manager_opts = [
     cfg.IntOpt('task_period',
                default=10,
                help='How often (in seconds) to run periodic tasks in '
@@ -43,20 +48,56 @@ local_controller_opts = [
                     'will depend on your choice of scheduler driver.'),
 ]
 CONF = cfg.CONF
-CONF.register_opts(collector_controller_opts)
+CONF.register_opts(collector_manager_opts)
+
+virt_driver      = virt.LibvirtDriver()
 
 
 class CollectorManager(manager.Manager):
     """Samsara Collector Agent."""
 
-    target = messaging.Target(version='1.0')
-
     def __init__(self, *args, **kwargs):
         super(CollectorManager, self).__init__(service_name='collector',
                                                *args, **kwargs)
 
+        # Create context repository
+        LOG.info('Create context repository')
+        self.ctx_repository = contexts_repository.LocalContextsRepository()
 
-     @periodic_task.periodic_task(spacing=CONF.task_period,
-                                  run_immediately=True)
-     def _run_periodic_tasks(self, context):
-         self.driver.run_periodic_tasks(context)
+    @periodic_task.periodic_task(spacing=CONF.task_period, run_immediately=True)
+    def _get_host_context(self,context):
+        """ Get Host Contexts and store into repository"""
+
+        # Get host resources usage context
+        ctx_host_resources_usage = contexts.HostResourceUtilization('host_resources_usage').getContext()
+
+        LOG.debug(ctx_host_resources_usage)
+
+        # Store into repository
+        self.ctx_repository.store_context(ctx_host_resources_usage)
+
+        LOG.info(self.ctx_repository.list_context_vars('host_resources_usage'))
+
+        # notifier.info({'some': 'context'}, 'host.get_resources', 'ok')
+
+        LOG.info('Get Host Contexts and store into repository')
+
+
+    @periodic_task.periodic_task(spacing=CONF.task_period, run_immediately=True)
+    def _get_instances_context(self,context):
+        """ Get Virtual Machine Resource Usage Contexts and store into repository"""
+
+        # Get Virtual Machine Contexts
+        for vm_id in virt_driver.get_active_instacesID():
+
+            # Get instance (vm) resources usage context
+            ctx_vm_resources_usage = contexts.VirtualMachineResourceUtilization('vm_resources_usage',vm_id).getContext()
+
+            # Store into repository
+            self.ctx_repository.store_context(ctx_vm_resources_usage)
+
+        LOG.info('Collect Contexts: OK')
+
+        # Update vcpu_time for all instances
+        virt_driver.update_vcpu_time_instances()
+        LOG.info('Update VCPU time for all instances')

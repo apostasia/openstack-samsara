@@ -1,55 +1,31 @@
-# Copyright 2013 Red Hat, Inc.
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
-#    not use this file except in compliance with the License. You may obtain
-#    a copy of the License at
-#
-#         http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#    License for the specific language governing permissions and limitations
-#    under the License.
-
 """
-Client side of the Samsara Local Controller RPC API.
+Client side of the samsara collector RPC API.
 """
 
 from oslo_config import cfg
-from oslo_log import log as logging
-import oslo_messaging as messaging
-from oslo_serialization import jsonutils
 
-from samsara.common import exception
-from samsara.openstack.common.i18n import _
-from samsara import objects
+import oslo_messaging as messaging
+
+from samsara.common import context as samsara_context
 from samsara.objects import base as objects_base
 from samsara.common import rpc
 
 rpcapi_opts = [
-    cfg.StrOpt('samsara_local_controller_topic',
-               default='samsara_local_controller',
-               help='The topic samsara local controller nodes listen on'),
+    cfg.StrOpt('samsara_collector_topic',
+               default='samsara_collector',
+               help='The topic samsara collector nodes listen on'),
 ]
 
 CONF = cfg.CONF
 CONF.register_opts(rpcapi_opts)
 
-rpcapi_cap_opt = cfg.StrOpt('samsara_local_controller',
-        help='Set a version cap for messages sent to samsara local controller services. If you '
-             'plan to do a live upgrade from an old version to a newer '
-             'version, you should set this option to the old version before '
-             'beginning the live upgrade procedure. Only upgrading to the '
-             'next version is supported, so you cannot skip a release for '
-             'the live upgrade procedure.')
-
+rpcapi_cap_opt = cfg.StrOpt('samsara_collector',
+        help='Set a version cap for messages sent to samsara collector services')
 CONF.register_opt(rpcapi_cap_opt, 'upgrade_levels')
 
-LOG = logging.getLogger(__name__)
 
-
-class LocalControllerAPI(object):
-    '''Client side of the compute rpc API.
+class CollectorManagerAPI(object):
+    '''Client side of the samsara collector manager rpc API.
 
     API version history:
 
@@ -61,30 +37,28 @@ class LocalControllerAPI(object):
     }
 
     def __init__(self):
-        super(LocalControllerAPI, self).__init__()
-        target = messaging.Target(topic=CONF.compute_topic, version='1.0')
-        version_cap = self.VERSION_ALIASES.get(CONF.upgrade_levels.compute,
-                                               CONF.upgrade_levels.compute)
+        super(CollectorManagerAPI, self).__init__()
+        target = messaging.Target(topic=CONF.samsara_collector_topic, version='1.0')
+        version_cap = self.VERSION_ALIASES.get(CONF.upgrade_levels.samsara_collector,
+                                               CONF.upgrade_levels.samsara_collector)
+
         serializer = objects_base.SamsaraObjectSerializer()
         self.client = rpc.get_client(target, version_cap=version_cap,
                                      serializer=serializer)
-                                     
-    def get_host_info(self, ctxt, host):
+
+
+    def get_host_info(self,ctx,host):
+        ''' Get info from specific host
+
+        '''
         version = '1.0'
         cctxt = self.client.prepare(server=host, version=version)
-        return cctxt.call(ctxt, 'get_host_info', action=action)
-    #
-    #
-    # def host_power_action(self, ctxt, action, host):
-    #     version = '1.0'
-    #     cctxt = self.client.prepare(server=host, version=version)
-    #     return cctxt.call(ctxt, 'host_power_action', action=action)
-    #
-    #
-    # def pause_instance(self, ctxt, instance):
-    #     version = '4.0'
-    #     cctxt = self.client.prepare(server=_compute_host(None, instance),
-    #             version=version)
-    #     cctxt.cast(ctxt, 'pause_instance', instance=instance)
+        return cctxt.call(ctx,'get_host_info')
 
-    
+    def get_host_info_ob(self,ctx,host):
+        ''' Get info from specific host
+
+        '''
+        version = '1.0'
+        cctxt = self.client.prepare(server=host, version=version)
+        return cctxt.call(ctx,'get_host_info_ob')

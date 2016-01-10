@@ -1,7 +1,7 @@
 #!/bin/bash
-# APPDIR="$HOME/samsara/samsara"
-# CONFDIR="$APPDIR/conf/samsara.conf"
-APPDIR="/opt/samsara/samsara"
-CONFDIR="/etc/samsara.conf"
+APPDIR="$HOME/samsara/samsara"
+#CONFDIR="$APPDIR/conf/samsara.conf"
+#APPDIR="/opt/samsara/samsara"
+CONFDIR="/etc/samsara/samsara.conf"
 
-/usr/bin/python $APPDIR/cmd/collector-agent.py --config-file $CONFDIR
+/usr/bin/python $APPDIR/cmd/collector.py --config-file $CONFDIR

@@ -12,6 +12,7 @@
 
 import itertools
 import samsara.cmd.global_controller
+import samsara.cmd.collector
 import samsara.common.baserpc
 import samsara.common.exception
 import samsara.common.service
@@ -21,6 +22,7 @@ def list_opts():
     return [
         ('DEFAULT',
          itertools.chain(
+            [samsara.collector.collector_manager_opts]
              # [nova.conductor.tasks.live_migrate.migrate_opt],
              # nova.wsgi.wsgi_opts,
          )),

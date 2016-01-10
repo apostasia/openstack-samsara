@@ -1,0 +1,13 @@
+CHANGES
+=======
+
+* Refactory
+* fix playboos and restart collector dev
+* Fix unable vagrant network after reload vm
+* Fix samsara playbook
+* Preparando ambiente para Samsara
+* Refactory Environment
+* Refactory Environment
+* Remove .pyc files
+* Adicionando ao Git LUPS
+* Initial Cookiecutter Commit

@@ -55,6 +55,10 @@ service_opts = [
     cfg.StrOpt('global_controller_manager',
                default='samsara.global_controller.manager.GlobalControllerManager',
                help='Full class name for the Manager for global controller'),
+    cfg.StrOpt('collector_manager',
+               default='samsara.collector.manager.CollectorManager',
+               help='Full class name for the Manager for collector'),
+
     cfg.IntOpt('service_down_time',
                default=60,
                help='Maximum time since last check-in for up service'),
@@ -74,35 +78,35 @@ class Service(service.Service):
 
     def __init__(self, host, binary, topic, manager, report_interval=None,
                  periodic_enable=None, periodic_fuzzy_delay=None,
-                 periodic_interval_max=None, db_allowed=True,
+                 periodic_interval_max=None,
                  *args, **kwargs):
-        
+
         super(Service, self).__init__()
-        
-        
+
+
         self.host = host
         self.binary = binary
         self.topic = topic
-        
+
         'Call Class Manager'
-        
+
         self.manager_class_name = manager
-        
+
         # Return class manager
         manager_class = importutils.import_class(self.manager_class_name)
-        
+
         # Instance class
-        self.manager = manager_class(host=self.host, *args, **kwargs) 
-        
+        self.manager = manager_class(host=self.host, *args, **kwargs)
+
         'Initial RPC config'
         self.rpcserver = None
         self.report_interval = report_interval
-        
+
         # Periodic tasks settings'
         self.periodic_enable = periodic_enable
         self.periodic_fuzzy_delay = periodic_fuzzy_delay
         self.periodic_interval_max = periodic_interval_max
-        
+
         self.saved_args, self.saved_kwargs = args, kwargs
         self.backdoor_port = None
 
@@ -113,7 +117,7 @@ class Service(service.Service):
         self.basic_config_check()
         self.manager.init_host()
         self.model_disconnected = False
-        
+
         #TODO(REFACT)ctxt = context.get_admin_context()
         ctxt = oslo_context.get_admin_context()
 
@@ -121,37 +125,37 @@ class Service(service.Service):
 
         if self.backdoor_port is not None:
             self.manager.backdoor_port = self.backdoor_port
-        
+
         '''             Create RPC Service                                   '''
-        
+
         LOG.debug("Creating RPC server for service %s", self.topic)
-        
+
         target = messaging.Target(topic=self.topic, server=self.host)
-        
+
         #Define endpoints
         endpoints = [
             self.manager,
             baserpc.BaseRPCAPI(self.manager.service_name, self.backdoor_port)
         ]
         endpoints.extend(self.manager.additional_endpoints)
-        
+
         # Define serializer
         # TODO - Refatorar SamsaraObjectSerializer
         serializer = objects_base.SamsaraObjectSerializer()
-        
+
         # Get and start RPC server
         self.rpcserver = rpc.get_server(target, endpoints, serializer)
         self.rpcserver.start()
 
         self.manager.post_start_hook()
 
-        
+
         if self.periodic_enable:
             if self.periodic_fuzzy_delay:
                 initial_delay = random.randint(0, self.periodic_fuzzy_delay)
             else:
                 initial_delay = None
-            
+
             '''
                 See http://docs.openstack.org/developer/oslo.service/api/threadgroup.html
             '''
@@ -162,9 +166,9 @@ class Service(service.Service):
 
     def __getattr__(self, key):
         '''The __getattr__ method intercepts attribute references. It's called
-         with the attribute name as a string whenever you try to qualify an 
-         instance with an undefined (nonexistent) attribute name. It is not 
-         called if Python can find the attribute using its inheritance tree 
+         with the attribute name as a string whenever you try to qualify an
+         instance with an undefined (nonexistent) attribute name. It is not
+         called if Python can find the attribute using its inheritance tree
          search procedure.'''
         manager = self.__dict__.get('manager', None)
         return getattr(manager, key)
@@ -208,8 +212,7 @@ class Service(service.Service):
                           report_interval=report_interval,
                           periodic_enable=periodic_enable,
                           periodic_fuzzy_delay=periodic_fuzzy_delay,
-                          periodic_interval_max=periodic_interval_max,
-                          db_allowed=db_allowed)
+                          periodic_interval_max=periodic_interval_max)
 
         return service_object
 
@@ -236,7 +239,7 @@ class Service(service.Service):
 
     def periodic_tasks(self, raise_on_error=False):
         """Tasks to be run at a periodic interval."""
-        
+
         #TODO(REFACT)ctxt = context.get_admin_context()
         ctxt = oslo_context.get_admin_context()
         return self.manager.periodic_tasks(ctxt, raise_on_error=raise_on_error)
@@ -250,7 +253,7 @@ class Service(service.Service):
         except Exception as e:
             LOG.error(_LE('Temporary directory is invalid: %s'), e)
             sys.exit(1)
-    
+
 
 
 # class WSGIService(service.Service):

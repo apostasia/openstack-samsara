@@ -33,7 +33,7 @@ from samsara.common import manager
 
 LOG = logging.getLogger(__name__)
 
-local_controller_opts = [ 
+local_controller_opts = [
     cfg.IntOpt('task_period',
                default=60,
                help='How often (in seconds) to run periodic tasks in '
@@ -54,12 +54,19 @@ class LocalControllerManager(manager.Manager):
     def __init__(self, *args, **kwargs):
         super(LocalControllerManager, self).__init__(service_name='local-controller',
                                                *args, **kwargs)
-    
+
     def get_host_info(self, context, host_name, instance_uuids):
-        return [last_ctx['created_at'] for last_ctx in ctx_repository.retrieve_last_n_contexts('host_resources_usage', 2)]                        
-                                               
-                                               
-                                             
+        return [last_ctx['created_at'] for last_ctx in ctx_repository.retrieve_last_n_contexts('host_resources_usage', 2)]
+
+
+
+
+    @periodic_task.periodic_task(spacing=CONF.task_period,
+                              run_immediately=True)
+    def _update_host_info(self, context):
+        print ("Update host info")
+
+
 
     #  @periodic_task.periodic_task(spacing=CONF.task_period,
     #                               run_immediately=True)

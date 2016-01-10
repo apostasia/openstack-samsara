@@ -7,4 +7,7 @@ global-exclude *.pyc
 global-exclude .DS_Store
 global-exclude .vagrant
 global-exclude vagrant
-global-exclude vagrant_old
+global-exclude samples
+global-exclude tests
+
+recursive-exclude samsara *.pyc .DS_Store

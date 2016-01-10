@@ -27,10 +27,10 @@ path_opts = [
                help='Directory where the nova python module is installed'),
     cfg.StrOpt('bindir',
                default=os.path.join(sys.prefix, 'local', 'bin'),
-               help='Directory where nova binaries are installed'),
+               help='Directory where samsara binaries are installed'),
     cfg.StrOpt('state_path',
                default='$pybasedir',
-               help="Top-level directory for maintaining nova's state"),
+               help="Top-level directory for maintaining samsara's state"),
 ]
 
 CONF = cfg.CONF
