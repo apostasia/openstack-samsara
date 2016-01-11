@@ -1,6 +1,6 @@
-- name: Copy Samsara Controller config file
+- name: Copy Samsara Common config file
   template:
-      src: "samsara-controller.conf.j2"
+      src: "samsara-common.conf.j2"
       dest: "/etc/samsara/samsara.conf"
       owner: root
       group: root

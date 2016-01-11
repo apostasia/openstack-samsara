@@ -1,17 +1,16 @@
 [DEFAULT]
-debug = true
-log_dir=/var/log/samsara
 state_path=/var/lib/samsara
 
 # Log Behavior
 debug = True
-log_config_append = True
+#log_config_append = /etc/samsara/logging.conf
+log_dir=/var/log/samsara
 
-# NIC used to live migration
-nic = em1
+# Management NIC used to live migration
+mgmt_nic = {{ mgmt_nic }}
 
-[database]
-connection = 'sqlite:////var/lib/samsara/context_store.db'
+# Management IPv4 address
+mgmt_ip = {{ ansible_eth1.ipv4.address }}
 
 [local_storage]
 path = 'sqlite:////var/lib/samsara/context_store.db'
@@ -22,8 +21,6 @@ interval = 10
 
 [libvirt]
 connection_uri =
-
-my_ip = {{ ansible_eth1.ipv4.address }}
 
 # KeyStone Auth
 auth_strategy = keystone

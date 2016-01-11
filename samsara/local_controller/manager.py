@@ -36,7 +36,6 @@ from samsara.common import manager
 from samsara.common import rpc
 
 
-
 LOG = logging.getLogger(__name__)
 
 local_controller_opts = [

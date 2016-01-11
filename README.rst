@@ -35,3 +35,9 @@ Features
 --------
 
 * TODO
+
+
+Support Tools
+-------------
+
+* DB Browser for SQLite: http://sqlitebrowser.org/

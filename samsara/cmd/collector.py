@@ -30,10 +30,10 @@ from samsara import version
 
 CONF = cfg.CONF
 
-logging.register_options(CONF)
-
 def main():
     config.parse_args(sys.argv)
+    logging.setup(CONF,'samsara')
+
     eventlet.monkey_patch()
 
     gmr.TextGuruMeditation.setup_autorun(version)

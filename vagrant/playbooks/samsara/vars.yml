@@ -1,7 +1,12 @@
 ---
 ###########################################################
-# OpenStack Samsara Configuration                                 #
+# OpenStack Samsara Configuration                         #
 ###########################################################
+
+# Management NIC
+
+mgmt_nic: eth1
+
 
 # OpenStack Samsara user password
 samsara_password: samsara
