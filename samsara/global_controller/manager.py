@@ -55,9 +55,23 @@ class GlobalControllerManager(manager.Manager):
         super(GlobalControllerManager, self).__init__(service_name='samsara-global_controller',
                                                *args, **kwargs)
 
-    def get_host_info(self,context):
-        chablau = "Chablau"
-        return jsonutils.to_primitive(chablau)
+
+
+    def update_host_info(self, context, host_name, instance_info):
+        """Receives information about changes to a host's instances, and
+        updates the driver's HostManager with that information.
+        """
+        # self.driver.host_manager.update_instance_info(context, host_name, instance_info)
+
+    def workload_consolidate(self,context):
+        """ Perform workload consolidation
+        """
+
+    def workload_balance(self,context):
+        """ Perform worload balancing
+        """
+    def 
+
 
     @periodic_task.periodic_task(spacing=CONF.task_period,
                                  run_immediately=True)
@@ -81,12 +95,7 @@ class GlobalControllerManager(manager.Manager):
 #             filter_properties)
 #         return jsonutils.to_primitive(dests)
 #
-#     def update_host_info(self, context, host_name, instance_info):
-#         """Receives information about changes to a host's instances, and
-#         updates the driver's HostManager with that information.
-#         """
-#         self.driver.host_manager.update_instance_info(context, host_name,
-#                                                       instance_info)
+#
 #
 #     def update_instance_info(self, context, host_name, instance_info):
 #         """Receives information about changes to a host's instances, and

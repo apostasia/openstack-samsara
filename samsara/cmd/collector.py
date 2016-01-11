@@ -33,7 +33,6 @@ CONF = cfg.CONF
 def main():
     config.parse_args(sys.argv)
     logging.setup(CONF,'samsara')
-
     eventlet.monkey_patch()
 
     gmr.TextGuruMeditation.setup_autorun(version)

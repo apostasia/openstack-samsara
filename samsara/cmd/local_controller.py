@@ -30,22 +30,18 @@ from samsara.common import service
 from samsara import objects
 from samsara import version
 
-
-
 CONF = cfg.CONF
 CONF.import_opt('samsara_local_controller_topic', 'samsara.local_controller.rpcapi') # import conf from module
 
-logging.register_options(CONF)
-
-
 def main():
     config.parse_args(sys.argv)
+    logging.setup(CONF,'samsara')
     eventlet.monkey_patch()
     objects.register_all()
 
     gmr.TextGuruMeditation.setup_autorun(version)
 
-    server = service.Service.create(binary='samsara-local_controller',
+    server = service.Service.create(binary='samsara-local-controller',
                                     topic=CONF.samsara_local_controller_topic)
 
     service.serve(server)
