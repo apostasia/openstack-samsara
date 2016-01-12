@@ -62,6 +62,16 @@ class ContextsRepository(base.BaseContextsRepository):
         # Store context
         self.repository[context_tag].insert(context_instance._asdict(),{'created_at':sqlalchemy.DateTime})
 
+    def upsert_context(self,context_instance, keys):
+        "Update or Insert context on contexts repository."
+
+        context_tag = type(context_instance).__name__
+        data = context_instance._asdict()
+        types = {'created_at':sqlalchemy.DateTime}
+
+        # Update or Insert context
+        self.repository[context_tag].upsert(data, keys, types)
+
     def retrieve_context():
         "Retrives an stored context"
         raise NotImplementedError()

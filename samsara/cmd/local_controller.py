@@ -41,7 +41,7 @@ def main():
 
     gmr.TextGuruMeditation.setup_autorun(version)
 
-    server = service.Service.create(binary='samsara-local-controller',
+    server = service.Service.create(binary='samsara-local_controller',
                                     topic=CONF.samsara_local_controller_topic)
 
     service.serve(server)

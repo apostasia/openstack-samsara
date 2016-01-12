@@ -9,6 +9,7 @@
   - python-dev
   - python-tox
   - python-oslo.config
+  - python-psycopg2
   - git
   - htop
 

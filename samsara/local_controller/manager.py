@@ -67,12 +67,22 @@ class LocalControllerManager(manager.Manager):
         # Get local contexts repository
         self.ctx_repository = contexts_repository.LocalContextsRepository()
 
+        # Get Global contexts repository
+        self.ctx_global_repository = contexts_repository.GlobalContextsRepository()
+
+        # Get Host Context Info
+        ctx_host_info = contexts.HostInfo('hosts_info').getContext()
+        LOG.info('Get Host Info Context')
+
+        # Update Cell Catalog Nodes Info
+        self.ctx_global_repository.upsert_context(ctx_host_info, ['uuid'])
+        LOG.info('Update Host Info Context Repository')
+
 
     @periodic_task.periodic_task(spacing=CONF.task_period,
                           run_immediately=True)
 
     def get_host_info(self, context):
-        print ("Get Context host info")
         for last_ctx in self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', 2):
             last_ctx['created_at']
 

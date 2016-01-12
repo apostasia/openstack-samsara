@@ -97,5 +97,6 @@
   vars_files:
       - vars.yml
   tasks:
-      -  include: tasks/nova-compute.yml
-      -  include: tasks/nfs-client.yml
+      - include: postgresql-client.yml
+      - include: tasks/nova-compute.yml
+      - include: tasks/nfs-client.yml

@@ -62,7 +62,7 @@ class CollectorManager(manager.Manager):
                                                *args, **kwargs)
 
         # Create context repository
-        LOG.info('Create context repository')
+        LOG.info('Create context local repository')
         self.ctx_repository = contexts_repository.LocalContextsRepository()
         self.ctx_global_repository = contexts_repository.GlobalContextsRepository()
 
@@ -72,14 +72,14 @@ class CollectorManager(manager.Manager):
 
         # Get host resources usage context
         ctx_host_resources_usage = contexts.HostResourceUtilization('host_resources_usage').getContext()
-
-        LOG.debug(ctx_host_resources_usage)
+        LOG.info('Get host resources usage context')
 
         # Store into repository
         self.ctx_repository.store_context(ctx_host_resources_usage)
-        self.ctx_global_repository.store_context(ctx_host_resources_usage)
+        LOG.info('Store host resources usage context into local repository')
 
-        LOG.info(self.ctx_repository.list_context_vars('host_resources_usage'))
+        self.ctx_global_repository.store_context(ctx_host_resources_usage)
+        LOG.info('Store host resources usage context into global repository')
 
         # notifier.info({'some': 'context'}, 'host.get_resources', 'ok')
 
@@ -90,7 +90,7 @@ class CollectorManager(manager.Manager):
     def _get_instances_context(self,context):
         """ Get Virtual Machine Resource Usage Contexts and store into repository"""
 
-        # Get Virtual Machine Contexts
+        # Get Virtual Machines Contexts and store local repository
         for vm_id in virt_driver.get_active_instacesID():
 
             # Get instance (vm) resources usage context
@@ -99,7 +99,7 @@ class CollectorManager(manager.Manager):
             # Store into repository
             self.ctx_repository.store_context(ctx_vm_resources_usage)
 
-        LOG.info('Collect Contexts: OK')
+        LOG.info('Get Virtual Machines Contexts and store local repository')
 
         # Update vcpu_time for all instances
         virt_driver.update_vcpu_time_instances()

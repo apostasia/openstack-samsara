@@ -21,13 +21,13 @@ import pprint
 from lxml import etree,objectify
 from oslo.config import cfg
 from oslo_log import log as logging
-    
+
 
 LOG = logging.getLogger(__name__)
 
 
 libvirt_opts = [
-    
+
     cfg.StrOpt('connection_uri',
                default='',
                help='Override the default libvirt URI '
@@ -44,23 +44,18 @@ libvirt_opts = [
 #                choices=('none', 'os', 'hardware', 'auto'),
 #                help='The data source used to the populate the host "serial" '
 #                     'UUID exposed to guest in the virtual BIOS.')
-    # cfg.IntOpt('mem_stats_period_seconds',
-#                 default=10,
-#                 help='A number of seconds to memory usage statistics period. '
-#                      'Zero or negative value mean to disable memory usage '
-#                      'statistics.')
     ]
 
 CONF = cfg.CONF
 CONF.register_opts(libvirt_opts, 'libvirt')
 
 instances_vcpu_time = None
-    
+
 class LibvirtDriver(object):
-    def __init__(self,uri=CONF.libvirt.connection_uri):       
+    def __init__(self,uri=CONF.libvirt.connection_uri):
         self.uri = uri
         self.conn = self.get_connection()
-    
+
     def get_connection(self):
         """Returns a connection to the hypervisor
            This method should be used to create and return a well
@@ -71,21 +66,21 @@ class LibvirtDriver(object):
         try:
             conn = libvirt.openReadOnly(self.uri)
         except libvirt.libvirtError as ex:
-                    LOG.exception("Connection to libvirt failed: %s", ex)    
+                    LOG.exception("Connection to libvirt failed: %s", ex)
         return conn
-        
-        
+
+
     def get_host_uuid(self):
         """Get a UUID from the host hardware
         Get a UUID for the host hardware reported by libvirt.
         This is typically from the SMBIOS data, unless it has
-        been overridden in /etc/libvirt/libvirtd.conf
+        been overridden in /etc/libvirt/libvirtd.conf. Return an object lxml
         """
         conn = self.get_connection()
         capabilities = objectify.fromstring(conn.getCapabilities())
         return capabilities.host.uuid
 
-    
+
     def get_vm_usage_mips_percore(self,dom_id,interval=1):
         """ Return the usage mips per core/cpu for  an VM in the interval
         """
@@ -114,32 +109,32 @@ class LibvirtDriver(object):
          return sum(usage_percore)
 
     def get_instance_allocated_memory(self,domain_id):
-        
+
         conn = self.get_connection()
         dom  = conn.lookupByID(domain_id)
         return dom.maxMemory()
-        
+
     def get_instance_uuid(self,domain_id):
-        
+
         conn = self.get_connection()
         dom  = conn.lookupByID(domain_id)
         return dom.UUIDString()
-        
+
     def list_instaces(self):
-    
+
         vm_list = []
-        
+
         conn = self.get_connection()
         for domain_id in conn.listDomainsID():
            vm_list.append(conn.lookupByID(domain_id))
-        
+
         return vm_list
-    
+
     def get_active_instacesID(self):
         """ Return the active instaces ID list
         """
         return self.conn.listDomainsID()
-    
+
     def get_vcpu_time_percore(self,domain_id):
         """ Return the busy time per core/cpu (in seconds) for an VM in the interval
         """
@@ -149,39 +144,34 @@ class LibvirtDriver(object):
         #Get the cpu time intervals
         vcpu_time_percore  = [float(phys_cpu['cpu_time']) for phys_cpu in dom.getCPUStats(False,0)]
         return vcpu_time_percore
-    
+
     def get_vcpu_time_instances(self):
         """ Return the vcpu time per core/cpu (in seconds) for all VMs
         """
         conn = self.get_connection()
-        vcpu_times_percore  = {domain_id:self.get_vcpu_time_percore(domain_id) for domain_id in conn.listDomainsID()} 
+        vcpu_times_percore  = {domain_id:self.get_vcpu_time_percore(domain_id) for domain_id in conn.listDomainsID()}
         return vcpu_times_percore
-        
+
     def get_busytime_percore(self,domain_id,interval=1):
         """ Return the busy time per core/cpu (in seconds) for an VM in the interval
         """
         conn = self.get_connection()
         dom  = conn.lookupByID(domain_id)
-        
+
         global instances_vcpu_time
         if instances_vcpu_time == None:
             instances_vcpu_time = self.get_vcpu_time_instances()
-        
+
         vcpu_time_t0 = [float(vcpu) for vcpu in instances_vcpu_time[domain_id]]
         vcpu_time_t1 = [float(phys_cpu['cpu_time']) for phys_cpu in dom.getCPUStats(False,0)]
 
         # compute the delta time for each cpu, convert to seconds and generate an list
         busytime_percore = [float(diff_time)/1000000000 for diff_time in map(sub,vcpu_time_t1,vcpu_time_t0)]
-        
+
         return busytime_percore
-        
+
     def update_vcpu_time_instances(self):
         """ Update the vcpu time per core/cpu (in seconds) for all VMs
         """
         global instances_vcpu_time
         instances_vcpu_time = self.get_vcpu_time_instances()
-
-        
-
-    
-     
