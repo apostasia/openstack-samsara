@@ -64,6 +64,7 @@ class CollectorManager(manager.Manager):
         # Create context repository
         LOG.info('Create context repository')
         self.ctx_repository = contexts_repository.LocalContextsRepository()
+        self.ctx_global_repository = contexts_repository.GlobalContextsRepository()
 
     @periodic_task.periodic_task(spacing=CONF.collector.host_collect_context_period, run_immediately=True)
     def _get_host_context(self,context):
@@ -76,6 +77,7 @@ class CollectorManager(manager.Manager):
 
         # Store into repository
         self.ctx_repository.store_context(ctx_host_resources_usage)
+        self.ctx_global_repository.store_context(ctx_host_resources_usage)
 
         LOG.info(self.ctx_repository.list_context_vars('host_resources_usage'))
 

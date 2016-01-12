@@ -70,9 +70,7 @@ class GlobalControllerManager(manager.Manager):
     def workload_balance(self,context):
         """ Perform worload balancing
         """
-    def 
-
-
+    
     @periodic_task.periodic_task(spacing=CONF.task_period,
                                  run_immediately=True)
     def listen_notify(self, context):

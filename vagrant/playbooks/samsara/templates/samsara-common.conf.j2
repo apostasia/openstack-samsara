@@ -19,6 +19,10 @@ path = 'sqlite:////var/lib/samsara/context_store.db'
 # Interval between collects (in seconds)
 interval = 10
 
+[context_aware]
+local_repository = sqlite:////var/lib/samsara/contexts_local_repository.db
+global_repository = postgresql://samsara:samsara@controller/samsara
+
 [libvirt]
 connection_uri =
 
