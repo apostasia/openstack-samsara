@@ -28,8 +28,6 @@ from samsara import config
 
 from samsara.context_aware import base
 from samsara.context_aware import sensors
-from samsara.context_aware import contexts
-
 
 contexts_repository_group = cfg.OptGroup('context_aware')
 
@@ -90,8 +88,7 @@ class ContextsRepository(base.BaseContextsRepository):
 class LocalContextsRepository(ContextsRepository):
 
     def __init__(self):
-        # self.repository = dataset.connect(CONF.contexts_repository.local_storage)
-
+        
         super(LocalContextsRepository, self).__init__(CONF.context_aware.local_repository)
 
 class GlobalContextsRepository(ContextsRepository):

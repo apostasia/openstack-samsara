@@ -20,6 +20,7 @@ import time
 
 from samsara.context_aware import base
 from samsara.context_aware import sensors
+from samsara.context_aware import contexts_repository as ctx_repository
 
 
 class HostInfo(base.BaseContext):
@@ -91,6 +92,20 @@ class HostResourceUtilization(base.BaseContext):
 
         return self.context(compute_utilization,memory_utilization, created_at)
 
+
+class HistoricalHostComputeUsage(base.BaseContext):
+    """ Host Compute Usage Historical Context """
+
+    def __init__(self, context_tag):
+        self.ctx_repository = ctx_repository.LocalContextsRepository()
+
+    def getContext(self, limit=10):
+        """ Get historical data about host compute usage from local context repository
+        """
+
+        historical_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', limit)]
+
+        return historical_data
 
 class VirtualMachineResourceUtilization(base.BaseContext):
 
