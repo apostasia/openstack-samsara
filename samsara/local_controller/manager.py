@@ -26,6 +26,8 @@ from oslo_serialization import jsonutils
 from oslo_service import periodic_task
 from oslo_utils import importutils
 
+import simplejson as json
+
 from samsara.context_aware import entities
 from samsara.context_aware import sensors
 from samsara.context_aware import contexts
@@ -78,14 +80,15 @@ class LocalControllerManager(manager.Manager):
         self.ctx_global_repository.upsert_context(ctx_host_info, ['uuid'])
         LOG.info('Update Host Info Context Repository')
 
+        self.historical_compute_usage = contexts.HistoricalHostComputeUsage('host_resources_usage')
+
 
     @periodic_task.periodic_task(spacing=CONF.task_period,
                           run_immediately=True)
 
-    def get_host_info(self, context):
-        for last_ctx in self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', 2):
-            last_ctx['created_at']
-
+    def check_host_status(self, context):
+        samples = str(self.historical_compute_usage.getContext())
+        LOG.info('Historical Compute Usage: %s', samples)
 
     # @periodic_task.periodic_task(spacing=CONF.task_period,
     #                           run_immediately=True)

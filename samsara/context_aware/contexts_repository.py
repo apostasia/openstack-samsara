@@ -32,7 +32,7 @@ from samsara.context_aware import sensors
 contexts_repository_group = cfg.OptGroup('context_aware')
 
 contexts_repository_opts = [
-    cfg.StrOpt('local_repository', default='sqlite:////var/lib/samsara/contexts_repository.db',
+    cfg.StrOpt('local_repository', default='sqlite:////var/lib/samsara/contexts_local_repository.db',
                                     help=("Connection to Local Store")),
 
     cfg.StrOpt('global_repository', default='postgresql://samsara:samsara@controller/samsara',
@@ -88,7 +88,7 @@ class ContextsRepository(base.BaseContextsRepository):
 class LocalContextsRepository(ContextsRepository):
 
     def __init__(self):
-        
+
         super(LocalContextsRepository, self).__init__(CONF.context_aware.local_repository)
 
 class GlobalContextsRepository(ContextsRepository):

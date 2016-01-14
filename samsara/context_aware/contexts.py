@@ -81,8 +81,9 @@ class HostState(base.BaseContext):
 class HostResourceUtilization(base.BaseContext):
 
     def __init__(self,context_tag):
-        self.context = collections.namedtuple(context_tag, ['compute_utilization','memory_utilization','created_at'])
-        #context_vars
+        self.context = collections.namedtuple(context_tag, ['compute_utilization',
+        'memory_utilization',
+        'created_at'])
 
     def getContext(self):
 
@@ -90,7 +91,9 @@ class HostResourceUtilization(base.BaseContext):
         memory_utilization  = sensors.HostMemoryUsageSensor.read_value()
         created_at          = datetime.utcnow().isoformat()
 
-        return self.context(compute_utilization,memory_utilization, created_at)
+        return self.context(compute_utilization,
+                            memory_utilization,
+                            created_at)
 
 
 class HistoricalHostComputeUsage(base.BaseContext):
