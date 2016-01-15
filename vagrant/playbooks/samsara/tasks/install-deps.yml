@@ -29,3 +29,4 @@
   - psutil
   - subprocess32
   - dataset
+  - pbr>=1.6
