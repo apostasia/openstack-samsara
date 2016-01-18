@@ -70,13 +70,13 @@ class GlobalControllerManager(manager.Manager):
     def workload_balance(self,context):
         """ Perform worload balancing
         """
-    
-    @periodic_task.periodic_task(spacing=CONF.task_period,
-                                 run_immediately=True)
-    def listen_notify(self, context):
-        self.driver.run_periodic_tasks(context)
 
-    # @periodic_task.periodic_task(spacing=CONF.task_period,
+    # # @periodic_task.periodic_task(spacing=CONF.task_period,
+    #                              run_immediately=True)
+    # def listen_notify(self, context):
+    #     self.driver.run_periodic_tasks(context)
+    #
+    # # @periodic_task.periodic_task(spacing=CONF.task_period,
     #                              run_immediately=True)
     # def _run_periodic_tasks(self, context):
     #     self.driver.run_periodic_tasks(context)

@@ -135,6 +135,16 @@ class LibvirtDriver(object):
         """
         return self.conn.listDomainsID()
 
+    def get_active_instacesUUID(self):
+        """ Return an list with the active instaces UUID
+        """
+        active_instances_uuid = []
+        for instance_id in self.conn.listDomainsID():
+            instance = self.conn.lookupByID(instance_id)
+            active_instances_uuid.append(instance.UUIDString())
+
+        return active_instances_uuid
+
     def get_vcpu_time_percore(self,domain_id):
         """ Return the busy time per core/cpu (in seconds) for an VM in the interval
         """

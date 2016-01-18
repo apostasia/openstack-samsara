@@ -125,3 +125,16 @@ class VirtualMachineResourceUtilization(base.BaseContext):
         created_at          = datetime.utcnow().isoformat()
 
         return self.context(uuid, compute_utilization, memory_utilization, created_at)
+class ActiveVirtualMachines(base.BaseContext):
+    """ Representing the active virtual machines in the host."""
+
+    def __init__(self, context_tag):
+        self.context = collections.namedtuple(context_tag, ['active_vms','created_at'])
+
+
+    def getContext(self):
+
+        active_vms = sensors.ActiveVirtualMachinesSensor.read_value()
+        created_at = datetime.utcnow().isoformat()
+
+        return self.context(active_vms, created_at)

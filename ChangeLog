@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+* Fix playbooks
+* Historical Host Resource Usage Context Implementation
 * Working on Context stuffs
 * Hosts Catalog Implentation
 * Context Global Repository and other stuffs

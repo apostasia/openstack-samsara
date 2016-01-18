@@ -154,3 +154,10 @@ class VirtualMachineIdSensor(base.BaseSensor):
         driver = virt.LibvirtDriver()
         value = driver.get_instance_uuid(self.instance_id)
         return value
+
+class ActiveVirtualMachinesSensor(base.BaseSensor):
+    def read_value(self):
+        """Returns the instance allocated memory"""
+        driver = virt.LibvirtDriver()
+        value = driver.get_active_instacesUUID()
+        return value
