@@ -55,8 +55,8 @@ admin_token: 57d82
 # OpenStack Users
 openstack_users:
     admin_password: samsara
-    glance_password: samsara
-    nova_password: samsara
+    glance_password: nova
+    nova_password: nova
 
 #
 # Environments

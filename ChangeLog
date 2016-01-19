@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Add active vms sensors
 * Fix playbooks
 * Historical Host Resource Usage Context Implementation
 * Working on Context stuffs
