@@ -124,33 +124,3 @@ class StoredHostComputeUsage(base.BaseContext):
         stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', limit)]
 
         return stored_data
-
-class VirtualMachineResourceUtilization(base.BaseContext):
-
-    def __init__(self, context_tag, vm_id):
-        self.context = collections.namedtuple(context_tag, ['uuid', 'compute_utilization','memory_utilization','created_at'])
-        self.vm_id   = vm_id
-        #context_vars
-
-    def getContext(self):
-
-        uuid                = sensors.VirtualMachineIdSensor(self.vm_id).read_value()
-        compute_utilization = sensors.VirtualMachineComputeUsageSensor(self.vm_id).read_value()
-        memory_utilization  = sensors.VirtualMachineMemoryUsageSensor(self.vm_id).read_value()
-        created_at          = datetime.utcnow().isoformat()
-
-        return self.context(uuid, compute_utilization, memory_utilization, created_at)
-
-class ActiveVirtualMachines(base.BaseContext):
-    """ Representing the active virtual machines in the host."""
-
-    def __init__(self, context_tag):
-        self.context = collections.namedtuple(context_tag, ['active_vms','created_at'])
-
-
-    def getContext(self):
-
-        active_vms = sensors.ActiveVirtualMachinesSensor.read_value()
-        created_at = datetime.utcnow().isoformat()
-
-        return self.context(active_vms, created_at)
