@@ -12,6 +12,7 @@
 #    under the License.
 
 """Generic Node base class for all workers that run on hosts."""
+
 from oslo_context import context as oslo_context
 import os
 import random
@@ -112,11 +113,12 @@ class Service(service.Service):
 
     def start(self):
         verstr = version.version_string_with_package()
+
         LOG.info(_LI('Starting %(topic)s node (version %(version)s)'),
                   {'topic': self.topic, 'version': verstr})
+
         self.basic_config_check()
         self.manager.init_host()
-        self.model_disconnected = False
 
         #TODO(REFACT)ctxt = context.get_admin_context()
         ctxt = oslo_context.get_admin_context()
@@ -126,7 +128,8 @@ class Service(service.Service):
         if self.backdoor_port is not None:
             self.manager.backdoor_port = self.backdoor_port
 
-        '''             Create RPC Service                                   '''
+        '''             Create RPC Service
+        '''
 
         LOG.debug("Creating RPC server for service %s", self.topic)
 
@@ -169,7 +172,9 @@ class Service(service.Service):
          with the attribute name as a string whenever you try to qualify an
          instance with an undefined (nonexistent) attribute name. It is not
          called if Python can find the attribute using its inheritance tree
-         search procedure.'''
+         search procedure.
+         '''
+
         manager = self.__dict__.get('manager', None)
         return getattr(manager, key)
 
@@ -254,112 +259,6 @@ class Service(service.Service):
             LOG.error(_LE('Temporary directory is invalid: %s'), e)
             sys.exit(1)
 
-
-
-# class WSGIService(service.Service):
-#     """Provides ability to launch API from a 'paste' configuration."""
-#
-#     def __init__(self, name, loader=None, use_ssl=False, max_url_len=None):
-#         """Initialize, but do not start the WSGI server.
-#
-#         :param name: The name of the WSGI server given to the loader.
-#         :param loader: Loads the WSGI application using the given name.
-#         :returns: None
-#
-#         """
-#         self.name = name
-#         self.manager = self._get_manager()
-#         self.loader = loader or wsgi.Loader()
-#         self.app = self.loader.load_app(name)
-#         # inherit all compute_api worker counts from osapi_compute
-#         if name.startswith('openstack_compute_api'):
-#             wname = 'osapi_compute'
-#         else:
-#             wname = name
-#         self.host = getattr(CONF, '%s_listen' % name, "0.0.0.0")
-#         self.port = getattr(CONF, '%s_listen_port' % name, 0)
-#         self.workers = (getattr(CONF, '%s_workers' % wname, None) or
-#                         processutils.get_worker_count())
-#         if self.workers and self.workers < 1:
-#             worker_name = '%s_workers' % name
-#             msg = (_("%(worker_name)s value of %(workers)s is invalid, "
-#                      "must be greater than 0") %
-#                    {'worker_name': worker_name,
-#                     'workers': str(self.workers)})
-#             raise exception.InvalidInput(msg)
-#         self.use_ssl = use_ssl
-#         self.server = wsgi.Server(name,
-#                                   self.app,
-#                                   host=self.host,
-#                                   port=self.port,
-#                                   use_ssl=self.use_ssl,
-#                                   max_url_len=max_url_len)
-#         # Pull back actual port used
-#         self.port = self.server.port
-#         self.backdoor_port = None
-#
-#     def reset(self):
-#         """Reset server greenpool size to default.
-#
-#         :returns: None
-#
-#         """
-#         self.server.reset()
-#
-#     def _get_manager(self):
-#         """Initialize a Manager object appropriate for this service.
-#
-#         Use the service name to look up a Manager subclass from the
-#         configuration and initialize an instance. If no class name
-#         is configured, just return None.
-#
-#         :returns: a Manager instance, or None.
-#
-#         """
-#         fl = '%s_manager' % self.name
-#         if fl not in CONF:
-#             return None
-#
-#         manager_class_name = CONF.get(fl, None)
-#         if not manager_class_name:
-#             return None
-#
-#         manager_class = importutils.import_class(manager_class_name)
-#         return manager_class()
-#
-#     def start(self):
-#         """Start serving this service using loaded configuration.
-#
-#         Also, retrieve updated port number in case '0' was passed in, which
-#         indicates a random port should be used.
-#
-#         :returns: None
-#
-#         """
-#         if self.manager:
-#             self.manager.init_host()
-#             self.manager.pre_start_hook()
-#             if self.backdoor_port is not None:
-#                 self.manager.backdoor_port = self.backdoor_port
-#         self.server.start()
-#         if self.manager:
-#             self.manager.post_start_hook()
-#
-#     def stop(self):
-#         """Stop serving this API.
-#
-#         :returns: None
-#
-#         """
-#         self.server.stop()
-#
-#     def wait(self):
-#         """Wait for the service to stop serving this API.
-#
-#         :returns: None
-#
-#         """
-#         self.server.wait()
 
 
 def process_launcher():

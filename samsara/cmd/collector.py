@@ -25,7 +25,7 @@ from oslo_reports import guru_meditation_report as gmr
 
 from samsara import config
 from samsara.common import service
-#from samsara import utils
+from samsara.common import utils
 from samsara import version
 
 CONF = cfg.CONF
