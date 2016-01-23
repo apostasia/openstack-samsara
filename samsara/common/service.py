@@ -187,7 +187,7 @@ class Service(service.Service):
 
         :param host: defaults to CONF.host
         :param binary: defaults to basename of executable
-        :param topic: defaults to bin_name - 'nova-' part
+        :param topic: defaults to bin_name - 'samsara-' part
         :param manager: defaults to CONF.<topic>_manager
         :param report_interval: defaults to CONF.report_interval
         :param periodic_enable: defaults to CONF.periodic_enable

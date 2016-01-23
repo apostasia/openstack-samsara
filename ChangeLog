@@ -1,6 +1,9 @@
 CHANGES
 =======
 
+* Start Interpreter - Fix name file
+* Start Interpreter
+* Local Manager/Global Manager Integration
 * Small Fix
 * Context Refactor
 * openstack nova driver implementation and some fixes
