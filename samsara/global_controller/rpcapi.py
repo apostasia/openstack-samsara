@@ -38,8 +38,8 @@ rpcapi_cap_opt = cfg.StrOpt('samsara_global',
 CONF.register_opt(rpcapi_cap_opt, 'upgrade_levels')
 
 
-class GlobalManagerAPI(object):
-    '''Client side of the samsara global manager rpc API.
+class GlobalControllerAPI(object):
+    '''Client side of the samsara global controller manager rpc API.
 
     API version history:
 
@@ -51,28 +51,36 @@ class GlobalManagerAPI(object):
     }
 
     def __init__(self):
-        super(GlobalManagerAPI, self).__init__()
+        super(GlobalControllerAPI, self).__init__()
         target = messaging.Target(topic=CONF.samsara_global_controller_topic, version='1.0')
         version_cap = self.VERSION_ALIASES.get(CONF.upgrade_levels.samsara_global,
                                                CONF.upgrade_levels.samsara_global)
-        
+
         serializer = objects_base.SamsaraObjectSerializer()
         self.client = rpc.get_client(target, version_cap=version_cap,
                                      serializer=serializer)
-                                     
-                                     
+
+
     def get_host_info(self,ctx,host):
         ''' Get info from specific host
-            
+
         '''
         version = '1.0'
         cctxt = self.client.prepare(server=host, version=version)
         return cctxt.call(ctx,'get_host_info')
-    
+
     def get_host_info_ob(self,ctx,host):
         ''' Get info from specific host
-            
+
         '''
         version = '1.0'
         cctxt = self.client.prepare(server=host, version=version)
         return cctxt.call(ctx,'get_host_info_ob')
+
+    def update_host_workload_state(self, context, host, state):
+        ''' Get info from specific host
+
+        '''
+        version = '1.0'
+        cctxt = self.client.prepare(server="controller", version=version)
+        cctxt.call(context,'update_host_workload_state', host=host, state=state)

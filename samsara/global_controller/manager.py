@@ -63,6 +63,12 @@ class GlobalControllerManager(manager.Manager):
         """
         # self.driver.host_manager.update_instance_info(context, host_name, instance_info)
 
+    def update_host_workload_state(self, context, host, state):
+        """Receives information about changes to a host workload state, and
+        updates Global Controller with that information.
+        """
+        LOG.info('Host Workload State: %s - %s', host, state)
+
     def workload_consolidate(self,context):
         """ Perform workload consolidation
         """

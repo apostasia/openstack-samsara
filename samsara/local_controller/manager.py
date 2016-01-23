@@ -36,6 +36,7 @@ from samsara.context_aware import contexts_repository
 #from samsara.common import exception
 from samsara.common import manager
 from samsara.common import rpc
+from samsara.global_controller import rpcapi as sgc_rpcapi
 
 
 LOG = logging.getLogger(__name__)
@@ -61,11 +62,6 @@ class LocalControllerManager(manager.Manager):
     def __init__(self, *args, **kwargs):
         super(LocalControllerManager, self).__init__(service_name='local-controller',
                                                *args, **kwargs)
-
-
-        # Get Notifier
-        self.notifier = rpc.get_notifier('local-controller')
-
         # Get local contexts repository
         self.ctx_repository = contexts_repository.LocalContextsRepository()
 
@@ -82,6 +78,9 @@ class LocalControllerManager(manager.Manager):
 
         self.historical_compute_usage = contexts.HistoricalHostComputeUsage('host_resources_usage')
 
+        # Samsara Global Controller RPC API
+        self.global_controller = sgc_rpcapi.GlobalControllerAPI()
+
 
     @periodic_task.periodic_task(spacing=CONF.task_period,
                           run_immediately=True)
@@ -89,6 +88,10 @@ class LocalControllerManager(manager.Manager):
     def check_host_status(self, context):
         samples = str(self.historical_compute_usage.getContext())
         LOG.info('Historical Compute Usage: %s', samples)
+
+        self.global_controller.update_host_workload_state(context,"compute-001", "overload")
+
+        LOG.info('Workload State Update')
 
     # @periodic_task.periodic_task(spacing=CONF.task_period,
     #                           run_immediately=True)

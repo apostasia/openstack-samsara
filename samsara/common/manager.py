@@ -16,7 +16,7 @@
 
 """Base Manager class.
 
-NOTE(samsara): Base classe copied from Nova project 
+NOTE(samsara): Base classe copied from Nova project
 
 Managers are responsible for a certain aspect of the system.  It is a logical
 grouping of code relating to a portion of the system.  In general other
@@ -57,7 +57,7 @@ from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_service import periodic_task
 
-from samsara.db import base 
+from samsara.db import base
 from samsara.common import rpc
 
 
@@ -79,8 +79,11 @@ class Manager(base.Base, PeriodicTasks):
         self.host = host
         self.backdoor_port = None
         self.service_name = service_name
+
+        # Get notifier - Send notification messages.
         self.notifier = rpc.get_notifier(self.service_name, self.host)
         self.additional_endpoints = []
+
         super(Manager, self).__init__(db_driver)
 
     def periodic_tasks(self, context, raise_on_error=False):

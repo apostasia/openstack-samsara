@@ -1,6 +1,9 @@
 CHANGES
 =======
 
+* Small Fix
+* Context Refactor
+* openstack nova driver implementation and some fixes
 * Add active vms sensors
 * Fix playbooks
 * Historical Host Resource Usage Context Implementation
