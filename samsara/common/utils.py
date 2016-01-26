@@ -13,6 +13,9 @@
 # under the License.
 
 from __future__ import division
+from datetime import datetime
+from datetime import timedelta
+import time
 
 
 def to_percentage(value, max_value):
@@ -25,3 +28,13 @@ def to_percentage(value, max_value):
     """
     percentage = 100 * (value/max_value)
     return percentage
+
+def get_time_from_period(period=60):
+    """ Get the time moment from period ago
+    Args:
+        period (int): Period value in seconds.
+    Returns:
+        timestamp in UTC format
+    """
+    time = datetime.now() - timedelta(seconds=period)
+    return time.isoformat()

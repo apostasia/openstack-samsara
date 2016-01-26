@@ -25,6 +25,7 @@ from oslo_log import log
 import sqlalchemy
 
 from samsara import config
+from samsara.common import utils
 
 from samsara.context_aware import base
 from samsara.context_aware import sensors
@@ -90,6 +91,14 @@ class LocalContextsRepository(ContextsRepository):
     def __init__(self):
 
         super(LocalContextsRepository, self).__init__(CONF.context_aware.local_repository)
+
+    def retrieve_last_contexts_from_period(self,context_tag,period=60):
+
+        time_value = get_time_from_period(period)
+
+        query = "select * from %(context)s where datetime(created_at) > datetime('%(time)s')" % {"context": context_tag, "time": time_value}
+
+        return self.repository.query(query)
 
 class GlobalContextsRepository(ContextsRepository):
 
