@@ -120,7 +120,13 @@ class StoredHostComputeUsage(base.BaseContext):
     def getContext(self, limit=10):
         """ Get stored data about host compute usage from local context repository
         """
-
         stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', limit)]
 
+        return stored_data
+
+    def get_last_period_contexts(self,period):
+        """ Get stored data about host compute usage from local context repository
+        """
+        stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_contexts_from_period('host_resources_usage', period)]
+        
         return stored_data

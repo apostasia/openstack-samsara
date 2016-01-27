@@ -17,7 +17,5 @@ import abc
 from context_aware import base
 
 
-class HostContextProcessor(object):
-
-    def __init__(self):
-        self.ctx_repository = contexts_repository.LocalContextsRepository()
+class ContextsProcessors(object):
+    pass
