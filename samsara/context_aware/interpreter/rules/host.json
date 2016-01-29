@@ -1,0 +1,10 @@
+{"conditions": { "any": [
+                  { "name": "current_resource_usage",
+                    "operator": "greater_than",
+                    "value": 4
+                  }
+              ]},
+              "actions": [
+                  { "name": "notify_overload"}
+              ]
+            }

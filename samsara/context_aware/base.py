@@ -58,13 +58,3 @@ class BaseContextsRepository(object):
     def retrieve_context():
         "Retrives an stored context"
         raise NotImplementedError()
-
-
-class BaseContextAnalyzer(object):
-    """Base class to analyzers"""
-    __metaclass__  = abc.ABCMeta
-
-    @abc.abstractmethod
-    def run():
-        "Execute contexts analyser"
-        raise NotImplementedError()
