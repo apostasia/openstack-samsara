@@ -19,6 +19,7 @@
 - name: Install Required PIP Packages
   pip: name={{item}}
   with_items:
+  - business-rules>=0.2.0
   - openstacksdk
   - oslo.config
   - oslo.log

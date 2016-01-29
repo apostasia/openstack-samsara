@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+* Rules Handler
+* Interpreter Module
+* Get contexts per periods implementation
+* Start Actuator
+* Interpreter Implementing
 * Start Interpreter - Fix name file
 * Start Interpreter
 * Local Manager/Global Manager Integration

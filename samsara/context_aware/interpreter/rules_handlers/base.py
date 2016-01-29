@@ -24,7 +24,7 @@ from oslo_log import log as logging
 from oslo_serialization import jsonutils
 
 json_rules_files_dir_path_opt = cfg.StrOpt('rules_location_dir',
-                                            default='',
+                                            default='/etc/samsara/rules',
                                             help='Rules JSON files location dir.')
 
 CONF = cfg.CONF
@@ -43,6 +43,8 @@ class BaseRulesHandler(object):
         self.actions   = actions
 
     def reason(self):
+            LOG.info('Reason rules')
+
             run_all(rule_list=self.rules,
                     defined_variables=self.variables,
                     defined_actions=self.actions
@@ -54,7 +56,8 @@ class BaseRulesHandler(object):
         dir_path = CONF.rules_location_dir
         path = "{0}/{1}".format(dir_path,filename)
 
+        LOG.info('Load host rules')
         with open(path, 'r') as f:
-            rules = [jsonutils.load(f)]
+            rules = jsonutils.load(f)
 
         return rules

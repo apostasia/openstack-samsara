@@ -32,7 +32,8 @@ from samsara.common import manager
 
 from samsara.context_aware import entities
 from samsara.context_aware import sensors
-from samsara.context_aware import contexts
+from samsara.context_aware.contexts import host as host_contexts
+from samsara.context_aware.contexts import vm as vm_contexts
 from samsara.context_aware import contexts_repository
 from samsara.drivers import virt
 
@@ -64,14 +65,19 @@ class CollectorManager(manager.Manager):
         # Create context repository
         LOG.info('Create context local repository')
         self.ctx_repository = contexts_repository.LocalContextsRepository()
+
         self.ctx_global_repository = contexts_repository.GlobalContextsRepository()
+
+        # Instantiate Contexts Handlers
+        self.host_resources_usage_handler = host_contexts.HostResourcesUsage()
+        self.vm_resources_usage_handler   = vm_contexts.VirtualMachineResourceUsage()
 
     @periodic_task.periodic_task(spacing=CONF.collector.host_collect_context_period, run_immediately=True)
     def _get_host_context(self,context):
         """ Get Host Contexts and store into repository"""
 
         # Get host resources usage context
-        ctx_host_resources_usage = contexts.HostResourceUtilization('host_resources_usage').getContext()
+        ctx_host_resources_usage = self.host_resources_usage_handler.getContext()
         LOG.info('Get host resources usage context')
 
         # Store into repository
@@ -94,7 +100,7 @@ class CollectorManager(manager.Manager):
         for vm_id in virt_driver.get_active_instacesID():
 
             # Get instance (vm) resources usage context
-            ctx_vm_resources_usage = contexts.VirtualMachineResourceUtilization('vm_resources_usage',vm_id).getContext()
+            ctx_vm_resources_usage = self.vm_resources_usage_handler.getContext(vm_id)
 
             # Store into repository
             self.ctx_repository.store_context(ctx_vm_resources_usage)

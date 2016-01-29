@@ -22,18 +22,22 @@ from samsara.context_aware import base
 from samsara.context_aware import sensors
 from samsara.context_aware import contexts_repository as ctx_repository
 
-class VirtualMachineResourceUtilization(base.BaseContext):
+class VirtualMachineResourceUsage(base.BaseContext):
 
-    def __init__(self, context_tag, vm_id):
-        self.context = collections.namedtuple(context_tag, ['uuid', 'compute_utilization','memory_utilization','created_at'])
-        self.vm_id   = vm_id
-        #context_vars
+    def __init__(self):
 
-    def getContext(self):
+        self.tag = "vm_resources_usage"
+
+        self.context = collections.namedtuple(self.tag, ['uuid', 'compute_utilization','memory_utilization','created_at'])
+
+    def getContext(self, vm_id):
 
         uuid                = sensors.VirtualMachineIdSensor(self.vm_id).read_value()
+
         compute_utilization = sensors.VirtualMachineComputeUsageSensor(self.vm_id).read_value()
+
         memory_utilization  = sensors.VirtualMachineMemoryUsageSensor(self.vm_id).read_value()
+
         created_at          = datetime.utcnow().isoformat()
 
         return self.context(uuid, compute_utilization, memory_utilization, created_at)

@@ -43,12 +43,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.synced_folder "../", "/home/vagrant/samsara", create:true
 
     # Setup to run Samsara
-    config.vm.synced_folder "../bin", "/opt/samsara/bin", create:true
-    config.vm.synced_folder "../", "/opt/samsara", create:true
+    #config.vm.synced_folder "../bin", "/opt/samsara/bin", create:true
+    #config.vm.synced_folder "../", "/opt/samsara", create:true
 
     # Fake root
     # config.vm.synced_folder "../fake_root/etc/samsara", "/etc/samsara", create:true
-    config.vm.synced_folder "../fake_root/var/lib/samsara", "/var/lib/samsara", create:true
+    #config.vm.synced_folder "../fake_root/var/lib/samsara", "/var/lib/samsara", create:true
     # config.vm.synced_folder "../fake_root/var/lock/samsara", "/var/lock/samsara", create:true
     # config.vm.synced_folder "../fake_root/var/log/samsara", "/var/log/samsara", create:true
     # config.vm.synced_folder "../fake_root/var/run/samsara", "/var/run/samsara", create:true
@@ -104,6 +104,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             else
                 compute_group << node[:name]
             end
+
+            # Fake root
+            node_config.vm.synced_folder "../fake_root/#{node[:name]}/etc/samsara", "/etc/samsara", create:true
+
+            node_config.vm.synced_folder "../fake_root/#{node[:name]}/var/lib/samsara", "/var/lib/samsara", create:true
+
+            node_config.vm.synced_folder "../fake_root/#{node[:name]}/var/lock/samsara", "/var/lock/samsara", create:true
+
+            node_config.vm.synced_folder "../fake_root/#{node[:name]}/var/log/samsara", "/var/log/samsara", create:true
+
+            node_config.vm.synced_folder "../fake_root/#{node[:name]}/var/run/samsara", "/var/run/samsara", create:true
 
             #
             # Configurações da máquina

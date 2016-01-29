@@ -30,8 +30,10 @@ import simplejson as json
 
 from samsara.context_aware import entities
 from samsara.context_aware import sensors
-from samsara.context_aware import contexts
+from samsara.context_aware.contexts import host as host_contexts
+from samsara.context_aware.contexts import vm as vm_contexts
 from samsara.context_aware import contexts_repository
+from samsara.context_aware.interpreter.rules_handlers import host as host_rl
 
 #from samsara.common import exception
 from samsara.common import manager
@@ -69,14 +71,14 @@ class LocalControllerManager(manager.Manager):
         self.ctx_global_repository = contexts_repository.GlobalContextsRepository()
 
         # Get Host Context Info
-        ctx_host_info = contexts.HostInfo('hosts_info').getContext()
+        ctx_host_info = host_contexts.HostInfo().getContext()
         LOG.info('Get Host Info Context')
 
         # Update Cell Catalog Nodes Info
         self.ctx_global_repository.upsert_context(ctx_host_info, ['uuid'])
         LOG.info('Update Host Info Context Repository')
 
-        self.historical_compute_usage = contexts.HistoricalHostComputeUsage('host_resources_usage')
+        self.historical_compute_usage = host_contexts.HistoricalHostComputeUsage('host_resources_usage')
 
         # Samsara Global Controller RPC API
         self.global_controller = sgc_rpcapi.GlobalControllerAPI()
@@ -89,9 +91,15 @@ class LocalControllerManager(manager.Manager):
         samples = str(self.historical_compute_usage.getContext())
         LOG.info('Historical Compute Usage: %s', samples)
 
-        self.global_controller.update_host_workload_state(context,"compute-001", "overload")
+        # Run Host Rules Handler
+        # Host Rules Handler
+        self.host_rules_handler = host_rl.HostRulesHandler()
+        LOG.info('Run Host Rules Handler')
+        self.host_rules_handler.reason()
 
-        LOG.info('Workload State Update')
+        # self.global_controller.update_host_workload_state(context,"compute-001", "overload")
+        #
+        # LOG.info('Workload State Update')
 
     # @periodic_task.periodic_task(spacing=CONF.task_period,
     #                           run_immediately=True)

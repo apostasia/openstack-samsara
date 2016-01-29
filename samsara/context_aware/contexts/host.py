@@ -25,8 +25,9 @@ from samsara.context_aware import contexts_repository as ctx_repository
 
 class HostInfo(base.BaseContext):
 
-    def __init__(self,context_tag):
-        self.context = collections.namedtuple(context_tag,
+    def __init__(self):
+        self.tag = "host_info"
+        self.context = collections.namedtuple(self.tag,
         ['hostname',
         'uuid',
         'cpu_number',
@@ -78,10 +79,11 @@ class HostState(base.BaseContext):
                             created_at)
 
 
-class HostResourceUtilization(base.BaseContext):
+class HostResourcesUsage(base.BaseContext):
 
-    def __init__(self,context_tag):
-        self.context = collections.namedtuple(context_tag, ['compute_utilization',
+    def __init__(self):
+        self.tag = "host_resources_usage"
+        self.context = collections.namedtuple(self.tag, ['compute_utilization',
         'memory_utilization',
         'created_at'])
 
@@ -128,5 +130,5 @@ class StoredHostComputeUsage(base.BaseContext):
         """ Get stored data about host compute usage from local context repository
         """
         stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_contexts_from_period('host_resources_usage', period)]
-        
+
         return stored_data
