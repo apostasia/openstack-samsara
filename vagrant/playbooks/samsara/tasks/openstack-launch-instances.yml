@@ -1,0 +1,13 @@
+# Launch Instances
+- name: Launch instances
+  environment: "{{ user_env }}"
+  os_server:
+      name: "{{ item }}"
+      state: present
+      image: Ubuntu Server 14.04
+      flavor: pico
+  with_items:
+      - samsara-teste-01
+      - samsara-teste-02
+      - samsara-teste-03
+      - samsara-teste-04
