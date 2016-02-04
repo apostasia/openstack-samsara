@@ -16,12 +16,11 @@ from business_rules.fields import FIELD_TEXT, FIELD_NUMERIC, FIELD_SELECT
 from business_rules import run_all
 from business_rules import export_rule_data
 
-
-
-
 from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_serialization import jsonutils
+
+from samsara.context_aware import contexts_repository
 
 json_rules_files_dir_path_opt = cfg.StrOpt('rules_location_dir',
                                             default='/etc/samsara/rules',

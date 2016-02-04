@@ -40,7 +40,7 @@
       group: keystone
       mode: 0755
   notify: restart apache
-  
+
 - name: Enable WSGI Site
   sudo: yes
   command: a2ensite wsgi-keystone
@@ -63,6 +63,7 @@
       group: keystone
       mode: 0755
   notify: restart apache
+
 - name: Copy Keystone WSGI admin file
   template:
       src: "admin"

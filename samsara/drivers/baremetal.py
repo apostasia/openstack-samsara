@@ -99,8 +99,25 @@ class BareMetalDriver(object):
             for line in f:
                 if not line.startswith("model name"):
                     continue
-                max_freq = float(re.match(r'model name\s+:\s+.*@\s(\d+\.*\d*)GHz|MHz',line).group(1))*1000
+                max_freq_string = re.match(r'model name\s+:\s+.*@\s(\d+\.*\d*)(GHz|MHz)',line)
+
+                """ Split value and unit"""
+                # Value
+                max_freq_value = float(max_freq_string.group(1))
+
+                # Unit
+                max_freq_unit = max_freq_string.group(2)
+
+                # Convert do MHz
+                if max_freq_unit == "GHz":
+                    max_freq = max_freq_value * 1000
+                # elif max_freq_unit == "MHz":
+                #     max_freq_value * 1
+                else:
+                    max_freq = max_freq_value * 1
+
                 max_freq_percore.append(max_freq)
+
         return max_freq_percore
 
     def get_current_freq_percore(self):
@@ -187,8 +204,8 @@ class BareMetalDriver(object):
 
     def get_usage_perc_percore(self):
         """Returns an list with usage percentual percore"""
-        maxmips_percore    = get_max_mips_percore()
-        usage_mips_percore = get_usage_mips_percore()
+        maxmips_percore    = self.get_max_mips_percore()
+        usage_mips_percore = self.get_usage_mips_percore()
 
         usage_percore = []
 
@@ -201,7 +218,15 @@ class BareMetalDriver(object):
         """Get current total usage CPU percentual
            Return an float value percentual
         """
-        return sum(self.get_usage_mips_percore())
+        usage_mips       = sum(self.get_usage_mips_percore())
+        utilized_cputime = sum(self.get_busytime_percore())
+
+        if utilized_cputime > 0:
+            current_usage = usage_mips / utilized_cputime
+        else:
+            current_usage = usage_mips
+
+        return current_usage
 
     def get_max_memory(self):
         """ Get max memory in MBytes

@@ -23,7 +23,6 @@
       #- include: handlers/main.yml
   tasks:
       - include: tasks/samsara-controller-config.yml
-
 - hosts: compute_group
   sudo: true
   vars_files:
@@ -31,3 +30,4 @@
       - ../openstack/vars.yml
   tasks:
       - include: tasks/samsara-compute-config.yml
+      - include: tasks/openstack-launch-instances.yml

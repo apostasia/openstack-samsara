@@ -32,26 +32,33 @@ class VirtualMachineResourceUsage(base.BaseContext):
 
     def getContext(self, vm_id):
 
-        uuid                = sensors.VirtualMachineIdSensor(self.vm_id).read_value()
+        uuid                = sensors.VirtualMachineIdSensor(vm_id).read_value()
 
-        compute_utilization = sensors.VirtualMachineComputeUsageSensor(self.vm_id).read_value()
+        compute_utilization = sensors.VirtualMachineComputeUsageSensor(vm_id).read_value()
 
-        memory_utilization  = sensors.VirtualMachineMemoryUsageSensor(self.vm_id).read_value()
+        memory_utilization  = sensors.VirtualMachineMemoryUsageSensor(vm_id).read_value()
 
         created_at          = datetime.utcnow().isoformat()
 
         return self.context(uuid, compute_utilization, memory_utilization, created_at)
 
-class ActiveVirtualMachines(base.BaseContext):
-    """ Representing the active virtual machines in the host."""
+class VirtualMachineAverageComputeUsage(base.BaseContext):
+    """ Store Host Compute Usage Context """
 
-    def __init__(self, context_tag):
-        self.context = collections.namedtuple(context_tag, ['active_vms','created_at'])
+    def __init__(self):
+        context_tag = "store_host_compute_usage"
+        self.ctx_repository = ctx_repository.LocalContextsRepository()
 
+    def getContext(self, limit=10):
+        """ Get stored data about host compute usage from local context repository
+        """
+        stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', limit)]
 
-    def getContext(self):
+        return stored_data
 
-        active_vms = sensors.ActiveVirtualMachinesSensor.read_value()
-        created_at = datetime.utcnow().isoformat()
+    def get_last_period_contexts(self,period):
+        """ Get stored data about host compute usage from local context repository
+        """
+        stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_contexts_from_period('host_resources_usage', period)]
 
-        return self.context(active_vms, created_at)
+        return stored_data
