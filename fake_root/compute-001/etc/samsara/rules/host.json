@@ -3,7 +3,7 @@
         "conditions": {
             "any": [
                 {
-                    "name": "current_compute_resource_usage",
+                    "name": "percentual_compute_resource_usage",
                     "operator": "greater_than",
                     "value": 0.8
                 }
@@ -22,7 +22,7 @@
         "conditions": {
             "any": [
                 {
-                    "name": "current_compute_resource_usage",
+                    "name": "percentual_compute_resource_usage",
                     "operator": "less_than",
                     "value": 0.3
                 }
@@ -41,12 +41,12 @@
         "conditions": {
             "all": [
                 {
-                    "name": "current_compute_resource_usage",
+                    "name": "percentual_compute_resource_usage",
                     "operator": "less_than",
                     "value": 0.8
                 },
                 {
-                    "name": "current_compute_resource_usage",
+                    "name": "percentual_compute_resource_usage",
                     "operator": "greater_than",
                     "value": 0.3
                 }

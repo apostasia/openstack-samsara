@@ -31,8 +31,8 @@ class HostInfo(base.BaseContext):
         ['hostname',
         'uuid',
         'cpu_number',
-        'max_compute',
-        'max_memory',
+        'compute_capacity',
+        'memory_capacity',
         'mgmt_nic_speed',
         'created_at'])
 
@@ -132,3 +132,17 @@ class StoredHostComputeUsage(base.BaseContext):
         stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_contexts_from_period('host_resources_usage', period)]
 
         return stored_data
+
+class ActiveVirtualMachines(base.BaseContext):
+    """ Representing the active virtual machines in the host."""
+
+    def __init__(self, context_tag):
+        self.context = collections.namedtuple(context_tag, ['active_vms','created_at'])
+
+
+    def getContext(self):
+
+        active_vms = sensors.ActiveVirtualMachinesSensor.read_value()
+        created_at = datetime.utcnow().isoformat()
+
+        return self.context(active_vms, created_at)

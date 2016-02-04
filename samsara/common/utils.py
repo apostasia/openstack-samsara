@@ -18,16 +18,20 @@ from datetime import timedelta
 import time
 
 
-def to_percentage(value, max_value):
+def to_percentage(value, total):
     """ Calculate a percentual of value.
     Args:
         value (float): Value to percentual calculate
-        max_value (float): Referencial max value
+        total (float): Referencial max value
     Returns:
-        percentage value
+        percentage value between 0 and 1
     """
-    percentage = 100 * (value/max_value)
-    return percentage
+    try:
+        percentage = ((float(value*100) / float(total)) / 1000)
+
+        return float(percentage)
+    except ZeroDivisionError:
+        return None
 
 def get_time_from_period(period=60):
     """ Get the time moment from period ago

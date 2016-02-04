@@ -25,7 +25,7 @@ from oslo_log import log
 import sqlalchemy
 
 from samsara import config
-from samsara.common import utils
+from samsara.common.utils import *
 
 from samsara.context_aware import base
 from samsara.context_aware import sensors
@@ -93,6 +93,7 @@ class LocalContextsRepository(ContextsRepository):
         super(LocalContextsRepository, self).__init__(CONF.context_aware.local_repository)
 
     def retrieve_last_contexts_from_period(self,context_tag,period=60):
+        """ Retrive last context from of determined period"""
 
         time_value = get_time_from_period(period)
 

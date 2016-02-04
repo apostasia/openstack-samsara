@@ -12,6 +12,7 @@
   - python-psycopg2
   - git
   - htop
+  -ipython
 
 ############################################################################
 # Install Required PIP Packages
@@ -20,6 +21,7 @@
   pip: name={{item}}
   with_items:
   - business-rules>=0.2.0
+  - numpy
   - openstacksdk
   - oslo.config
   - oslo.log
@@ -31,3 +33,4 @@
   - subprocess32
   - dataset
   - pbr>=1.6
+  - shade

@@ -29,7 +29,7 @@ LOG = logging.getLogger(__name__)
 libvirt_opts = [
 
     cfg.StrOpt('connection_uri',
-               default='',
+               default='localhost',
                help='Override the default libvirt URI '
                     '(which is dependent on virt_type)')
     # cfg.IntOpt('live_migration_bandwidth',
