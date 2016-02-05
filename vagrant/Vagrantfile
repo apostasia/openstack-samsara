@@ -6,6 +6,7 @@ VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box = 'ubuntu/trusty64'
+    config.vm.box_version = '20151218.0.1'
 
     all_group = []
 
@@ -101,8 +102,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
                 # PostgreSQL
                 node_config.vm.network 'forwarded_port', guest: 5432, host: 5432
+
+                # RabbitMQ Manager
+                node_config.vm.network 'forwarded_port', guest: 15672, host: 15672
             else
                 compute_group << node[:name]
+                node_config.vm.provision :reload
+                #node_config.trigger.after :provision, :execute => "vagrant reload"
             end
 
             # Fake root

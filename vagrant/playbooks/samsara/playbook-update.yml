@@ -30,4 +30,4 @@
       - ../openstack/vars.yml
   tasks:
       - include: tasks/samsara-compute-config.yml
-      - include: tasks/openstack-launch-instances.yml
+      #- include: tasks/openstack-launch-instances.yml

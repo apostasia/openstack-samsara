@@ -11,13 +11,13 @@
 #
 - hosts: samsara
   sudo: yes
-  tasks:  
+  tasks:
     ############################################################################
     # Add OpenStack Repositories
     ############################################################################
     - name: Add OpenStack Repositories
       shell: sudo add-apt-repository -y cloud-archive:kilo
-      
+
      #apt_repository: repo='cloud-archive:kilo'
      #               update_cache=yes
     ############################################################################
@@ -60,6 +60,8 @@
       - python-pip
       - git
       - htop
+    - name: Remove cgroup-lite package
+      apt: name=cgroup-lite state=absent
     ############################################################################
     # Install all the needed packages in one go.
     ############################################################################
@@ -71,7 +73,7 @@
       - oslo.db
       - oslo.log
       - oslo.messaging
-      - oslo.utils 
+      - oslo.utils
       - oslo.versionedobjects
       - psutil
       - subprocess32

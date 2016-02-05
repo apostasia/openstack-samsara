@@ -10,3 +10,17 @@
 - name: Restart eth1 interface
   sudo: yes
   shell: ifdown eth1 && ifup eth1
+
+- name: Install NTP package
+  sudo: yes
+  apt: pkg=ntp state=installed update_cache=yes
+
+- name: Update Timezone to Etc/UTC
+  copy: content="America/Sao_Paulo\n" dest=/etc/timezone owner=root group=root mode=0644
+  sudo: true
+  register: timezone
+
+- name: Reconfigure Timezone Data
+  shell: dpkg-reconfigure -f noninteractive tzdata
+  sudo: true
+  when: timezone.changed

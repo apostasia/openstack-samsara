@@ -29,7 +29,7 @@ LOG = logging.getLogger(__name__)
 libvirt_opts = [
 
     cfg.StrOpt('connection_uri',
-               default='localhost',
+               default='',
                help='Override the default libvirt URI '
                     '(which is dependent on virt_type)')
     # cfg.IntOpt('live_migration_bandwidth',
@@ -52,7 +52,9 @@ CONF.register_opts(libvirt_opts, 'libvirt')
 instances_vcpu_time = None
 
 class LibvirtDriver(object):
-    def __init__(self,uri=CONF.libvirt.connection_uri):
+
+    def __init__(self, uri=CONF.libvirt.connection_uri):
+
         self.uri = uri
         self.conn = self.get_connection()
 
@@ -65,9 +67,10 @@ class LibvirtDriver(object):
         global libvirt
         try:
             conn = libvirt.openReadOnly(self.uri)
+            return conn
         except libvirt.libvirtError as ex:
                     LOG.exception("Connection to libvirt failed: %s", ex)
-        return conn
+
 
 
     def get_host_uuid(self):

@@ -32,15 +32,28 @@
       command: apt-get -y autoremove
       when: "'packages will be REMOVED' in check_autoremove.stdout"
 
+    # - name: Remove cgroup-lite package
+    #   apt: name=cgroup-lite state=absent
+
+
+    # # Reboot if required.
+    # - name: Reboot system (cgroup fix)
+    #   sudo: yes
+    #   command: shutdown -r now 'Rebooting system'
+    #   async: 0
+    #   poll: 0
+    #   ignore_errors: true
+    #   register: rebooted
+
     # Reboot if required.
-    - name: Reboot system if required
-      sudo: yes
-      command: shutdown -r now 'Rebooting to complete system upgrade'
-           removes=/var/run/reboot-required
-      async: 0
-      poll: 0
-      ignore_errors: true
-      register: rebooted
+    # - name: Reboot system if required
+    #   sudo: yes
+    #   command: shutdown -r now 'Rebooting to complete system upgrade'
+    #        removes=/var/run/reboot-required
+    #   async: 0
+    #   poll: 0
+    #   ignore_errors: true
+    #   register: rebooted
 
     # - name: Wait for VM Reboot.
     #   sudo: no
@@ -52,13 +65,13 @@
     #                 timeout=120
     #   when: rebooted.changed
 
-    - name: Wait for VM Reboot.
-      sudo: no
-      local_action: wait_for host={{ inventory_hostname }}
-                    state=started
-                    delay=10
-                    timeout=60
-      when: rebooted.changed
+    # - name: Wait for VM Reboot.
+    #   sudo: no
+    #   local_action: wait_for host={{ inventory_hostname }}
+    #                 state=started
+    #                 delay=10
+    #                 timeout=60
+    #   when: rebooted.changed
 
     # Add OpenStack Repositories
     - name: Add OpenStack Repositories

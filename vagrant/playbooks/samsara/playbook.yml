@@ -20,9 +20,9 @@
       - vars.yml
       - ../openstack/vars.yml
   handlers:
-      #- include: handlers/main.yml
+      - include: handlers/main.yml
   tasks:
-      #- include: tasks/database-server.yml
+      - include: tasks/database-server.yml
       - include: tasks/openstack-config-setup.yml
       - include: tasks/install-deps.yml
       - include: tasks/samsara-controller-config.yml
@@ -36,3 +36,4 @@
       - include: tasks/install-deps.yml
       - include: tasks/rootwrap-config.yml
       - include: tasks/samsara-compute-config.yml
+      - include: tasks/add-users-to-libvirtd-group.yml
