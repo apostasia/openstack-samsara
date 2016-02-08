@@ -1,3 +1,43 @@
 CHANGES
 =======
 
+* cpuacct fix and other stuffs
+* ..
+* Update
+* Fix conflict
+* Todo: fix cgroup issue
+* Add fake_root
+* playbook adjusts
+* Run!
+* Rules Handler
+* Interpreter Module
+* Get contexts per periods implementation
+* Start Actuator
+* Interpreter Implementing
+* Start Interpreter - Fix name file
+* Start Interpreter
+* Local Manager/Global Manager Integration
+* Small Fix
+* Context Refactor
+* openstack nova driver implementation and some fixes
+* Add active vms sensors
+* Fix playbooks
+* Historical Host Resource Usage Context Implementation
+* Working on Context stuffs
+* Hosts Catalog Implentation
+* Context Global Repository and other stuffs
+* Clean
+* Local Controller Sprint
+* Clean more stuffs
+* Impl Local Meanager and clean some stuffs
+* Implementação do collector a arquitetura
+* Refactory
+* fix playboos and restart collector dev
+* Fix unable vagrant network after reload vm
+* Fix samsara playbook
+* Preparando ambiente para Samsara
+* Refactory Environment
+* Refactory Environment
+* Remove .pyc files
+* Adicionando ao Git LUPS
+* Initial Cookiecutter Commit

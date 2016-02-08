@@ -1,0 +1,31 @@
+# Fix cpuacct not mounted issue
+# Todo: to explain more
+
+- name: Creates /sys/fs/cgroup/cpuacct directory
+  file: path=/sys/fs/cgroup/cpuacct state=directory owner=root
+
+- name: Creates /sys/fs/cgroup/cpu directory
+  file: path=/sys/fs/cgroup/cpu state=directory owner=root
+
+- name: Add cgroup entries to FSTAB
+  sudo: yes
+  shell: |
+    su -c "cat >> /etc/fstab << EOF
+                # cgroup
+                cgroup_cpuacct /sys/fs/cgroup/cpuacct cgroup rw,nosuid,nodev,noexec,relatime,cpuacct 0 0
+
+                none /sys/fs/cgroup/cpu cgroup cpu 0 0
+            EOF
+            "
+- name: Remount device
+  sudo: yes
+  shell: mount -av
+
+- name: Restart Nova Compute and libvirt Services
+  sudo: yes
+  service: name={{ item }} state=restarted
+  with_items:
+      - nova-compute
+      - nova-network
+      - nova-api-metadata
+      - libvirt-bin

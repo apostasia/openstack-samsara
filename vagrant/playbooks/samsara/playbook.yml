@@ -37,3 +37,4 @@
       - include: tasks/rootwrap-config.yml
       - include: tasks/samsara-compute-config.yml
       - include: tasks/add-users-to-libvirtd-group.yml
+      - include: tasks/cpuacct-ubuntu-fix.yml

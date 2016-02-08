@@ -33,9 +33,9 @@ flat_interface = eth2
 public_interface = eth2
 
 #metadata
-metadata_host = controller
-metadata_listen = controller
-metadata_listen_port = 8775
+#metadata_host = {{ ansible_eth1.ipv4.address }}
+#metadata_listen = 0.0.0.0
+#metadata_listen_port = 8775
 
 # Configuração do acesso ao console remoto
 vnc_enabled = True
