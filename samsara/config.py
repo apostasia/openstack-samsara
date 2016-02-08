@@ -47,7 +47,7 @@ def parse_args(argv, default_config_files=None, configure_db=False):
     # Config Log options
     logging.set_defaults(_DEFAULT_LOGGING_CONTEXT_FORMAT, _DEFAULT_LOG_LEVELS)
     logging.register_options(CONF)
-    
+
     options.set_defaults(CONF, connection=_DEFAULT_SQL_CONNECTION,
                          sqlite_db='samsara.sqlite')
     rpc.set_defaults(control_exchange='samsara')

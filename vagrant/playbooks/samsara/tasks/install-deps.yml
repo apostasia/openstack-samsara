@@ -10,10 +10,11 @@
   - python-tox
   - python-oslo.config
   - python-psycopg2
+  - python-numpy
   - git
   - htop
   - ipython
-  
+
 ############################################################################
 # Install Required PIP Packages
 ############################################################################
@@ -21,14 +22,14 @@
   pip: name={{item}}
   with_items:
   - business-rules>=0.2.0
-  - numpy
+  #- numpy
   - openstacksdk
-  - oslo.config
-  - oslo.log
-  - oslo.messaging
-  - oslo.reports
-  - oslo.i18n>=2.1.0
-  - oslo.versionedobjects
+  #- oslo.config - use distrib pkg
+  #- oslo.log
+  #- oslo.messaging
+  #- oslo.reports
+  #- oslo.i18n>=2.1.0
+  #- oslo.versionedobjects
   - psutil
   - subprocess32
   - dataset

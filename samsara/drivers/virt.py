@@ -19,7 +19,7 @@ import os,sys
 import re
 import pprint
 from lxml import etree,objectify
-from oslo.config import cfg
+from oslo_config import cfg
 from oslo_log import log as logging
 
 
