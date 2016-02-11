@@ -20,7 +20,7 @@ from datetime import datetime
 import time
 
 from oslo_config import cfg
-from oslo_log import log
+from oslo_log import log as logging
 
 import sqlalchemy
 
@@ -43,6 +43,8 @@ contexts_repository_opts = [
 CONF = cfg.CONF
 CONF.register_group(contexts_repository_group)
 CONF.register_opts(contexts_repository_opts, contexts_repository_group)
+
+LOG = logging.getLogger(__name__)
 
 
 class ContextsRepository(base.BaseContextsRepository):
@@ -98,6 +100,8 @@ class LocalContextsRepository(ContextsRepository):
         time_value = get_time_from_period(period)
 
         query = "select * from %(context)s where datetime(created_at) > datetime('%(time)s')" % {"context": context_tag, "time": time_value}
+
+        LOG.info('Query: %s', query)
 
         return self.repository.query(query)
 

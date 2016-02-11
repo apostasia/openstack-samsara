@@ -144,7 +144,8 @@ class Service(service.Service):
 
         # Define serializer
         # TODO - Refatorar SamsaraObjectSerializer
-        serializer = objects_base.SamsaraObjectSerializer()
+        #serializer = objects_base.SamsaraObjectSerializer()
+        serializer = None
 
         # Get and start RPC server
         self.rpcserver = rpc.get_server(target, endpoints, serializer)

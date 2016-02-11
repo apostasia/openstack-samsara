@@ -43,7 +43,6 @@ class BareMetalDriver(object):
     def __init__(self):
         pass
 
-
     def get_number_cpu(self):
         return multiprocessing.cpu_count()
 
@@ -197,8 +196,14 @@ class BareMetalDriver(object):
 
         usage_percore = []
 
-        for maxmips,maxfreq,currentfreq,utilized_cputime in zip(maxmips_percore,maxfreq_percore,currentfreq_percore,utilized_cputime_percore):
-            usage_percore.append(int((((currentfreq * maxmips)/maxfreq) * utilized_cputime)))
+        for maxmips, maxfreq, currentfreq, utilized_cputime in zip(maxmips_percore, maxfreq_percore, currentfreq_percore, utilized_cputime_percore):
+
+            if utilized_cputime <= 0:
+                utilized_cputime = 1
+
+            usage_core = int((((currentfreq * maxmips)/maxfreq) / utilized_cputime))
+
+            usage_percore.append(usage_core)
 
         return usage_percore
 
@@ -219,14 +224,16 @@ class BareMetalDriver(object):
            Return an float value percentual
         """
         usage_mips       = sum(self.get_usage_mips_percore())
-        utilized_cputime = sum(self.get_busytime_percore())
+        #utilized_cputime = sum(self.get_busytime_percore())
 
-        if utilized_cputime > 0:
-            current_usage = usage_mips / utilized_cputime
-        else:
-            current_usage = usage_mips
+        # if utilized_cputime > 0:
+        #     current_usage = usage_mips / utilized_cputime
+        # else:
+        current_usage = usage_mips
 
         return current_usage
+
+
 
     def get_max_memory(self):
         """ Get max memory in MBytes

@@ -32,7 +32,7 @@ LOG = logging.getLogger(__name__)
 
 rules_handler_opts = [
     cfg.IntOpt('compute_usage_time_frame_evaluation',
-               default=60,
+               default=10,
                help='Compute Usage time frame to evaluation (in seconds)'),
 ]
 CONF = cfg.CONF
@@ -83,7 +83,7 @@ class HostVariables(BaseVariables):
         global host_resources_usage_ctx
 
         host_avg_resources_usage = self.host_avg_resources_usage_handler.get_context(self.time_frame)
-
+        
         # Convert to percentual
         percentual_compute_resource_usage = to_percentage(host_avg_resources_usage.compute_usage_avg, self.host_info.compute_capacity)
 

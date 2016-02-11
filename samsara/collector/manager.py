@@ -80,15 +80,12 @@ class CollectorManager(manager.Manager):
         LOG.info('Get host resources usage context')
         ctx_host_resources_usage = self.host_resources_usage_handler.getContext()
 
-
         # Store into repository
         self.ctx_repository.store_context(ctx_host_resources_usage)
         LOG.info('Store host resources usage context into local repository')
 
         self.ctx_global_repository.store_context(ctx_host_resources_usage)
         LOG.info('Store host resources usage context into global repository')
-
-        # notifier.info({'some': 'context'}, 'host.get_resources', 'ok')
 
         LOG.info('Get Host Contexts and store into repository')
 

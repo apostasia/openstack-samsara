@@ -77,22 +77,21 @@ class GlobalControllerManager(manager.Manager):
         """Receives information about changes to a host situation, and
         updates Global Controller with that information.
         """
-        # situation_tuple = decode_unicode(jsonutils.loads(situation))
+        situation_tuple = jsonutils.loads(situation)
 
         LOG.info('Host Workload Situation: %s - %s', host, situation_tuple)
 
         situation_description = situation_tuple['description']
         related_context = situation_tuple['related_context']
 
-        LOG.info('related_context: %s - %s', host, type(related_context))
+        LOG.info('related_context: %s - %s', host, related_context)
 
         # # Instantiate Host resources situation
-        # host_situation = situations.Situation('host_situation', situation_description, related_context)
-        #
+        host_situation = situations.Situation('host_situation', situation_description, related_context)
+
         # # Store Situation in Global Repository
-        # self.global_repository.store_situation(situation)
-        #
-        # LOG.info('Store host situation into global repository')
+        self.global_repository.store_situation(host_situation.get_situation())
+        LOG.info('Store host situation into global repository')
 
     def workload_consolidate(self,context):
         """ Perform workload consolidation

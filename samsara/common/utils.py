@@ -33,9 +33,12 @@ def to_percentage(value, total):
         percentage value between 0 and 1
     """
     try:
-        percentage = ((float(value*100) / float(total)) / 1000)
+        if value >= total:
+            value = total
 
+        percentage = ((float(value*100) / float(total)) / 100)
         return float(percentage)
+        
     except ZeroDivisionError:
         return None
 
@@ -46,7 +49,7 @@ def get_time_from_period(period=60):
     Returns:
         timestamp in UTC format
     """
-    time = datetime.now() - timedelta(seconds=period)
+    time = datetime.utcnow() - timedelta(seconds=period)
     return time.isoformat()
 
 

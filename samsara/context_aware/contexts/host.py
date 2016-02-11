@@ -18,10 +18,13 @@ import collections
 from datetime import datetime
 import numpy as np
 import time
+from oslo_log import log as logging
 
 from samsara.context_aware import base
 from samsara.context_aware import sensors
 from samsara.context_aware import contexts_repository as ctx_repository
+
+LOG = logging.getLogger(__name__)
 
 
 class HostInfo(base.BaseContext):
@@ -78,6 +81,7 @@ class HostAvgResourcesUsage(base.BaseContext):
 
         # Historical Compute Usage per periodo defined in time frame
         historical_compute_usage = self.stored_ctx_host.get_last_period_contexts(time_frame)
+        LOG.info('Samples in MIPS: %s', historical_compute_usage)
 
         # Get basic host information
         hostname          = sensors.HostNetworkHostnameSensor.read_value()
@@ -146,7 +150,7 @@ class StoredHostComputeUsage(base.BaseContext):
 
         return stored_data
 
-    def get_last_period_contexts(self,period):
+    def get_last_period_contexts(self, period):
         """ Get stored data about host compute usage from local context repository
         """
         stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_contexts_from_period('host_resources_usage', period)]
