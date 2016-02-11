@@ -24,16 +24,21 @@ class BaseContext(object):
     # self.timestamp    = ""
     # self.context_vars = {}
 
-    @abc.abstractmethod
-    def getContext():
-        "Return an tuple with context vars and values"
-        raise NotImplementedError()
+    # @abc.abstractmethod
+    # def getContext():
+    #     "Return an tuple with context vars and values"
+    #     raise NotImplementedError()
     def retrieve(self):
         "Retrives an stored context"
         raise NotImplementedError()
 
 class BaseSituation(object):
     __metaclass__  = abc.ABCMeta
+
+    # @abc.abstractmethod
+    # def getContext():
+    #     "Return an tuple with context vars and values"
+    #     raise NotImplementedError()
 
 class BaseSensor(object):
     __metaclass__  = abc.ABCMeta

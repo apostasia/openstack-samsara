@@ -13,11 +13,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     all_group = []
 
-    if Vagrant.has_plugin?("vagrant-cachier")
-      config.cache.scope = :machine
-      config.cache.enable :apt
-      config.cache.enable :apt_lists
-    end
+    #if Vagrant.has_plugin?("vagrant-cachier")
+    #  config.cache.scope = :machine
+    #  config.cache.enable :apt
+    #  config.cache.enable :apt_lists
+    #end
 
     # Disable automatic box update checking. If you disable this, then
     # boxes will only be checked for updates when the user runs

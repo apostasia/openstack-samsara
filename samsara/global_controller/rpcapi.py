@@ -69,18 +69,10 @@ class GlobalControllerAPI(object):
         cctxt = self.client.prepare(server=host, version=version)
         return cctxt.call(ctx,'get_host_info')
 
-    def get_host_info_ob(self,ctx,host):
-        ''' Get info from specific host
-
-        '''
-        version = '1.0'
-        cctxt = self.client.prepare(server=host, version=version)
-        return cctxt.call(ctx,'get_host_info_ob')
-
-    def update_host_workload_state(self, context, host, state):
+    def update_host_situation(self, context, host, situation):
         ''' Get info from specific host
 
         '''
         version = '1.0'
         cctxt = self.client.prepare(server="controller", version=version)
-        cctxt.call(context,'update_host_workload_state', host=host, state=state)
+        cctxt.call(context,'update_host_situation', host=host, situation=situation)

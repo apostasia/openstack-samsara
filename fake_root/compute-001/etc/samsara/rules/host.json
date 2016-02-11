@@ -11,9 +11,9 @@
         },
         "actions": [
             {
-                "name": "notify_controller",
+                "name": "notify_situation_to_controller",
                 "params": {
-                    "status": "overload"
+                    "situation": "overload"
                 }
             }
         ]
@@ -30,9 +30,9 @@
         },
         "actions": [
             {
-                "name": "notify_controller",
+                "name": "notify_situation_to_controller",
                 "params": {
-                    "status": "underload"
+                    "situation": "underload"
                 }
             }
         ]
@@ -55,9 +55,9 @@
         },
         "actions": [
             {
-                "name": "notify_controller",
+                "name": "notify_situation_to_controller",
                 "params": {
-                    "status": "normal"
+                    "situation": "normal"
                 }
             }
         ]

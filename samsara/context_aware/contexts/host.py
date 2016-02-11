@@ -16,6 +16,7 @@
 import abc
 import collections
 from datetime import datetime
+import numpy as np
 import time
 
 from samsara.context_aware import base
@@ -57,25 +58,44 @@ class HostInfo(base.BaseContext):
 
 
 
-class HostState(base.BaseContext):
+class HostAvgResourcesUsage(base.BaseContext):
+    def __init__(self):
 
-    def __init__(self,context_tag):
-        self.context = collections.namedtuple(context_tag,
+        self.tag = "host_avg_resources_usage"
+        self.context = collections.namedtuple(self.tag,
         ['hostname',
         'uuid',
-        'state',
+        'compute_usage_avg',
+        'memory_usage_avg',
         'created_at'])
 
-    def getContext(self):
-
-        hostname       = sensors.HostNetworkHostnameSensor.read_value()
-        uuid           = sensors.HostIdSensor.read_value()
-        state          = None
         created_at     = datetime.utcnow().isoformat()
+
+        # Instantiate Stored Host Compute Contexts Handlers
+        self.stored_ctx_host = StoredHostComputeUsage()
+
+    def get_context(self, time_frame, method=None):
+
+        # Historical Compute Usage per periodo defined in time frame
+        historical_compute_usage = self.stored_ctx_host.get_last_period_contexts(time_frame)
+
+        # Get basic host information
+        hostname          = sensors.HostNetworkHostnameSensor.read_value()
+        uuid              = sensors.HostIdSensor.read_value()
+
+        # Calculate average compute usage
+        compute_usage_avg = np.average(historical_compute_usage)
+
+        # Calculate average memory usage - TODO: to implement
+        memory_usage_avg  = 0
+
+        created_at          = datetime.utcnow().isoformat()
+
 
         return self.context(hostname,
                             uuid,
-                            state,
+                            compute_usage_avg,
+                            memory_usage_avg,
                             created_at)
 
 

@@ -106,3 +106,26 @@ class GlobalContextsRepository(ContextsRepository):
     def __init__(self):
 
         super(GlobalContextsRepository, self).__init__(CONF.context_aware.global_repository)
+
+    def retrieve_last_contexts_from_period(self,context_tag,period=60):
+        """ Retrive last context from of determined period"""
+
+        time_value = get_time_from_period(period)
+
+        query = "select * from %(context)s where datetime(created_at) > datetime('%(time)s')" % {"context": context_tag, "time": time_value}
+
+        return self.repository.query(query)
+
+    def store_situation(self, situation_instance):
+        "Store situation on contexts repository"
+
+        tag = type(situation_instance).__name__
+
+        # Prepare situation data
+        situation_tuple = situation_instance.related_context
+
+        # Add situation description to end tuple
+        situation_tuple.update(situation=situation_instance.description)
+
+        # Store situation
+        self.repository[tag].insert(situation_tuple, {'created_at':sqlalchemy.DateTime})

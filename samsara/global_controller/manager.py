@@ -28,7 +28,14 @@ from oslo_utils import importutils
 
 #from samsara.common import exception
 from samsara.common import manager
-from samsara import objects
+from samsara.common.utils import *
+
+from samsara.context_aware.contexts import host as host_contexts
+from samsara.context_aware.contexts import vm as vm_contexts
+from samsara.context_aware.situations import base as situations
+from samsara.context_aware import contexts_repository
+
+import yaml
 
 
 LOG = logging.getLogger(__name__)
@@ -56,6 +63,9 @@ class GlobalControllerManager(manager.Manager):
                                                *args, **kwargs)
 
 
+        # Get Global contexts repository
+        self.global_repository = contexts_repository.GlobalContextsRepository()
+
 
     def update_host_info(self, context, host_name, instance_info):
         """Receives information about changes to a host's instances, and
@@ -63,11 +73,26 @@ class GlobalControllerManager(manager.Manager):
         """
         # self.driver.host_manager.update_instance_info(context, host_name, instance_info)
 
-    def update_host_workload_state(self, context, host, state):
-        """Receives information about changes to a host workload state, and
+    def update_host_situation(self, context, host, situation):
+        """Receives information about changes to a host situation, and
         updates Global Controller with that information.
         """
-        LOG.info('Host Workload State: %s - %s', host, state)
+        # situation_tuple = decode_unicode(jsonutils.loads(situation))
+
+        LOG.info('Host Workload Situation: %s - %s', host, situation_tuple)
+
+        situation_description = situation_tuple['description']
+        related_context = situation_tuple['related_context']
+
+        LOG.info('related_context: %s - %s', host, type(related_context))
+
+        # # Instantiate Host resources situation
+        # host_situation = situations.Situation('host_situation', situation_description, related_context)
+        #
+        # # Store Situation in Global Repository
+        # self.global_repository.store_situation(situation)
+        #
+        # LOG.info('Store host situation into global repository')
 
     def workload_consolidate(self,context):
         """ Perform workload consolidation

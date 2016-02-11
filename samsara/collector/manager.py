@@ -77,8 +77,9 @@ class CollectorManager(manager.Manager):
         """ Get Host Contexts and store into repository"""
 
         # Get host resources usage context
-        ctx_host_resources_usage = self.host_resources_usage_handler.getContext()
         LOG.info('Get host resources usage context')
+        ctx_host_resources_usage = self.host_resources_usage_handler.getContext()
+
 
         # Store into repository
         self.ctx_repository.store_context(ctx_host_resources_usage)

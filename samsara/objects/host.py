@@ -29,8 +29,8 @@ CONF = cfg.CONF
 class Host(base.SamsaraObject):
     # Version 1.0: Initial version
     VERSION = '1.0'
-    
-    
+
+
     fields = {
         'id': fields.IntegerField(read_only=True),
         'host': fields.StringField(nullable=True),
@@ -69,7 +69,7 @@ class Host(base.SamsaraObject):
     #     'cpu_allocation_ratio': fields.FloatField(),
     #     'ram_allocation_ratio': fields.FloatField(),
     #     }
-        
+
     @base.remotable
     def get_host_info_ob(self,context=None):
         return 'Host INfo: Chablau'

@@ -13,11 +13,21 @@
 # under the License.
 
 """
-Componente responsável por processar contexto e regras, e determinar situações
-""" 
-import abc
-from context_aware import base
+Componente responsável por representar uma situação
+"""
+import collections
+
+from samsara.context_aware import base
 
 
+class Situation(base.BaseSituation):
+    """  """
+    def __init__(self, tag, description, related_context):
+        self.tag = tag
+        self.description = description
+        self.related_context = related_context
 
-    
+    def get_situation(self):
+        self.situation = collections.namedtuple(self.tag, ['description','related_context'])
+
+        return self.situation(self.description, self.related_context)

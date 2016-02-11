@@ -26,7 +26,8 @@ from oslo_serialization import jsonutils
 from oslo_service import periodic_task
 from oslo_utils import importutils
 
-import simplejson as json
+#import simplejson as json
+import json
 
 from samsara.context_aware import entities
 from samsara.context_aware import sensors
@@ -91,15 +92,14 @@ class LocalControllerManager(manager.Manager):
         samples = str(self.historical_compute_usage.getContext())
         LOG.info('Historical Compute Usage: %s', samples)
 
-        # Run Host Rules Handler
-        # Host Rules Handler
+
+        # Initiate Host Rules Handler
         self.host_rules_handler = host_rl.HostRulesHandler()
+
+        # Run Host Rules Handler
         LOG.info('Run Host Rules Handler')
         self.host_rules_handler.reason()
 
-        # self.global_controller.update_host_workload_state(context,"compute-001", "overload")
-        #
-        # LOG.info('Workload State Update')
 
     # @periodic_task.periodic_task(spacing=CONF.task_period,
     #                           run_immediately=True)
