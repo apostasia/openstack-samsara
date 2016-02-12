@@ -19,6 +19,8 @@ import re
 import socket
 import sys
 import time
+
+from datetime import datetime
 from operator import sub
 
 from lxml import etree, objectify
@@ -38,6 +40,9 @@ else:
     import subprocess
 
 cpu_time_percore =  [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
+
+# Global var used to calc and normalize current cpu usage
+global_timestamp = datetime.utcnow()
 
 class BareMetalDriver(object):
     def __init__(self):
@@ -161,21 +166,25 @@ class BareMetalDriver(object):
          """
          return sum(self.get_usage_mips_percore())
 
-    # def get_busytime_percore(self):
-#
-#         global cpu_time  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
-#         time.sleep(interval)
-#         cpu_time_t1  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
-#
-#         # compute the delta time for each cpu and generate an list
-#         busytime_percore = map(sub,cpu_time_t1,cpu_time_t0)
-#
-#         return busytime_percore
+    def _get_busytime_percore(self, interval=5):
+        """ Get current busytime CPU - Alternative
+            Return an float value in Seconds
+        """
 
-    def get_busytime_percore(self,interval=5):
+        cpu_time_t0  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
+        time.sleep(interval)
 
-        # cpu_time_t0  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
-        # time.sleep(interval)
+        cpu_time_t1  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
+
+        # compute the delta time for each cpu and generate an list
+        busytime_percore = map(sub,cpu_time_t1,cpu_time_t0)
+
+        return busytime_percore
+
+    def get_busytime_percore(self):
+        """ Get current busytime CPU
+            Return an float value in Seconds
+        """
         global cpu_time_percore
         cpu_time_t0   = cpu_time_percore
         cpu_time_t1  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
@@ -189,6 +198,7 @@ class BareMetalDriver(object):
 
     def get_usage_mips_percore(self):
         """Returns an list with usage mips percore"""
+
         maxmips_percore               = self.get_max_mips_percore()
         maxfreq_percore               = self.get_max_freq_percore()
         currentfreq_percore           = self.get_current_freq_percore()
@@ -201,35 +211,34 @@ class BareMetalDriver(object):
             if utilized_cputime <= 0:
                 utilized_cputime = 1
 
-            usage_core = int((((currentfreq * maxmips)/maxfreq) / utilized_cputime))
+            usage_core = int((((currentfreq * maxmips)/maxfreq) * utilized_cputime))
 
             usage_percore.append(usage_core)
 
         return usage_percore
 
-    def get_usage_perc_percore(self):
-        """Returns an list with usage percentual percore"""
-        maxmips_percore    = self.get_max_mips_percore()
-        usage_mips_percore = self.get_usage_mips_percore()
+    def get_usage_percentual(self):
+        """Returns an list with usage percentual"""
+        maxmips    = self.get_max_mips()
+        usage_mips = self.get_current_usage_mips()
 
-        usage_percore = []
+        usage = round((usage_mips * 100)/maxmips)
 
-        for maxmips,usage_mips in zip(maxmips_percore,usage_mips_percore):
-            usage_percore.append(round((usage_mips * 100)/maxmips))
-
-        return usage_percore
+        return usage
 
     def get_current_usage_mips(self):
         """Get current total usage CPU percentual
            Return an float value percentual
         """
-        usage_mips       = sum(self.get_usage_mips_percore())
-        #utilized_cputime = sum(self.get_busytime_percore())
+        global global_timestamp
+        timestamp_t0     = global_timestamp
+        timestamp_t1     = datetime.utcnow()
+        time_interval    = (timestamp_t1 - timestamp_t0).seconds
+        global_timestamp = datetime.utcnow()
 
-        # if utilized_cputime > 0:
-        #     current_usage = usage_mips / utilized_cputime
-        # else:
-        current_usage = usage_mips
+        usage_mips = sum(self.get_usage_mips_percore())
+
+        current_usage = usage_mips / time_interval
 
         return current_usage
 
