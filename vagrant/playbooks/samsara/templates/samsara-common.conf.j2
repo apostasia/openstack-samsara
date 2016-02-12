@@ -17,7 +17,8 @@ path = 'sqlite:////var/lib/samsara/context_store.db'
 
 [collector]
 # Interval between collects (in seconds)
-interval = 10
+host_collect_context_period = 5
+instances_collect_context_period = 5
 
 [context_aware]
 local_repository = sqlite:////var/lib/samsara/contexts_local_repository.db

@@ -19,7 +19,7 @@ from datetime import datetime
 import time
 
 from samsara.context_aware import base
-from samsara.context_aware import sensors
+from samsara.context_aware.sensors import virtual_machine as vm_sensors
 from samsara.context_aware import contexts_repository as ctx_repository
 
 class VirtualMachineResourceUsage(base.BaseContext):
@@ -32,17 +32,17 @@ class VirtualMachineResourceUsage(base.BaseContext):
 
     def getContext(self, vm_id):
 
-        uuid                = sensors.VirtualMachineIdSensor(vm_id).read_value()
+        uuid                = vm_sensors.VirtualMachineIdSensor(vm_id).read_value()
 
-        compute_utilization = sensors.VirtualMachineComputeUsageSensor(vm_id).read_value()
+        compute_utilization = vm_sensors.VirtualMachineComputeUsageSensor(vm_id).read_value()
 
-        memory_utilization  = sensors.VirtualMachineMemoryUsageSensor(vm_id).read_value()
+        memory_utilization  = vm_sensors.VirtualMachineMemoryUsageSensor(vm_id).read_value()
 
         created_at          = datetime.utcnow().isoformat()
 
         return self.context(uuid, compute_utilization, memory_utilization, created_at)
 
-class VirtualMachineAverageComputeUsage(base.BaseContext):
+class AverageComputeUsage(base.BaseContext):
     """ Store Host Compute Usage Context """
 
     def __init__(self):

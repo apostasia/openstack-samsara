@@ -17,6 +17,8 @@ import multiprocessing
 import os
 import re
 import socket
+import fcntl
+import struct
 import sys
 import time
 
@@ -285,3 +287,10 @@ class BareMetalDriver(object):
         """ Return Node Hostname
         """
         return socket.getfqdn()
+
+    def get_mac_address(self, nic):
+        """ Return HW address to specific NIC
+        """
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', nic[:15]))
+        return ''.join(['%02x:' % ord(char) for char in info[18:24]])[:-1]

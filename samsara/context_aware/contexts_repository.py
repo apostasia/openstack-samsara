@@ -28,7 +28,6 @@ from samsara import config
 from samsara.common.utils import *
 
 from samsara.context_aware import base
-from samsara.context_aware import sensors
 
 contexts_repository_group = cfg.OptGroup('context_aware')
 

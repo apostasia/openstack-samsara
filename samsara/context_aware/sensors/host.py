@@ -19,13 +19,15 @@ from oslo_config import cfg
 from samsara.context_aware import base
 
 import abc
-#import untangle
 from samsara.drivers import baremetal
 from samsara.drivers import virt
 
 sensors_opts = [
     cfg.StrOpt('mgmt_nic', default='eth0',
-                                    help=("Management NIC used to live migration"))
+                                    help=("Management NIC")),
+
+    cfg.StrOpt('hypervisor_driver', default='LibvirtDriver',
+                                    help=("HyperVisor Driver"))
 ]
 
 CONF = cfg.CONF
@@ -85,7 +87,7 @@ class HostMemoryUsageSensor(base.BaseSensor):
 class HostNetworkNicCapacitySensor(base.BaseSensor):
     @staticmethod
     def read_value():
-        """Returns the memory memory usage"""
+        """Returns the nic capacity bandwith"""
         driver = baremetal.BareMetalDriver()
         value = driver.get_host_nic_speed(CONF.mgmt_nic)
         return value
@@ -93,71 +95,15 @@ class HostNetworkNicCapacitySensor(base.BaseSensor):
 class HostNetworkHostnameSensor(base.BaseSensor):
     @staticmethod
     def read_value():
-        """Returns the memory memory usage"""
+        """Returns the network hostname"""
         driver = baremetal.BareMetalDriver()
         value = driver.get_hostname()
         return value
 
-""" Virtual Machine Sensors"""
-
-class VirtualMachineSensors(base.BaseSensor):
-
-    def __init__(self,instance_id=None):
-        self.instance_id = instance_id
-    pass
-
-
-class VirtualMachineComputeUsageSensor(base.BaseSensor):
-    def __init__(self,instance_id=None):
-        self.instance_id = instance_id
-
-    def read_value(self,is_sum=1):
-        """Returns the host compute usage"""
-        baremetal_driver = baremetal.BareMetalDriver()
-        virt_driver      = virt.LibvirtDriver()
-
-        host_compute_capacity_percore = baremetal_driver.get_max_mips_percore()
-        host_maxfreq_percore          = baremetal_driver.get_max_freq_percore()
-        host_currentfreq_percore      = baremetal_driver.get_current_freq_percore()
-        vm_utilized_cputime_percore   = virt_driver.get_busytime_percore(self.instance_id,5)
-
-        compute_usage_percore = []
-
-        for compute_capacity, maxfreq,currentfreq, vm_utilized_cputime in zip(host_compute_capacity_percore,
-                                                                             host_maxfreq_percore,
-                                                                             host_currentfreq_percore,
-                                                                             vm_utilized_cputime_percore):
-
-            compute_usage_percore.append(int((((currentfreq * compute_capacity)/maxfreq) * vm_utilized_cputime)))
-
-        value = sum(compute_usage_percore) if is_sum else compute_usage_percore
-
-        return value
-
-class VirtualMachineMemoryUsageSensor(base.BaseSensor):
-    def __init__(self,instance_id=None):
-        self.instance_id = instance_id
-
-    def read_value(self):
-        """Returns the instance allocated memory"""
-        driver = virt.LibvirtDriver()
-        value = driver.get_instance_allocated_memory(self.instance_id)
-        return value
-
-class VirtualMachineIdSensor(base.BaseSensor):
-
-    def __init__(self,instance_id=None):
-        self.instance_id = instance_id
-
-    def read_value(self):
-        """Returns the instance allocated memory"""
-        driver = virt.LibvirtDriver()
-        value = driver.get_instance_uuid(self.instance_id)
-        return value
-
-class ActiveVirtualMachinesSensor(base.BaseSensor):
-    def read_value(self):
-        """Returns the instance allocated memory"""
-        driver = virt.LibvirtDriver()
-        value = driver.get_active_instacesUUID()
+class HostNetworkNicHwAddressSensor(base.BaseSensor):
+    @staticmethod
+    def read_value():
+        """Returns the mgmt nic hw address """
+        driver = baremetal.BareMetalDriver()
+        value = driver.get_mac_address(CONF.mgmt_nic)
         return value

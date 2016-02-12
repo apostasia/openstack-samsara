@@ -21,7 +21,8 @@ import time
 from oslo_log import log as logging
 
 from samsara.context_aware import base
-from samsara.context_aware import sensors
+from samsara.context_aware.sensors import host as host_sensors
+from samsara.context_aware.sensors import hypervisor as hypervisor_sensors
 from samsara.context_aware import contexts_repository as ctx_repository
 
 LOG = logging.getLogger(__name__)
@@ -38,16 +39,18 @@ class HostInfo(base.BaseContext):
         'compute_capacity',
         'memory_capacity',
         'mgmt_nic_speed',
+        'mgmt_nic_hwaddr',
         'created_at'])
 
     def getContext(self):
 
-        hostname       = sensors.HostNetworkHostnameSensor.read_value()
-        uuid           = sensors.HostIdSensor.read_value()
-        cpu_number     = sensors.HostCPUNumberSensor.read_value()
-        max_compute    = sensors.HostComputeCapacitySensor.read_value()
-        max_memory     = sensors.HostMemoryCapacitySensor.read_value()
-        mgmt_nic_speed = sensors.HostNetworkNicCapacitySensor.read_value()
+        hostname        = host_sensors.HostNetworkHostnameSensor.read_value()
+        uuid            = host_sensors.HostIdSensor.read_value()
+        cpu_number      = host_sensors.HostCPUNumberSensor.read_value()
+        max_compute     = host_sensors.HostComputeCapacitySensor.read_value()
+        max_memory      = host_sensors.HostMemoryCapacitySensor.read_value()
+        mgmt_nic_speed  = host_sensors.HostNetworkNicCapacitySensor.read_value()
+        mgmt_nic_hwaddr = host_sensors.HostNetworkNicHwAddressSensor.read_value()
 
         created_at          = datetime.utcnow().isoformat()
 
@@ -57,6 +60,7 @@ class HostInfo(base.BaseContext):
                             max_compute,
                             max_memory,
                             mgmt_nic_speed,
+                            mgmt_nic_hwaddr,
                             created_at)
 
 
@@ -84,8 +88,8 @@ class HostAvgResourcesUsage(base.BaseContext):
         LOG.info('Samples in MIPS: %s', historical_compute_usage)
 
         # Get basic host information
-        hostname          = sensors.HostNetworkHostnameSensor.read_value()
-        uuid              = sensors.HostIdSensor.read_value()
+        hostname          = host_sensors.HostNetworkHostnameSensor.read_value()
+        uuid              = host_sensors.HostIdSensor.read_value()
 
         # Calculate average compute usage
         compute_usage_avg = np.average(historical_compute_usage)
@@ -113,8 +117,8 @@ class HostResourcesUsage(base.BaseContext):
 
     def getContext(self):
 
-        compute_utilization = sensors.HostComputeUsageSensor.read_value()
-        memory_utilization  = sensors.HostMemoryUsageSensor.read_value()
+        compute_utilization = host_sensors.HostComputeUsageSensor.read_value()
+        memory_utilization  = host_sensors.HostMemoryUsageSensor.read_value()
         created_at          = datetime.utcnow().isoformat()
 
         return self.context(compute_utilization,
@@ -166,7 +170,7 @@ class ActiveVirtualMachines(base.BaseContext):
 
     def getContext(self):
 
-        active_vms = sensors.ActiveVirtualMachinesSensor.read_value()
+        active_vms = hypervisor_sensors.ActiveVirtualMachinesSensor.read_value()
         created_at = datetime.utcnow().isoformat()
 
         return self.context(active_vms, created_at)
