@@ -28,11 +28,17 @@ from samsara.context_aware import contexts_repository as ctx_repository
 LOG = logging.getLogger(__name__)
 
 
-class HostInfo(base.BaseContext):
-
+class HostContexts(base.BaseContext):
+    """ Class Representing Hosts Contexts"""
     def __init__(self):
-        self.tag = "host_info"
-        self.context = collections.namedtuple(self.tag,
+
+        # Start Local Repository
+        self.ctx_repository = ctx_repository.LocalContextsRepository()
+
+    def get_host_info(self):
+
+        tag = "host_info"
+        context = collections.namedtuple(tag,
         ['hostname',
         'uuid',
         'cpu_number',
@@ -41,8 +47,6 @@ class HostInfo(base.BaseContext):
         'mgmt_nic_speed',
         'mgmt_nic_hwaddr',
         'created_at'])
-
-    def getContext(self):
 
         hostname        = host_sensors.HostNetworkHostnameSensor.read_value()
         uuid            = host_sensors.HostIdSensor.read_value()
@@ -54,7 +58,7 @@ class HostInfo(base.BaseContext):
 
         created_at          = datetime.utcnow().isoformat()
 
-        return self.context(hostname,
+        return context(hostname,
                             uuid,
                             cpu_number,
                             max_compute,
@@ -65,11 +69,10 @@ class HostInfo(base.BaseContext):
 
 
 
-class HostAvgResourcesUsage(base.BaseContext):
-    def __init__(self):
+    def get_avg_resources_usage(self, time_frame, method=None):
 
-        self.tag = "host_avg_resources_usage"
-        self.context = collections.namedtuple(self.tag,
+        tag = "host_avg_resources_usage"
+        context = collections.namedtuple(tag,
         ['hostname',
         'uuid',
         'compute_usage_avg',
@@ -78,20 +81,15 @@ class HostAvgResourcesUsage(base.BaseContext):
 
         created_at     = datetime.utcnow().isoformat()
 
-        # Instantiate Stored Host Compute Contexts Handlers
-        self.stored_ctx_host = StoredHostComputeUsage()
-
-    def get_context(self, time_frame, method=None):
-
         # Historical Compute Usage per periodo defined in time frame
-        historical_compute_usage = self.stored_ctx_host.get_last_period_contexts(time_frame)
+        historical_compute_usage = self.get_compute_usage_last_period(time_frame)
         LOG.info('Samples in MIPS: %s', historical_compute_usage)
 
         # Get basic host information
-        hostname          = host_sensors.HostNetworkHostnameSensor.read_value()
-        uuid              = host_sensors.HostIdSensor.read_value()
+        hostname          = self.get_host_info().hostname
+        uuid              = self.get_host_info().uuid
 
-        # Calculate average compute usage
+        # Calculate average compute usage class ActiveVirtualMachines(base.BaseContext)
         compute_usage_avg = np.average(historical_compute_usage)
 
         # Calculate average memory usage - TODO: to implement
@@ -100,39 +98,28 @@ class HostAvgResourcesUsage(base.BaseContext):
         created_at          = datetime.utcnow().isoformat()
 
 
-        return self.context(hostname,
+        return context(hostname,
                             uuid,
                             compute_usage_avg,
                             memory_usage_avg,
                             created_at)
 
 
-class HostResourcesUsage(base.BaseContext):
-
-    def __init__(self):
-        self.tag = "host_resources_usage"
-        self.context = collections.namedtuple(self.tag, ['compute_utilization',
+    def get_resources_usage(self):
+        tag = "host_resources_usage"
+        context = collections.namedtuple(tag, ['compute_utilization',
         'memory_utilization',
         'created_at'])
-
-    def getContext(self):
 
         compute_utilization = host_sensors.HostComputeUsageSensor.read_value()
         memory_utilization  = host_sensors.HostMemoryUsageSensor.read_value()
         created_at          = datetime.utcnow().isoformat()
 
-        return self.context(compute_utilization,
+        return context(compute_utilization,
                             memory_utilization,
                             created_at)
 
-
-class HistoricalHostComputeUsage(base.BaseContext):
-    """ Host Compute Usage Historical Context """
-
-    def __init__(self, context_tag):
-        self.ctx_repository = ctx_repository.LocalContextsRepository()
-
-    def getContext(self, limit=10):
+    def get_historical_compute_usage(self, limit=10):
         """ Get historical data about host compute usage from local context repository
         """
 
@@ -140,37 +127,19 @@ class HistoricalHostComputeUsage(base.BaseContext):
 
         return historical_data
 
-class StoredHostComputeUsage(base.BaseContext):
-    """ Store Host Compute Usage Context """
-
-    def __init__(self):
-        context_tag = "store_host_compute_usage"
-        self.ctx_repository = ctx_repository.LocalContextsRepository()
-
-    def getContext(self, limit=10):
-        """ Get stored data about host compute usage from local context repository
-        """
-        stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', limit)]
-
-        return stored_data
-
-    def get_last_period_contexts(self, period):
+    def get_compute_usage_last_period(self, period):
         """ Get stored data about host compute usage from local context repository
         """
         stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_contexts_from_period('host_resources_usage', period)]
 
         return stored_data
 
-class ActiveVirtualMachines(base.BaseContext):
-    """ Representing the active virtual machines in the host."""
+    def get_active_instances(self):
+        """ Return the active virtual machines in the host."""
 
-    def __init__(self, context_tag):
-        self.context = collections.namedtuple(context_tag, ['active_vms','created_at'])
-
-
-    def getContext(self):
+        context = collections.namedtuple(context_tag, ['active_vms','created_at'])
 
         active_vms = hypervisor_sensors.ActiveVirtualMachinesSensor.read_value()
         created_at = datetime.utcnow().isoformat()
 
-        return self.context(active_vms, created_at)
+        return context(active_vms, created_at)

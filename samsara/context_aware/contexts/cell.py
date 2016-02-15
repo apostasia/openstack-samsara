@@ -13,11 +13,38 @@
 # under the License.
 
 from __future__ import print_function
-
+import collections
+from datetime import datetime
+import numpy as np
+import time
 from oslo_config import cfg
+from oslo_log import log as logging
 
 from samsara.context_aware import base
+from samsara.context_aware.sensors import host as host_sensors
+from samsara.context_aware.sensors import hypervisor as hypervisor_sensors
+from samsara.context_aware import contexts_repository
 
-import abc
-from samsara.drivers import baremetal
-from samsara.drivers import virt
+LOG = logging.getLogger(__name__)
+
+
+
+
+class CellContexts(base.BaseContext):
+    """ Representing  the cloud cell contexts."""
+
+    def __init__(self):
+
+        # Global Repository
+        self.ctx_global_repository = contexts_repository.GlobalContextsRepository()
+
+    def get_active_hosts(self):
+        """ Return active host in the cloud cell"""
+
+        active_hosts = hypervisor_sensors.ActiveVirtualMachinesSensor.read_value()
+        created_at = datetime.utcnow().isoformat()
+
+        return self.context(active_vms, created_at)
+
+    def get_tasks_status(self):
+        pass

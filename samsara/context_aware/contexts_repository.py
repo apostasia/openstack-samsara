@@ -86,6 +86,10 @@ class ContextsRepository(base.BaseContextsRepository):
     def retrieve_last_n_contexts(self,context_tag,limit=10):
         return self.repository[context_tag].find(_limit=limit,order_by=['-created_at'])
 
+    def get_repository_handler(self):
+        return self.repository
+
+
 
 class LocalContextsRepository(ContextsRepository):
 

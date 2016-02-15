@@ -71,15 +71,16 @@ class LocalControllerManager(manager.Manager):
         # Get Global contexts repository
         self.ctx_global_repository = contexts_repository.GlobalContextsRepository()
 
+        # Instantiates Hosts Contexts
+        self.host_contexts_handler = host_contexts.HostContexts()
+
         # Get Host Context Info
-        ctx_host_info = host_contexts.HostInfo().getContext()
+        ctx_host_info = self.host_contexts_handler.get_host_info()
         LOG.info('Get Host Info Context')
 
         # Update Cell Catalog Nodes Info
         self.ctx_global_repository.upsert_context(ctx_host_info, ['uuid'])
         LOG.info('Update Host Info Context Repository')
-
-        self.historical_compute_usage = host_contexts.HistoricalHostComputeUsage('host_resources_usage')
 
         # Samsara Global Controller RPC API
         self.global_controller = sgc_rpcapi.GlobalControllerAPI()
@@ -87,11 +88,10 @@ class LocalControllerManager(manager.Manager):
 
     @periodic_task.periodic_task(spacing=CONF.task_period,
                           run_immediately=True)
-
     def check_host_status(self, context):
-        samples = str(self.historical_compute_usage.getContext())
-        LOG.info('Historical Compute Usage: %s', samples)
 
+        samples = str(self.host_contexts_handler.get_historical_compute_usage())
+        LOG.info('Historical Compute Usage: %s', samples)
 
         # Initiate Host Rules Handler
         self.host_rules_handler = host_rl.HostRulesHandler()

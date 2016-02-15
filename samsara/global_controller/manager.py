@@ -30,13 +30,10 @@ from oslo_utils import importutils
 from samsara.common import manager
 from samsara.common.utils import *
 
-from samsara.context_aware.contexts import host as host_contexts
 from samsara.context_aware.contexts import vm as vm_contexts
 from samsara.context_aware.situations import base as situations
 from samsara.context_aware import contexts_repository
-
-import yaml
-
+from samsara.context_aware.interpreter.rules_handlers import cell as cell_rh
 
 LOG = logging.getLogger(__name__)
 
@@ -66,6 +63,9 @@ class GlobalControllerManager(manager.Manager):
         # Get Global contexts repository
         self.global_repository = contexts_repository.GlobalContextsRepository()
 
+        # Initiate Host Rules Handler
+        self.cell_rules_handler = cell_rh.CellRulesHandler()
+
 
     def update_host_info(self, context, host_name, instance_info):
         """Receives information about changes to a host's instances, and
@@ -93,55 +93,21 @@ class GlobalControllerManager(manager.Manager):
         self.global_repository.store_situation(host_situation.get_situation())
         LOG.info('Store host situation into global repository')
 
-    def workload_consolidate(self,context):
+    @periodic_task.periodic_task(spacing=CONF.task_period,
+                          run_immediately=True)
+    def check_cell_status(self, context):
+
+            # Run Host Rules Handler
+            LOG.info('Run Cell Rules Handler')
+            self.cell_rules_handler.reason()
+
+
+    def consolidate_workload(self,context):
         """ Perform workload consolidation
         """
+        LOG.info('Starting Consolidation')
 
-    def workload_balance(self,context):
+    def balance_workload(self,context):
         """ Perform worload balancing
         """
-
-    # # @periodic_task.periodic_task(spacing=CONF.task_period,
-    #                              run_immediately=True)
-    # def listen_notify(self, context):
-    #     self.driver.run_periodic_tasks(context)
-    #
-    # # @periodic_task.periodic_task(spacing=CONF.task_period,
-    #                              run_immediately=True)
-    # def _run_periodic_tasks(self, context):
-    #     self.driver.run_periodic_tasks(context)
-#
-#     @messaging.expected_exceptions(exception.NoValidHost)
-#     def select_destinations(self, context, request_spec, filter_properties):
-#         """Returns destinations(s) best suited for this request_spec and
-#         filter_properties.
-#
-#         The result should be a list of dicts with 'host', 'nodename' and
-#         'limits' as keys.
-#         """
-#         dests = self.driver.select_destinations(context, request_spec,
-#             filter_properties)
-#         return jsonutils.to_primitive(dests)
-#
-#
-#
-#     def update_instance_info(self, context, host_name, instance_info):
-#         """Receives information about changes to a host's instances, and
-#         updates the driver's HostManager with that information.
-#         """
-#         self.driver.host_manager.update_instance_info(context, host_name,
-#                                                       instance_info)
-#
-#     def delete_instance_info(self, context, host_name, instance_uuid):
-#         """Receives information about the deletion of one of a host's
-#         instances, and updates the driver's HostManager with that information.
-#         """
-#         self.driver.host_manager.delete_instance_info(context, host_name,
-#                                                       instance_uuid)
-#
-#     def sync_instance_info(self, context, host_name, instance_uuids):
-#         """Receives a sync request from a host, and passes it on to the
-#         driver's HostManager.
-#         """
-#         self.driver.host_manager.sync_instance_info(context, host_name,
-#                                                     instance_uuids)
+        LOG.info('Starting Balance')

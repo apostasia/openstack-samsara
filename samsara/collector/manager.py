@@ -68,9 +68,12 @@ class CollectorManager(manager.Manager):
 
         self.ctx_global_repository = contexts_repository.GlobalContextsRepository()
 
+        #
         # Instantiate Contexts Handlers
-        self.host_resources_usage_handler = host_contexts.HostResourcesUsage()
-        self.vm_resources_usage_handler   = vm_contexts.VirtualMachineResourceUsage()
+        #
+        self.host_contexts_handler = host_contexts.HostContexts()
+
+        self.vm_contexts_handler = vm_contexts.VirtualMachineContexts()
 
     @periodic_task.periodic_task(spacing=CONF.collector.host_collect_context_period, run_immediately=True)
     def _get_host_context(self,context):
@@ -78,7 +81,7 @@ class CollectorManager(manager.Manager):
 
         # Get host resources usage context
         LOG.info('Get host resources usage context')
-        ctx_host_resources_usage = self.host_resources_usage_handler.getContext()
+        ctx_host_resources_usage = self.host_contexts_handler.get_resources_usage()
 
         # Store into repository
         self.ctx_repository.store_context(ctx_host_resources_usage)
@@ -98,7 +101,7 @@ class CollectorManager(manager.Manager):
         for vm_id in virt_driver.get_active_instacesID():
 
             # Get instance (vm) resources usage context
-            ctx_vm_resources_usage = self.vm_resources_usage_handler.getContext(vm_id)
+            ctx_vm_resources_usage = self.self.vm_contexts_handler.get_resources_usage(vm_id)
 
             # Store into repository
             self.ctx_repository.store_context(ctx_vm_resources_usage)

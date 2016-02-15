@@ -69,19 +69,25 @@ class LocalControllerAPI(object):
                                      serializer=serializer)
 
     def get_host_info(self, ctxt, host):
+        ''' Get info from specific host
+
+        '''
         version = '1.0'
         cctxt = self.client.prepare(server=host, version=version)
         return cctxt.call(ctxt, 'get_host_info', action=action)
+
+
+    def get_active_instances(self,ctx,host):
+        ''' Get active instances from specific host
+
+        '''
+        version = '1.0'
+        cctxt = self.client.prepare(server=host, version=version)
+        return cctxt.call(ctx,'get_active_instances')
+
     #
     #
     # def host_power_action(self, ctxt, action, host):
     #     version = '1.0'
     #     cctxt = self.client.prepare(server=host, version=version)
     #     return cctxt.call(ctxt, 'host_power_action', action=action)
-    #
-    #
-    # def pause_instance(self, ctxt, instance):
-    #     version = '4.0'
-    #     cctxt = self.client.prepare(server=_compute_host(None, instance),
-    #             version=version)
-    #     cctxt.cast(ctxt, 'pause_instance', instance=instance)

@@ -59,20 +59,11 @@ class HostVariables(BaseVariables):
 
     def __init__(self):
 
-        # Instantiate Host Contexts Handlers
-        self.host_avg_resources_usage_handler = host_contexts.HostAvgResourcesUsage()
-
-        # Instantiate Stored Host Compute Contexts Handlers
-        self.stored_ctx_host = host_contexts.StoredHostComputeUsage()
-
-        # Instantiate Host Info Handler
-        self.host_info_handler = host_contexts.HostInfo()
-
-        # Contexts Stored in Local Repository
-        self.ctx_host_compute_usage = host_contexts.StoredHostComputeUsage()
+        # Instantiates Host Contexts Handlers
+        self.host_contexts_handler = host_contexts.HostContexts()
 
         # Get Host Info
-        self.host_info = self.host_info_handler.getContext()
+        self.host_info = self.host_contexts_handler.get_host_info()
 
         # Time Frame
         self.time_frame = CONF.rules_handler.compute_usage_time_frame_evaluation
@@ -82,15 +73,18 @@ class HostVariables(BaseVariables):
 
         global host_resources_usage_ctx
 
-        host_avg_resources_usage = self.host_avg_resources_usage_handler.get_context(self.time_frame)
-        
+        # Get average 
+        host_avg_resources_usage = self.host_contexts_handler.get_avg_resources_usage(self.time_frame)
+
         # Convert to percentual
         percentual_compute_resource_usage = to_percentage(host_avg_resources_usage.compute_usage_avg, self.host_info.compute_capacity)
 
         host_resources_usage_ctx = host_avg_resources_usage
 
         LOG.info('Compute Capacity in MIPS: %f', self.host_info.compute_capacity)
+
         LOG.info('Average Compute Usage in the last %d seconds in MIPS: %f', self.time_frame, host_avg_resources_usage.compute_usage_avg)
+
         LOG.info('Average Host CPU Load in the last %d seconds: %f', self.time_frame, percentual_compute_resource_usage)
 
         return percentual_compute_resource_usage
@@ -103,11 +97,11 @@ class HostActions(BaseActions):
         # Samsara Global Controller RPC API
         self.global_controller = sgc_rpcapi.GlobalControllerAPI()
 
-        # Instantiate Host Info Handler
-        self.host_info_handler = host_contexts.HostInfo()
+        # Instantiates Host Contexts Handlers
+        self.host_contexts_handler = host_contexts.HostContexts()
 
         # Get Host Info
-        self.host_info = self.host_info_handler.getContext()
+        self.host_info = self.host_contexts_handler.get_host_info()
 
     @rule_action(params={"situation":FIELD_TEXT})
     def notify_situation_to_controller(self, situation):

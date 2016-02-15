@@ -61,13 +61,6 @@ class GlobalControllerAPI(object):
                                      serializer=serializer)
 
 
-    def get_host_info(self,ctx,host):
-        ''' Get info from specific host
-
-        '''
-        version = '1.0'
-        cctxt = self.client.prepare(server=host, version=version)
-        return cctxt.call(ctx,'get_host_info')
 
     def update_host_situation(self, context, host, situation):
         ''' Get info from specific host
