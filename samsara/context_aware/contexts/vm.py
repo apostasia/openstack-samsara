@@ -16,6 +16,7 @@
 import abc
 import collections
 from datetime import datetime
+import numpy as np
 import time
 
 from samsara.context_aware import base
@@ -43,22 +44,30 @@ class VirtualMachineResourceUsage(base.BaseContext):
         return self.context(uuid, compute_utilization, memory_utilization, created_at)
 
 class AverageComputeUsage(base.BaseContext):
-    """ Store Host Compute Usage Context """
+    """ Average VM Compute Usage Context """
 
-    def __init__(self):
-        context_tag = "store_host_compute_usage"
-        self.ctx_repository = ctx_repository.LocalContextsRepository()
-
-    def getContext(self, limit=10):
+    @staticmethod
+    def getContext(vm_uuid, limit=10):
         """ Get stored data about host compute usage from local context repository
         """
-        stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', limit)]
+        local_ctx_repository = ctx_repository.LocalContextsRepository()
 
-        return stored_data
+        historical_compute_usage = [ctx['compute_utilization'] for ctx in  local_ctx_repository.retrieve_last_n_contexts('vm_resources_usage', limit)]
 
-    def get_last_period_contexts(self,period):
+        # Calculate average compute usage
+        compute_usage_avg = np.average(historical_compute_usage)
+
+        return compute_usage_avg
+
+    @staticmethod
+    def get_last_period_contexts(vm_uuid, period):
         """ Get stored data about host compute usage from local context repository
         """
-        stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_contexts_from_period('host_resources_usage', period)]
+        local_local_ctx_repository = ctx_repository.LocalContextsRepository()
 
-        return stored_data
+        historical_compute_usage = [ctx['compute_utilization'] for ctx in  ctx_repository.retrieve_last_contexts_from_period('vm_resources_usage', period)]
+
+        # Calculate average compute usage
+        compute_usage_avg = np.average(historical_compute_usage)
+
+        return compute_usage_avg
