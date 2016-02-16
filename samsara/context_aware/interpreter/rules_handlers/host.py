@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+""" Host Rules Handler class.
+
+"""
 from business_rules.engine import check_condition
 from business_rules import export_rule_data
 from business_rules.actions import rule_action
@@ -11,7 +15,6 @@ from business_rules.variables import (BaseVariables,
                                       select_multiple_rule_variable)
 from business_rules.fields import FIELD_TEXT, FIELD_NUMERIC, FIELD_SELECT
 
-import numpy as np
 
 from oslo_log import log as logging
 from oslo_config import cfg
@@ -32,7 +35,7 @@ LOG = logging.getLogger(__name__)
 
 rules_handler_opts = [
     cfg.IntOpt('compute_usage_time_frame_evaluation',
-               default=10,
+               default=30,
                help='Compute Usage time frame to evaluation (in seconds)'),
 ]
 CONF = cfg.CONF
@@ -73,7 +76,7 @@ class HostVariables(BaseVariables):
 
         global host_resources_usage_ctx
 
-        # Get average 
+        # Get average
         host_avg_resources_usage = self.host_contexts_handler.get_avg_resources_usage(self.time_frame)
 
         # Convert to percentual

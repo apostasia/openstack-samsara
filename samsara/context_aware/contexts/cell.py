@@ -22,6 +22,7 @@ from oslo_log import log as logging
 
 from samsara.context_aware import base
 from samsara.context_aware.sensors import host as host_sensors
+<<<<<<< HEAD
 from samsara.context_aware.sensors import hypervisor as hypervisor_sensors
 from samsara.context_aware import contexts_repository
 

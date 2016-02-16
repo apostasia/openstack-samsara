@@ -18,6 +18,7 @@ import libvirt
 import os,sys
 import re
 import pprint
+from datetime import datetime
 from lxml import etree,objectify
 from oslo_config import cfg
 from oslo_log import log as logging
@@ -156,6 +157,7 @@ class LibvirtDriver(object):
 
         #Get the cpu time intervals
         vcpu_time_percore  = [float(phys_cpu['cpu_time']) for phys_cpu in dom.getCPUStats(False,0)]
+
         return vcpu_time_percore
 
     def get_vcpu_time_instances(self):
@@ -165,7 +167,7 @@ class LibvirtDriver(object):
         vcpu_times_percore  = {domain_id:self.get_vcpu_time_percore(domain_id) for domain_id in conn.listDomainsID()}
         return vcpu_times_percore
 
-    def get_busytime_percore(self,domain_id,interval=1):
+    def get_busytime_percore(self,domain_id):
         """ Return the busy time per core/cpu (in seconds) for an VM in the interval
         """
         conn = self.get_connection()

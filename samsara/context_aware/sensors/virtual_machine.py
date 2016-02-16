@@ -13,6 +13,7 @@
 # under the License.
 
 from __future__ import print_function
+from datetime import datetime
 
 from oslo_config import cfg
 
@@ -31,6 +32,8 @@ sensors_opts = [
 CONF = cfg.CONF
 CONF.register_opts(sensors_opts)
 
+# Virtual Machine Global timestamp
+vm_global_timestamp = datetime.utcnow()
 
 """ Virtual Machine Sensors"""
 
@@ -46,14 +49,20 @@ class VirtualMachineComputeUsageSensor(base.BaseSensor):
         self.instance_id = instance_id
 
     def read_value(self,is_sum=1):
-        """Returns the host compute usage"""
+        """Returns the Virtual Machine compute usage"""
         baremetal_driver = baremetal.BareMetalDriver()
         virt_driver      = virt.LibvirtDriver()
 
         host_compute_capacity_percore = baremetal_driver.get_max_mips_percore()
         host_maxfreq_percore          = baremetal_driver.get_max_freq_percore()
         host_currentfreq_percore      = baremetal_driver.get_current_freq_percore()
-        vm_utilized_cputime_percore   = virt_driver.get_busytime_percore(self.instance_id,5)
+        vm_utilized_cputime_percore   = virt_driver.get_busytime_percore(self.instance_id)
+
+        global vm_global_timestamp
+        timestamp_t0        = vm_global_timestamp
+        timestamp_t1        = datetime.utcnow()
+        time_interval       = (timestamp_t1 - timestamp_t0).seconds
+        vm_global_timestamp = datetime.utcnow()
 
         compute_usage_percore = []
 
@@ -62,7 +71,7 @@ class VirtualMachineComputeUsageSensor(base.BaseSensor):
                                                                              host_currentfreq_percore,
                                                                              vm_utilized_cputime_percore):
 
-            compute_usage_percore.append(int((((currentfreq * compute_capacity)/maxfreq) * vm_utilized_cputime)))
+            compute_usage_percore.append(int((((currentfreq * compute_capacity)/maxfreq) * vm_utilized_cputime)) / time_interval)
 
         value = sum(compute_usage_percore) if is_sum else compute_usage_percore
 
