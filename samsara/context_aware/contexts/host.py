@@ -75,8 +75,10 @@ class HostContexts(base.BaseContext):
         context = collections.namedtuple(tag,
         ['hostname',
         'uuid',
-        'compute_usage_avg',
-        'memory_usage_avg',
+        'avg_compute_usage',
+        'avg_compute_avail',
+        'avg_memory_usage',
+        'avg_memory_avail',
         'created_at'])
 
         created_at     = datetime.utcnow().isoformat()
@@ -85,27 +87,87 @@ class HostContexts(base.BaseContext):
         historical_compute_usage = self.get_compute_usage_last_period(time_frame)
         LOG.info('Samples in MIPS: %s', historical_compute_usage)
 
+        # Historical Compute Usage per periodo defined in time frame
+        historical_memory_usage = self.get_memory_usage_last_period(time_frame)
+        LOG.info('Samples in MBytes: %s', historical_memory_usage)
+
         # Get basic host information
         hostname          = self.get_host_info().hostname
         uuid              = self.get_host_info().uuid
+        compute_capacity  = self.get_host_info().compute_capacity
+        memory_capacity   = self.get_host_info().memory_capacity
 
-        # Calculate average compute usage class ActiveVirtualMachines(base.BaseContext)
-        compute_usage_avg = np.average(historical_compute_usage)
+        # Calculate average compute usage and compute available
+        avg_compute_usage = np.average(historical_compute_usage)
+        avg_compute_avail = compute_capacity - avg_compute_usage
 
-        # Calculate average memory usage - TODO: to implement
-        memory_usage_avg  = 0
+        # Calculate average memory usage and memory available - TODO: mover para um método especializado
+        avg_memory_usage = np.average(historical_memory_usage)
+        avg_memory_avail = memory_capacity - avg_memory_usage
 
         created_at          = datetime.utcnow().isoformat()
 
 
         return context(hostname,
                             uuid,
-                            compute_usage_avg,
-                            memory_usage_avg,
+                            avg_compute_usage,
+                            avg_compute_avail,
+                            avg_memory_usage,
+                            avg_memory_avail,
+                            created_at)
+
+    def get_resources_usage(self, time_frame, method=None):
+
+        tag = "host_avg_resources_usage"
+        context = collections.namedtuple(tag,
+        ['hostname',
+        'uuid',
+        'used_compute',
+        'available_compute',
+        'used_memory',
+        'available_memory',
+        'created_at'])
+
+        created_at     = datetime.utcnow().isoformat()
+
+        # Historical Compute Usage per periodo defined in time frame
+        historical_compute_usage = self.get_compute_usage_last_period(time_frame)
+        LOG.info('Samples in MIPS: %s', historical_compute_usage)
+
+        # Historical Compute Usage per periodo defined in time frame
+        historical_memory_usage = self.get_memory_usage_last_period(time_frame)
+        LOG.info('Samples in MBytes: %s', historical_memory_usage)
+
+        # Get basic host information
+        hostname          = self.get_host_info().hostname
+        uuid              = self.get_host_info().uuid
+        compute_capacity  = self.get_host_info().compute_capacity
+        memory_capacity   = self.get_host_info().memory_capacity
+
+        # Calculate average compute usage and compute available
+        used_compute = np.average(historical_compute_usage)
+        available_compute = compute_capacity - used_compute
+
+        # Calculate average memory usage and memory available - TODO: mover para um método especializado
+        used_memory     = np.average(historical_memory_usage)
+        available_memory = memory_capacity - used_memory
+
+        created_at          = datetime.utcnow().isoformat()
+
+
+        return context(hostname,
+                            uuid,
+                            used_compute,
+                            available_compute,
+                            used_memory,
+                            available_memory,
                             created_at)
 
 
-    def get_resources_usage(self):
+
+
+    def get_current_resources_usage(self):
+
         tag = "host_resources_usage"
         context = collections.namedtuple(tag, ['compute_utilization',
         'memory_utilization',
@@ -127,10 +189,25 @@ class HostContexts(base.BaseContext):
 
         return historical_data
 
+    def get_historical_memory_usage(self, limit=10):
+        """ Get historical data about host memory usage from local context repository
+        """
+
+        historical_data = [ctx['memory_utilization'] for ctx in  self.ctx_repository.retrieve_last_n_contexts('host_resources_usage', limit)]
+
+        return historical_data
+
     def get_compute_usage_last_period(self, period):
         """ Get stored data about host compute usage from local context repository
         """
         stored_data = [ctx['compute_utilization'] for ctx in  self.ctx_repository.retrieve_last_contexts_from_period('host_resources_usage', period)]
+
+        return stored_data
+
+    def get_memory_usage_last_period(self, period):
+        """ Get stored data about host memory usage from local context repository
+        """
+        stored_data = [ctx['memory_utilization'] for ctx in  self.ctx_repository.retrieve_last_contexts_from_period('host_resources_usage', period)]
 
         return stored_data
 

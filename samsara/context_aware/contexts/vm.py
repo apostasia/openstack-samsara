@@ -25,13 +25,11 @@ from samsara.context_aware import contexts_repository as ctx_repository
 
 class VirtualMachineContexts(base.BaseContext):
 
-    def __init__(self):
+    def __init__(self, id):
+        self.id = id
         self.ctx_repository = ctx_repository.LocalContextsRepository()
 
-    @staticmethod
-    def get_resources_usage(id):
-
-        self.id = id
+    def get_resources_usage(self):
 
         uuid                = vm_sensors.VirtualMachineIdSensor(self.id).read_value()
 

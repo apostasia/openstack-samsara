@@ -77,16 +77,18 @@ class HostVariables(BaseVariables):
         global host_resources_usage_ctx
 
         # Get average
-        host_avg_resources_usage = self.host_contexts_handler.get_avg_resources_usage(self.time_frame)
+        host_resources_usage = self.host_contexts_handler.get_resources_usage(self.time_frame)
+
+        # Get
 
         # Convert to percentual
-        percentual_compute_resource_usage = to_percentage(host_avg_resources_usage.compute_usage_avg, self.host_info.compute_capacity)
+        percentual_compute_resource_usage = to_percentage(host_resources_usage.used_compute, self.host_info.compute_capacity)
 
-        host_resources_usage_ctx = host_avg_resources_usage
+        host_resources_usage_ctx = host_resources_usage
 
         LOG.info('Compute Capacity in MIPS: %f', self.host_info.compute_capacity)
 
-        LOG.info('Average Compute Usage in the last %d seconds in MIPS: %f', self.time_frame, host_avg_resources_usage.compute_usage_avg)
+        LOG.info('Average Compute Usage in the last %d seconds in MIPS: %f', self.time_frame, host_resources_usage.used_compute)
 
         LOG.info('Average Host CPU Load in the last %d seconds: %f', self.time_frame, percentual_compute_resource_usage)
 

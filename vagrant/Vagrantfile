@@ -72,9 +72,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Define openstack nodes
 
     nodes = [
-        { name: 'controller', os_mgmt_ip: '172.16.0.10', os_flat_ip: '172.16.1.10', cpu: '2', memory: '3072' },
+        { name: 'controller', os_mgmt_ip: '172.16.0.10', os_flat_ip: '172.16.1.10', cpu: '2', memory: '2560' },
 
-        { name: 'compute-001', os_mgmt_ip: '172.16.0.21', os_flat_ip: '172.16.1.21', cpu: '1', memory: '2048' },
+        { name: 'compute-001', os_mgmt_ip: '172.16.0.21', os_flat_ip: '172.16.1.21', cpu: '1', memory: '1536' },
 
         { name: 'compute-002', os_mgmt_ip: '172.16.0.22', os_flat_ip: '172.16.1.22', cpu: '1', memory: '1024' }
     ]

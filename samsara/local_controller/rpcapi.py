@@ -83,11 +83,11 @@ class LocalControllerAPI(object):
         '''
         version = '1.0'
         cctxt = self.client.prepare(server=host, version=version)
-        return cctxt.call(ctx,'get_active_instances')
+        return cctxt.call(ctx,'retrieve_active_instances')
 
-    #
-    #
-    # def host_power_action(self, ctxt, action, host):
-    #     version = '1.0'
-    #     cctxt = self.client.prepare(server=host, version=version)
-    #     return cctxt.call(ctxt, 'host_power_action', action=action)
+
+
+    def call_actuactor(self, ctxt, action, host):
+        version = '1.0'
+        cctxt = self.client.prepare(server=host, version=version)
+        return cctxt.call(ctxt, 'host_power_action', action=action)

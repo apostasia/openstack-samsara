@@ -101,6 +101,15 @@ class LocalControllerManager(manager.Manager):
         self.host_rules_handler.reason()
 
 
+    def retrieve_active_instances(self, context, host_name):
+         """Receives information about  to a host's active instances
+         """
+         return ['instance-1','instance-2','instances-3']
+
+    def call_actuactor(self, context, host_name, action):
+        """ Call actuator """
+        pass
+
     # @periodic_task.periodic_task(spacing=CONF.task_period,
     #                           run_immediately=True)
     # def _update_host_info(self, context):
