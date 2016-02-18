@@ -1,6 +1,6 @@
 # Filters
 #
-# Filters definition files contain lists of filters that nova-rootwrap will use
+# Filters definition files contain lists of filters that samsara-rootwrap will use
 # to allow or deny a specific command. They are generally suffixed by
 # .filters.Since they are in the trusted security path, they need to be owned
 # and writeable only by the root user. Their location is specified in the
@@ -12,5 +12,7 @@
 
 
 [Filters]
-# samsara/actuactor/actuactor.py
-pm-sleep: CommandFilter, pm-sleep, root
+pm-suspend: CommandFilter, pm-suspend, root
+halt: CommandFilter, halt, root
+reboot: CommandFilter, reboot, root
+ls: CommandFilter, ls, root

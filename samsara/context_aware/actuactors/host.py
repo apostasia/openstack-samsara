@@ -12,29 +12,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import print_function
 
-from oslo_config import cfg
-from oslo_log import log as logging
-
-
-from samsara.context_aware.actuactor import base
-
-
-LOG = logging.getLogger(__name__)
-
-host_actuactor_opts = [ cfg.StrOpt('rootwrap_config', default = "/etc/samsara/rootwrap.conf", help = 'Path to the rootwrap configuration file to use'
-'running commands as root.')
-]
-
-CONF = cfg.CONF
-CONF.register_opt(host_actuactor_opts) 
+from samsara.context_aware.actuactors import base
 
 
 class HostActuactor(base.BaseActuator):
+    def __init__(self, *args, **kwargs):
+        super(HostActuactor, self).__init__()
 
-    def _get_root_helper(self):
-        return 'sudo samsara-rootwrap %s' % CONF.rootwrap_config
-
-    def execute(self):
-        pass
+    def suspend(self):
+        cmd = 'halt'
+        return self.execute(cmd)

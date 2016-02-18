@@ -2,6 +2,10 @@
 - name: Add entry to samsara rootwrap into sudoers file
   lineinfile: "dest=/etc/sudoers state=present regexp='^samsara ALL' line='samsara ALL = (root) NOPASSWD: /usr/bin/samsara-rootwrap /etc/samsara/rootwrap.conf *' validate='visudo -cf %s'"
 
+- name: Add entry to vagrant rootwrap into sudoers file
+  lineinfile: "dest=/etc/sudoers state=present regexp='^vagrant ALL' line='vagrant ALL = (root) NOPASSWD: /usr/bin/samsara-rootwrap /etc/samsara/rootwrap.conf *' validate='visudo -cf %s'"
+
+
 - name: Copy rootwrap config file
   template:
       src: "rootwrap.conf.j2"
