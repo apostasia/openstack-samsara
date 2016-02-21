@@ -1,14 +1,13 @@
 from keystoneclient.auth.identity import v3
 from keystoneclient import session
-from keystoneclient.v3 import client
 
 from novaclient import client as nova_client
 
 from samsara.common.credentials import get_admin_creds
 
-def get_nova_auth():
-    creds = get_nova_creds()
-    auth = keystone_client.Password(**creds)
+def get_nova_client():
+    creds = get_admin_creds()
+    auth = v3.Password(**creds)
     sess = session.Session(auth=auth)
     nova = nova_client.Client("2", session=sess)
     return nova

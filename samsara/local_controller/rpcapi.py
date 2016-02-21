@@ -70,7 +70,6 @@ class LocalControllerAPI(object):
 
     def get_host_info(self, ctxt, host):
         ''' Get info from specific host
-
         '''
         version = '1.0'
         cctxt = self.client.prepare(server=host, version=version)
