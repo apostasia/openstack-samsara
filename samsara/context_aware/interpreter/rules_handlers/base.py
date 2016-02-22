@@ -31,7 +31,6 @@ CONF.register_opt(json_rules_files_dir_path_opt)
 
 LOG = logging.getLogger(__name__)
 
-
 class BaseRulesHandler(object):
     """Base class to Rules Handlers"""
 

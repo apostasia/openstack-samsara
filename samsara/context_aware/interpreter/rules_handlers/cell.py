@@ -81,8 +81,8 @@ class CellActions(BaseActions):
         time.sleep(30)
         LOG.info('Consolidation Complete')
 
-
-
     @rule_action()
     def start_load_balance(self):
         LOG.info('Load Balance Request')
+        time.sleep(30)
+        LOG.info('Load Balance Complete')

@@ -12,14 +12,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+""" Host Actuator """
 
 from samsara.context_aware.actuactors import base
-
 
 class HostActuactor(base.BaseActuator):
     def __init__(self, *args, **kwargs):
         super(HostActuactor, self).__init__()
 
     def suspend(self):
-        cmd = 'halt'
+        cmd = 'pm-suspend'
         return self.execute(cmd)

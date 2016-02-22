@@ -1,9 +1,23 @@
+# -*- coding: utf-8 -*-
+
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
 from keystoneclient.auth.identity import v3
 from keystoneclient import session
 
 from novaclient import client as nova_client
 
-from samsara.common.credentials import get_admin_creds
+from samsara.common.credentials import *
 
 def get_nova_client():
     creds = get_admin_creds()
@@ -11,22 +25,3 @@ def get_nova_client():
     sess = session.Session(auth=auth)
     nova = nova_client.Client("2", session=sess)
     return nova
-
-def get_admin_auth():
-    creds = get_admin_creds()
-    auth = v3.Password(auth_url=creds["auth_url"],
-                   username=creds["username"],
-                   password=creds["password"],
-                   project_name=creds["project_name"],
-                   user_domain_name=creds["user_domain_name"],
-                   project_domain_name=creds["project_domain_name"])
-    return auth
-
-def get_session(auth):
-    sess = session.Session(auth=auth)
-    return sess
-
-def get_admin_session():
-    admin_auth = get_admin_auth()
-    admin_session = get_session(admin_auth)
-    return admin_session
