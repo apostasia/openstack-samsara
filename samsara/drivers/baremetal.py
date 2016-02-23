@@ -179,7 +179,7 @@ class BareMetalDriver(object):
         cpu_time_t1  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
 
         # compute the delta time for each cpu and generate an list
-        busytime_percore = map(sub,cpu_time_t1,cpu_time_t0)
+        busytime_percore = map(sub,cpu_time_t1, cpu_time_t0)
 
         return busytime_percore
 
@@ -188,7 +188,7 @@ class BareMetalDriver(object):
             Return an float value in Seconds
         """
         global cpu_time_percore
-        cpu_time_t0   = cpu_time_percore
+        cpu_time_t0   = cpu_time_percore[:]
         cpu_time_t1  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
 
         # compute the delta time for each cpu and generate an list
@@ -209,18 +209,14 @@ class BareMetalDriver(object):
         usage_percore = []
 
         for maxmips, maxfreq, currentfreq, utilized_cputime in zip(maxmips_percore, maxfreq_percore, currentfreq_percore, utilized_cputime_percore):
-
-            if utilized_cputime <= 0:
-                utilized_cputime = 1
-
-            usage_core = int((((currentfreq * maxmips)/maxfreq) * utilized_cputime))
-
+            usage_core = round((((currentfreq * maxmips)/maxfreq) * utilized_cputime))
             usage_percore.append(usage_core)
 
         return usage_percore
 
     def get_usage_percentual(self):
         """Returns an list with usage percentual"""
+
         maxmips    = self.get_max_mips()
         usage_mips = self.get_current_usage_mips()
 

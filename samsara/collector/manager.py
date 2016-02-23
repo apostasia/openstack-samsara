@@ -96,6 +96,7 @@ class CollectorManager(manager.Manager):
         """ Get Virtual Machine Resource Usage Contexts and store into repository"""
 
         # Get Virtual Machines Contexts and store local repository
+        LOG.info('Get Virtual Machines Contexts and store local repository')
         for vm_id in virt_driver.get_active_instacesID():
 
             # Get vm contexts Handlers
@@ -107,7 +108,7 @@ class CollectorManager(manager.Manager):
             # Store context into repository
             self.ctx_repository.store_context(ctx_vm_resources_usage)
 
-        LOG.info('Get Virtual Machines Contexts and store local repository')
+
 
         # Update vcpu_time for all instances
         virt_driver.update_vcpu_time_instances()

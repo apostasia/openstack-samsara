@@ -19,8 +19,6 @@ from oslo_config import cfg
 
 from samsara.context_aware import base
 
-import abc
-#import untangle
 from samsara.drivers import baremetal
 from samsara.drivers import virt
 
@@ -31,9 +29,6 @@ sensors_opts = [
 
 CONF = cfg.CONF
 CONF.register_opts(sensors_opts)
-
-# Virtual Machine Global timestamp
-vm_global_timestamp = datetime.utcnow()
 
 """ Virtual Machine Sensors"""
 
@@ -47,25 +42,36 @@ class VirtualMachineSensors(base.BaseSensor):
 class VirtualMachineComputeUsageSensor(base.BaseSensor):
     def __init__(self,instance_id=None):
         self.instance_id = instance_id
+        self.global_timestamp = 0
 
-    def read_value(self,is_sum=1):
+    def read_value(self):
         """Returns the Virtual Machine compute usage"""
         baremetal_driver = baremetal.BareMetalDriver()
         virt_driver      = virt.LibvirtDriver()
 
+        # Host Compute Capacity per CPU/Core
         host_compute_capacity_percore = baremetal_driver.get_max_mips_percore()
+
+        # Max Host CPU Frequency per Core
         host_maxfreq_percore          = baremetal_driver.get_max_freq_percore()
+
+        # Current Host CPU Frequency per Core
         host_currentfreq_percore      = baremetal_driver.get_current_freq_percore()
+
+        # VM Utilized Host CPU time per core
         vm_utilized_cputime_percore   = virt_driver.get_busytime_percore(self.instance_id)
 
-        global vm_global_timestamp
-        timestamp_t0        = vm_global_timestamp
-        timestamp_t1        = datetime.utcnow()
-        time_interval       = (timestamp_t1 - timestamp_t0).seconds
-        vm_global_timestamp = datetime.utcnow()
+
+        timestamp_t0          = self.global_timestamp
+        timestamp_t1          = datetime.utcnow()
+        time_interval         = (timestamp_t1 - timestamp_t0).seconds if self.global_timestamp > 0 else 1
+        self.global_timestamp = datetime.utcnow()
 
         compute_usage_percore = []
 
+
+
+        # Todo: Explain code
         for compute_capacity, maxfreq,currentfreq, vm_utilized_cputime in zip(host_compute_capacity_percore,
                                                                              host_maxfreq_percore,
                                                                              host_currentfreq_percore,
@@ -73,9 +79,7 @@ class VirtualMachineComputeUsageSensor(base.BaseSensor):
 
             compute_usage_percore.append(int((((currentfreq * compute_capacity)/maxfreq) * vm_utilized_cputime)) / time_interval)
 
-        value = sum(compute_usage_percore) if is_sum else compute_usage_percore
-
-        return value
+        return sum(compute_usage_percore)
 
 class VirtualMachineMemoryUsageSensor(base.BaseSensor):
     def __init__(self,instance_id=None):

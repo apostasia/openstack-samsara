@@ -86,11 +86,11 @@ class GlobalControllerManager(manager.Manager):
 
         LOG.info('related_context: %s - %s', host, related_context)
 
-        # # Instantiate Host resources situation
+        # Instantiate Host resources situation
         host_situation = situations.Situation('host_situation', situation_description, related_context)
 
-        # # Store Situation in Global Repository
-        self.global_repository.store_situation(host_situation.get_situation())
+        # Store Situation in Global Repository
+        self.global_repository.store_situation(host_situation.get_situation(), update_keys=['uuid'], historical=True)
         LOG.info('Store host situation into global repository')
 
     @periodic_task.periodic_task(spacing=CONF.task_period,

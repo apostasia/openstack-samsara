@@ -54,15 +54,28 @@ class ContextsRepository(base.BaseContextsRepository):
     def _create_catalog(self,context_tag):
         self.repository[context_tag]
 
-    def store_context(self,context_instance):
-        "Store context on contexts repository"
+    def store_context(self, context_instance, update_keys=None):
+        """
+            Store context on contexts repository
 
-        context_tag = type(context_instance).__name__
+         :param situation: context instance
+         :param update_keys: informed, it is used to update a stored context, comparing the attributes and performing the upgrade if they are equal.
+        """
+
+        tag = type(context_instance).__name__
         data = context_instance._asdict()
         types = {'created_at':sqlalchemy.DateTime}
 
-        # Store context
-        self.repository[context_tag]
+        #
+        # Send to Repository
+        #
+        if not isinstance(update_keys, (list, tuple)):
+            # Store context
+            self.repository[tag].insert(data, types)
+
+        else:
+            # Update context
+            self.repository[tag].upsert(data, update_keys, types)
 
     def upsert_context(self,context_instance, keys, historical=False):
         "Update or Insert context on contexts repository."
@@ -95,18 +108,17 @@ class ContextsRepository(base.BaseContextsRepository):
     def get_repository_handler(self):
         return self.repository
 
-    def store_as_historical(self,data_instance):
+    def store_as_historical(self, tag, data):
         "Store context or situation on contexts repository as historical data"
 
         # Set historical tag
-        tag = "historical_{0}".format(type(context_instance).__name__)
+        historical_tag = "historical_{0}".format(tag)
 
         # Prepare data
-        data = context_instance._asdict()
         types = {'created_at':sqlalchemy.DateTime}
 
         # Store context or situation
-        self.repository[historical_context_tag].insert(data, types)
+        self.repository[historical_tag].insert(data, types)
 
 
 class LocalContextsRepository(ContextsRepository):
@@ -141,10 +153,17 @@ class GlobalContextsRepository(ContextsRepository):
 
         return self.repository.query(query)
 
-    def store_situation(self, situation_instance):
-        "Store situation on contexts repository"
+    def store_situation(self, situation_instance, update_keys=None, historical=False):
+        """
+            Store situation on contexts repository
+
+         :param situation: situation instance
+         :param update_keys: informed, it is used to update a stored situation, comparing the attributes and performing the upgrade if they are equal.
+         :param historical: if True, also store situation as historical data
+        """
 
         tag = type(situation_instance).__name__
+        types = {'created_at':sqlalchemy.DateTime}
 
         # Prepare situation data
         situation_tuple = situation_instance.related_context
@@ -152,5 +171,18 @@ class GlobalContextsRepository(ContextsRepository):
         # Add situation description to end tuple
         situation_tuple.update(situation=situation_instance.description)
 
-        # Store situation
-        self.repository[tag].insert(situation_tuple, {'created_at':sqlalchemy.DateTime})
+        #
+        # Send to Repository
+        #
+        if not isinstance(update_keys, (list, tuple)):
+            # Store situation
+            self.repository[tag].insert(situation_tuple, types)
+
+        else:
+            # Update situation
+            self.repository[tag].upsert(situation_tuple, update_keys, types)
+
+
+        # Store as historical data if historical flag is True
+        if historical:
+            self.store_as_historical(tag, situation_tuple)
