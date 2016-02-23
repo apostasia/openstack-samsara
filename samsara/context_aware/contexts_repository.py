@@ -58,11 +58,13 @@ class ContextsRepository(base.BaseContextsRepository):
         "Store context on contexts repository"
 
         context_tag = type(context_instance).__name__
+        data = context_instance._asdict()
+        types = {'created_at':sqlalchemy.DateTime}
 
         # Store context
-        self.repository[context_tag].insert(context_instance._asdict(),{'created_at':sqlalchemy.DateTime})
+        self.repository[context_tag]
 
-    def upsert_context(self,context_instance, keys):
+    def upsert_context(self,context_instance, keys, historical=False):
         "Update or Insert context on contexts repository."
 
         context_tag = type(context_instance).__name__
@@ -71,6 +73,10 @@ class ContextsRepository(base.BaseContextsRepository):
 
         # Update or Insert context
         self.repository[context_tag].upsert(data, keys, types)
+
+        if historical:
+            self.store_as_historical(context_instance)
+
 
     def retrieve_context():
         "Retrives an stored context"
@@ -89,6 +95,18 @@ class ContextsRepository(base.BaseContextsRepository):
     def get_repository_handler(self):
         return self.repository
 
+    def store_as_historical(self,data_instance):
+        "Store context or situation on contexts repository as historical data"
+
+        # Set historical tag
+        tag = "historical_{0}".format(type(context_instance).__name__)
+
+        # Prepare data
+        data = context_instance._asdict()
+        types = {'created_at':sqlalchemy.DateTime}
+
+        # Store context or situation
+        self.repository[historical_context_tag].insert(data, types)
 
 
 class LocalContextsRepository(ContextsRepository):
