@@ -79,8 +79,6 @@ class HostVariables(BaseVariables):
         # Get average
         host_resources_usage = self.host_contexts_handler.get_resources_usage(self.time_frame)
 
-        # Get
-
         # Convert to percentual
         percentual_compute_resource_usage = to_percentage(host_resources_usage.used_compute, self.host_info.compute_capacity)
 

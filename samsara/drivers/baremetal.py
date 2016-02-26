@@ -41,17 +41,31 @@ if os.name == 'posix' and sys.version_info[0] < 3:
 else:
     import subprocess
 
-cpu_time_percore =  [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
 
-# Global var used to calc and normalize current cpu usage
+# Create function to get CLOCK_MONOTONIC time
+# CLOCK_MONOTONIC represents the absolute elapsed wall-clock time since some
+# arbitrary, fixed point in the past. It isn't affected by changes in the system
+# time-of-day clock.
+#_timer = getattr(time, 'monotonic', time.time)
+#global_timestamp = _timer()
 global_timestamp = datetime.utcnow()
 
 class BareMetalDriver(object):
     def __init__(self):
-        pass
+        # Count cpu busytime init
+        self._last_busytime_percore = self.get_cpu_time_percore()
 
     def get_number_cpu(self):
+        """ Get cpu number
+        """
         return multiprocessing.cpu_count()
+
+    def get_cpu_time_percore(self):
+        """Return a (user, system) representing  the
+        accumulated process time, in seconds.
+        This is the same as os.times() but per-process.
+        """
+        return [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
 
 
     def get_max_mips_percore(self):
@@ -163,20 +177,20 @@ class BareMetalDriver(object):
         return freq_percore
 
     def get_current_usage_mips(self):
-         """Get current total usage CPU in MIPS
+         """Get current usage CPU in MIPS for all cores
             Return an int value in MIPS
          """
          return sum(self.get_usage_mips_percore())
 
-    def _get_busytime_percore(self, interval=5):
+    def _get_busytime_percore(self, interval=0.1):
         """ Get current busytime CPU - Alternative
             Return an float value in Seconds
         """
 
-        cpu_time_t0  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
+        cpu_time_t0  = self.get_cpu_time_percore()
         time.sleep(interval)
 
-        cpu_time_t1  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
+        cpu_time_t1  = self.get_cpu_time_percore()
 
         # compute the delta time for each cpu and generate an list
         busytime_percore = map(sub,cpu_time_t1, cpu_time_t0)
@@ -187,13 +201,15 @@ class BareMetalDriver(object):
         """ Get current busytime CPU
             Return an float value in Seconds
         """
-        global cpu_time_percore
-        cpu_time_t0   = cpu_time_percore[:]
-        cpu_time_t1  = [float(t[0])+float(t[2]) for t in psutil.cpu_times(percpu=True)]
+        #global last_busytime_percore
+        cpu_time_t0   = self._last_busytime_percore
+        cpu_time_t1  = self.get_cpu_time_percore()
 
-        # compute the delta time for each cpu and generate an list
+        # update global vars
+        self._last_busytime_percore = cpu_time_t1
+
+        # compute the delta cpu time for each cpu and generate an list
         busytime_percore = map(sub,cpu_time_t1,cpu_time_t0)
-        cpu_time_percore = cpu_time_t1[:] # copy
 
         return busytime_percore
 
@@ -202,15 +218,28 @@ class BareMetalDriver(object):
         """Returns an list with usage mips percore"""
 
         maxmips_percore               = self.get_max_mips_percore()
-        maxfreq_percore               = self.get_max_freq_percore()
+        # maxfreq_percore               = self.get_max_freq_percore()
+        # maxfreq_percore               = [3185]
+        maxfreq_percore           = self.get_current_freq_percore()
         currentfreq_percore           = self.get_current_freq_percore()
-        utilized_cputime_percore      = self.get_busytime_percore()
+        busytime_percore              = self.get_busytime_percore()
+        delta_time                    = self.get_delta_time()
 
         usage_percore = []
 
-        for maxmips, maxfreq, currentfreq, utilized_cputime in zip(maxmips_percore, maxfreq_percore, currentfreq_percore, utilized_cputime_percore):
-            usage_core = round((((currentfreq * maxmips)/maxfreq) * utilized_cputime))
-            usage_percore.append(usage_core)
+        for max_mips, max_freq, current_freq, busytime in zip(maxmips_percore, maxfreq_percore, currentfreq_percore, busytime_percore):
+            try:
+                # 1
+                usage_core = ((((current_freq * busytime) * max_mips) / max_freq) / delta_time)
+                #usage_core = (((current_freq * max_mips)/max_freq) * busytime)
+
+                #usage_core = ((max_freq * busytime) * current_freq) / max_freq
+
+            except ZeroDivisionError:
+                # interval was too low
+                usage_percore.append(0.0)
+            else:
+                usage_percore.append(round(usage_core, 1))
 
         return usage_percore
 
@@ -220,26 +249,22 @@ class BareMetalDriver(object):
         maxmips    = self.get_max_mips()
         usage_mips = self.get_current_usage_mips()
 
-        usage = round((usage_mips * 100)/maxmips)
+        usage = round((usage_mips * 100) / maxmips)
 
         return usage
 
     def get_current_usage_mips(self):
         """Get current total usage CPU percentual
-           Return an float value percentual
+           Return an float value mips
         """
-        global global_timestamp
-        timestamp_t0     = global_timestamp
-        timestamp_t1     = datetime.utcnow()
-        time_interval    = (timestamp_t1 - timestamp_t0).seconds
-        global_timestamp = datetime.utcnow()
+        try:
+            avg_mips = round(sum(self.get_usage_mips_percore()) / self.get_delta_time(), 1)
 
-        usage_mips = sum(self.get_usage_mips_percore())
-
-        current_usage = usage_mips / time_interval
-
-        return current_usage
-
+        except ZeroDivisionError:
+            # interval was too low
+            return 0.0
+        else:
+            return avg_mips
 
 
     def get_max_memory(self):
@@ -290,3 +315,12 @@ class BareMetalDriver(object):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', nic[:15]))
         return ''.join(['%02x:' % ord(char) for char in info[18:24]])[:-1]
+
+    def get_delta_time(self):
+            global global_timestamp
+            timestamp_t0     = global_timestamp
+            timestamp_t1     = datetime.utcnow()
+            time_interval    = (timestamp_t1 - timestamp_t0).seconds
+            global_timestamp = datetime.utcnow()
+
+            return time_interval

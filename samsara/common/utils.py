@@ -22,7 +22,16 @@ import json
 import time
 
 
-
+def usage_percent(used, total, _round=None):
+    """Calculate percentage usage of 'used' against 'total'."""
+    try:
+        ret = (used / total) * 100
+    except ZeroDivisionError:
+        ret = 0.0 if isinstance(used, float) or isinstance(total, float) else 0
+    if _round is not None:
+        return round(ret, _round)
+    else:
+        return ret
 
 def to_percentage(value, total):
     """ Calculate a percentual of value.
@@ -38,7 +47,7 @@ def to_percentage(value, total):
 
         percentage = ((float(value*100) / float(total)) / 100)
         return float(percentage)
-        
+
     except ZeroDivisionError:
         return None
 
