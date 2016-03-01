@@ -229,9 +229,14 @@ class BareMetalDriver(object):
 
         for max_mips, max_freq, current_freq, busytime in zip(maxmips_percore, maxfreq_percore, currentfreq_percore, busytime_percore):
             try:
-                # 1
-                usage_core = ((((current_freq * busytime) * max_mips) / max_freq) / delta_time)
-                #usage_core = (((current_freq * max_mips)/max_freq) * busytime)
+                
+		# Calculate current_compute_capacity in BogoMips
+		current_compute_capacity = ((current_freq * busytime) * max_mips) / max_freq
+                
+		# Calculate current cpu usage in bogomips
+		current_usage = current_compute_capacity * busytime
+                
+		#usage_core = (((current_freq * max_mips)/max_freq) * busytime)
 
                 #usage_core = ((max_freq * busytime) * current_freq) / max_freq
 
@@ -239,7 +244,7 @@ class BareMetalDriver(object):
                 # interval was too low
                 usage_percore.append(0.0)
             else:
-                usage_percore.append(round(usage_core, 1))
+                usage_percore.append(round(current_usage, 1))
 
         return usage_percore
 
