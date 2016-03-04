@@ -33,6 +33,7 @@ sensors_opts = [
 CONF = cfg.CONF
 CONF.register_opts(sensors_opts)
 
+baremetal_driver = baremetal.BareMetalDriver()
 
 class HostIdSensor(base.BaseSensor):
     @staticmethod
@@ -64,7 +65,8 @@ class HostComputeUsageSensor(base.BaseSensor):
     @staticmethod
     def read_value():
         """Returns the host compute usage"""
-        driver = baremetal.BareMetalDriver()
+        global baremetal_driver
+        driver = baremetal_driver
         compute_usage = driver.get_current_usage_mips()
         return compute_usage
 

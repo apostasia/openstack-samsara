@@ -46,9 +46,8 @@ else:
 # CLOCK_MONOTONIC represents the absolute elapsed wall-clock time since some
 # arbitrary, fixed point in the past. It isn't affected by changes in the system
 # time-of-day clock.
-#_timer = getattr(time, 'monotonic', time.time)
-#global_timestamp = _timer()
-global_timestamp = datetime.utcnow()
+_timer = getattr(time, 'monotonic', time.time)
+_global_timestamp = _timer()
 
 class BareMetalDriver(object):
     def __init__(self):
@@ -131,10 +130,10 @@ class BareMetalDriver(object):
                 # Convert do MHz
                 if max_freq_unit == "GHz":
                     max_freq = max_freq_value * 1000
-                # elif max_freq_unit == "MHz":
+                # elif maglobal_timestamp = _timer()x_freq_unit == "MHz":
                 #     max_freq_value * 1
                 else:
-                    max_freq = max_freq_value * 1
+                    max_freq = max_freq_value
 
                 max_freq_percore.append(max_freq)
 
@@ -156,6 +155,7 @@ class BareMetalDriver(object):
         """
         current_freq_percore = []
         cpus = [cpu for cpu in os.listdir("/sys/devices/system/cpu") if re.match(r'\b(cpu)(\d+)\b',cpu)]
+
         for cpu in cpus:
             cmd = ["cat","/sys/devices/system/cpu/%s/cpufreq/scaling_cur_freq" % (cpu)]
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -166,13 +166,19 @@ class BareMetalDriver(object):
         """Get current frequency CPU per core by cpuinfo file
            Return an int value in MHz
         """
+        # Fix - Because Vbox Tests
+        #  Guest not scaling:
+        # https://forums.virtualbox.org/viewtopic.php?f=1&t=49456
+        correction_factor = 1.00193
+
         freq_percore = []
         with open("/proc/cpuinfo") as f:
             for line in f:
                 if not line.startswith("cpu MHz"):
                     continue
                 parts = line.split()
-                freq_percore.append(float(parts[3]))
+                current_freq = round(float(parts[3]) * correction_factor, 3)
+                freq_percore.append(current_freq)
 
         return freq_percore
 
@@ -202,7 +208,7 @@ class BareMetalDriver(object):
             Return an float value in Seconds
         """
         #global last_busytime_percore
-        cpu_time_t0   = self._last_busytime_percore
+        cpu_time_t0  = self._last_busytime_percore
         cpu_time_t1  = self.get_cpu_time_percore()
 
         # update global vars
@@ -218,25 +224,22 @@ class BareMetalDriver(object):
         """Returns an list with usage mips percore"""
 
         maxmips_percore               = self.get_max_mips_percore()
-        # maxfreq_percore               = self.get_max_freq_percore()
-        # maxfreq_percore               = [3185]
-        maxfreq_percore           = self.get_current_freq_percore()
+        maxfreq_percore               = self.get_max_freq_percore()
         currentfreq_percore           = self.get_current_freq_percore()
         busytime_percore              = self.get_busytime_percore()
-        delta_time                    = self.get_delta_time()
+
 
         usage_percore = []
 
         for max_mips, max_freq, current_freq, busytime in zip(maxmips_percore, maxfreq_percore, currentfreq_percore, busytime_percore):
             try:
-                
-		# Calculate current_compute_capacity in BogoMips
-		current_compute_capacity = ((current_freq * busytime) * max_mips) / max_freq
-                
-		# Calculate current cpu usage in bogomips
-		current_usage = current_compute_capacity * busytime
-                
-		#usage_core = (((current_freq * max_mips)/max_freq) * busytime)
+                # Calculate current_compute_capacity in BogoMips
+		        current_compute_capacity = (current_freq * max_mips) / max_freq
+
+		        # Calculate current cpu usage in bogomips
+		        current_usage = current_compute_capacity * busytime
+
+		        #usage_core = (((current_freq * max_mips)/max_freq) * busytime)
 
                 #usage_core = ((max_freq * busytime) * current_freq) / max_freq
 
@@ -263,13 +266,17 @@ class BareMetalDriver(object):
            Return an float value mips
         """
         try:
-            avg_mips = round(sum(self.get_usage_mips_percore()) / self.get_delta_time(), 1)
+
+            total_mips = sum(self.get_usage_mips_percore())
+            delta_time = self.get_delta_time()
+
+            avg_mips = total_mips / delta_time
 
         except ZeroDivisionError:
             # interval was too low
             return 0.0
         else:
-            return avg_mips
+            return round(avg_mips, 2)
 
 
     def get_max_memory(self):
@@ -322,10 +329,11 @@ class BareMetalDriver(object):
         return ''.join(['%02x:' % ord(char) for char in info[18:24]])[:-1]
 
     def get_delta_time(self):
-            global global_timestamp
-            timestamp_t0     = global_timestamp
-            timestamp_t1     = datetime.utcnow()
-            time_interval    = (timestamp_t1 - timestamp_t0).seconds
-            global_timestamp = datetime.utcnow()
+            global _global_timestamp
+
+            timestamp_t0     = _global_timestamp
+            timestamp_t1     = _timer()
+            time_interval    = timestamp_t1 - timestamp_t0
+            _global_timestamp = _timer()
 
             return time_interval
