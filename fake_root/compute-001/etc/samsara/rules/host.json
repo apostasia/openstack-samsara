@@ -5,7 +5,7 @@
                 {
                     "name": "percentual_compute_resource_usage",
                     "operator": "greater_than",
-                    "value": 0.8
+                    "value": 0.5
                 }
             ]
         },
@@ -43,7 +43,7 @@
                 {
                     "name": "percentual_compute_resource_usage",
                     "operator": "less_than",
-                    "value": 0.8
+                    "value": 0.5
                 },
                 {
 
