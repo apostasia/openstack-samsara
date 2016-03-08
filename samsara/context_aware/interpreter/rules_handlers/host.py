@@ -111,7 +111,7 @@ class HostActions(BaseActions):
 
         global host_resources_usage_ctx
 
-        LOG.info('Local Situation %s', situation)
+        LOG.info('Local Situation: %s', situation)
 
         os_ctx = os_context.RequestContext()
 

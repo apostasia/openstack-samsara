@@ -39,10 +39,44 @@ class CellContexts(base.BaseContext):
     def get_active_hosts(self):
         """ Return active host in the cloud cell"""
 
-        active_hosts = hypervisor_sensors.ActiveVirtualMachinesSensor.read_value()
+        context = collections.namedtuple('active_hosts', ['hosts','created_at'])
+
+        repository_handler = self.ctx_global_repository.get_repository_handler()
+
+
+        hosts = [ dict(host) for host in repository_handler['host_situation'].find(situation=['normal', 'underload', 'overload'])]
+
         created_at = datetime.utcnow().isoformat()
 
-        return self.context(active_vms, created_at)
+        return context(hosts, created_at)
+
+    def get_inactive_hosts(self):
+        """ Return inactive hosts in the cloud cell"""
+
+        context = collections.namedtuple('inactive_hosts', ['hosts','created_at'])
+
+        repository_handler = self.ctx_global_repository.get_repository_handler()
+
+
+        hosts = [ dict(host) for host in repository_handler['host_situation'].find(situation=['sleep', 'hibernate', 'off'])]
+
+        created_at = datetime.utcnow().isoformat()
+
+        return context(hosts, created_at)
+
+    def get_inactive_hosts(self):
+        """ Return inactive hosts in the cloud cell"""
+
+        context = collections.namedtuple('inactive_hosts', ['hosts','created_at'])
+
+        repository_handler = self.ctx_global_repository.get_repository_handler()
+
+
+        hosts = [ dict(host) for host in repository_handler['host_situation'].find(situation=['sleep', 'hibernate', 'off'])]
+
+        created_at = datetime.utcnow().isoformat()
+
+        return context(hosts, created_at)
 
     def get_tasks_status(self):
         pass
