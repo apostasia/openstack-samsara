@@ -44,7 +44,7 @@ class CellContexts(base.BaseContext):
         repository_handler = self.ctx_global_repository.get_repository_handler()
 
 
-        hosts = [ dict(host) for host in repository_handler['host_situation'].find(situation=['normal', 'underload', 'overload'])]
+        hosts = [ dict(host) for host in repository_handler['host_situation'].find(situation=['normal', 'underloaded', 'overloaded'])]
 
         created_at = datetime.utcnow().isoformat()
 
@@ -64,15 +64,29 @@ class CellContexts(base.BaseContext):
 
         return context(hosts, created_at)
 
-    def get_inactive_hosts(self):
-        """ Return inactive hosts in the cloud cell"""
+    def get_overloaded_hosts(self):
+        """ Return overloaded hosts in the cloud cell"""
 
-        context = collections.namedtuple('inactive_hosts', ['hosts','created_at'])
+        context = collections.namedtuple('overloaded_hosts', ['hosts','created_at'])
 
         repository_handler = self.ctx_global_repository.get_repository_handler()
 
 
-        hosts = [ dict(host) for host in repository_handler['host_situation'].find(situation=['sleep', 'hibernate', 'off'])]
+        hosts = [ dict(host) for host in repository_handler['host_situation'].find(situation=['overloaded'])]
+
+        created_at = datetime.utcnow().isoformat()
+
+        return context(hosts, created_at)
+
+    def get_underloaded_hosts(self):
+        """ Return underloaded hosts in the cloud cell"""
+
+        context = collections.namedtuple('underloaded_hosts', ['hosts','created_at'])
+
+        repository_handler = self.ctx_global_repository.get_repository_handler()
+
+
+        hosts = [ dict(host) for host in repository_handler['host_situation'].find(situation=['underloaded'])]
 
         created_at = datetime.utcnow().isoformat()
 

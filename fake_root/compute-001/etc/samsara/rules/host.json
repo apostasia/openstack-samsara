@@ -13,7 +13,7 @@
             {
                 "name": "notify_situation_to_controller",
                 "params": {
-                    "situation": "overload"
+                    "situation": "overloaded"
                 }
             }
         ]
@@ -32,7 +32,7 @@
             {
                 "name": "notify_situation_to_controller",
                 "params": {
-                    "situation": "underload"
+                    "situation": "underloaded"
                 }
             }
         ]

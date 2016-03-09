@@ -37,7 +37,6 @@ Features
 * TODO
 
 
-
 ### Vagrant Plugins:
 * Vagrant Reload Provisioner:
     - Repositório: https://github.com/aidanns/vagrant-reload
