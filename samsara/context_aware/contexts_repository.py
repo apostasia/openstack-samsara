@@ -54,6 +54,9 @@ class ContextsRepository(base.BaseContextsRepository):
     def _create_catalog(self,context_tag):
         self.repository[context_tag]
 
+    def query(self, query):
+        return self.repository.query(query)
+
     def store_context(self, context_instance, update_keys=None):
         """
             Store context on contexts repository
@@ -163,7 +166,7 @@ class GlobalContextsRepository(ContextsRepository):
         """
 
         tag = type(situation_instance).__name__
-        types = {'created_at':sqlalchemy.DateTime}
+        types = {'created_at':sqlalchemy.DateTime, 'last_change_at':sqlalchemy.DateTime}
 
         # Prepare situation data
         situation_tuple = situation_instance.related_context
@@ -186,3 +189,13 @@ class GlobalContextsRepository(ContextsRepository):
         # Store as historical data if historical flag is True
         if historical:
             self.store_as_historical(tag, situation_tuple)
+
+    def get_situation(self, tag, **kwargs):
+        " Return one situation by filters. "
+
+        kwargs['_limit'] = 1
+        iterator = self.repository[tag].find(**kwargs)
+        try:
+            return next(iterator)
+        except StopIteration:
+            return None

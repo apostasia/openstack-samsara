@@ -56,6 +56,7 @@ class CellVariables(BaseVariables):
 
     @string_rule_variable
     def hosts_underload(self):
+        print help(self)
         return "True"
 
 
@@ -74,15 +75,24 @@ class CellVariables(BaseVariables):
 # Action
 class CellActions(BaseActions):
     """ Class with actions """
+    # def __init__(self):
+    #
+    #     # Samsara Global Controller RPC API
+    #     self.global_controller = sgc_rpcapi.GlobalControllerAPI()
 
     @rule_action()
     def start_consolidation(self):
+        """ Invoke workload consolidation process"""
+
         LOG.info('Consolidation Request')
-        time.sleep(30)
-        LOG.info('Consolidation Complete')
+        # Request Consolidation to Global Controller
+        #self.global_controller.consolidate_workload(os_ctx, controller_hostname="controller")
+
 
     @rule_action()
     def start_load_balance(self):
+        """ Invoke workload balance process"""
+
         LOG.info('Load Balance Request')
-        time.sleep(30)
-        LOG.info('Load Balance Complete')
+        # Request Load Balance to Global Controller
+        #self.global_controller.balance_workload(os_ctx, controller_hostname="controller")

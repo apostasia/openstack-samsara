@@ -69,3 +69,19 @@ class GlobalControllerAPI(object):
         version = '1.0'
         cctxt = self.client.prepare(server="controller", version=version)
         cctxt.call(context,'update_host_situation', host=host, situation=situation)
+
+    def consolidate_workload(self, context, controller_hostname):
+        ''' Run workload consolidation.
+
+        '''
+        version = '1.0'
+        cctxt = self.client.prepare(server="controller", version=version)
+        cctxt.call(context,'consolidate_workload', host=controller_hostname, situation=situation)
+
+    def balance_workload(self, context, controller_hostname):
+        ''' Run workload balancing.
+
+        '''
+        version = '1.0'
+        cctxt = self.client.prepare(server="controller", version=version)
+        cctxt.call(context,'balance_workload', host=controller_hostname, situation=situation)

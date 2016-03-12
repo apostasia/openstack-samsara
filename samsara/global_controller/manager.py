@@ -26,6 +26,8 @@ from oslo_serialization import jsonutils
 from oslo_service import periodic_task
 from oslo_utils import importutils
 
+from datetime import datetime
+
 #from samsara.common import exception
 from samsara.common import manager
 from samsara.common.utils import *
@@ -86,6 +88,20 @@ class GlobalControllerManager(manager.Manager):
 
         LOG.info('related_context: %s - %s', host, related_context)
 
+        # Update if change situation host
+        host = self.global_repository.get_situation('host_situation',uuid=related_context['uuid'])
+        if host:
+            if host['situation'] != situation_description:
+                last_change_at = datetime.utcnow().isoformat()
+                related_context.update({'last_change_at': last_change_at})
+                LOG.info('Change Situation: before %s - actual %s', host['situation'], situation_description)
+            else:
+                last_change_at = host['last_change_at']
+                related_context.update({'last_change_at': last_change_at})
+        else:
+            last_change_at = related_context['created_at']
+            related_context.update({'last_change_at': last_change_at})
+
         # Instantiate Host resources situation
         host_situation = situations.Situation('host_situation', situation_description, related_context)
 
@@ -96,18 +112,21 @@ class GlobalControllerManager(manager.Manager):
     @periodic_task.periodic_task(spacing=CONF.task_period,
                           run_immediately=True)
     def check_cell_status(self, context):
-
             # Run Host Rules Handler
             LOG.info('Run Cell Rules Handler')
-            self.cell_rules_handler.reason()
+            #self.cell_rules_handler.reason()
 
 
-    def consolidate_workload(self,context):
+    def consolidate_workload(self, context, controller_hostname):
         """ Perform workload consolidation
         """
         LOG.info('Starting Consolidation')
+        time.sleep(30)
+        LOG.info('Consolidation Complete')
 
-    def balance_workload(self,context):
-        """ Perform worload balancing
+    def balance_workload(self, context, controller_hostname):
+        """ Perform workload balancing
         """
         LOG.info('Starting Balance')
+        time.sleep(30)
+        LOG.info('Balance Complete')

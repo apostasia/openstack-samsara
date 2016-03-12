@@ -26,14 +26,14 @@ class CellActuactor(base.BaseActuator):
     def _migrate_to(instance, host):
             pass
 
-    def wake_host(self, host):
+    def _wake_host(self, host):
             pass
 
-    def sleep_host(self, host):
+    def _sleep_host(self, host):
             pass
 
     def consolidate(self, consolidation_plan):
             pass
 
-    def balance(self, consolidation_plan):
+    def balance(self, load_balance_plan):
             pass
