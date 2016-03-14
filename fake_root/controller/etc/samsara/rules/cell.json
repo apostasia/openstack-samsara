@@ -4,14 +4,14 @@
             "all": [
                 {
                     "name": "hosts_underload",
-                    "operator": "equal_to",
-                    "value": "True"
+                    "operator": "greater_than",
+                    "value": 0
                 },
                 {
 
                     "name": "hosts_underload_time",
                     "operator": "greater_than",
-                    "value": 30
+                    "value": 60
                 }
             ]
         },
@@ -27,7 +27,7 @@
                 {
                     "name": "hosts_overload",
                     "operator": "equal_to",
-                    "value": "true"
+                    "value": 1
                 },
                 {
 

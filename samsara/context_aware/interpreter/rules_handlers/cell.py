@@ -16,6 +16,7 @@ from oslo_config import cfg
 from oslo_context import context as os_context
 from oslo_serialization import jsonutils
 
+from samsara.context_aware.contexts import cell
 from samsara.context_aware.contexts import host as host_contexts
 from samsara.context_aware.contexts import vm as vm_contexts
 from samsara.context_aware.situations import base as situations
@@ -37,12 +38,11 @@ LOG = logging.getLogger(__name__)
 
 
 # Global Vars
-host_resources_usage_ctx = None
+hosts_underloaded = None
 
 
 class CellRulesHandler(base.BaseRulesHandler):
         """ Cell Rules Handler """
-
         def __init__(self):
             # Load cell rules
             rules = self.load_rules("cell.json")
@@ -54,19 +54,49 @@ class CellRulesHandler(base.BaseRulesHandler):
 class CellVariables(BaseVariables):
     """ Class with variables (or conditions) to be reasoning """
 
-    @string_rule_variable
+    def __init__(self):
+        # Instantiates Cell Contexts Handlers
+        self.cell_contexts_handler = cell.CellContexts()
+
+
+    @numeric_rule_variable
     def hosts_underload(self):
-        print help(self)
-        return "True"
+        """ Return underloaded hosts amount"""
+
+        global hosts_underloaded
+        hosts_underloaded_ctx = self.cell_contexts_handler.get_underloaded_hosts()
+
+        if not hosts_underloaded_ctx:
+            hosts_underloaded = None
+            return 0
+        else:
+            hosts_underloaded = hosts_underloaded_ctx.hosts
+            return len(hosts_underloaded_ctx.hosts)
 
 
     @numeric_rule_variable
     def hosts_underload_time(self):
-        return 60
+        """ Return underloaded host period"""
+        hosts_underloaded = self.cell_contexts_handler.get_underloaded_hosts().hosts
 
-    @string_rule_variable
+        if hosts_underloaded:
+            # Get underload period per host
+            underload_period_per_host = [get_period_from_time(host['last_change_at'],host['created_at']) for host in hosts_underloaded]
+
+            # Return greater than underload period
+            greater_than_underload_period = max(underload_period_per_host)
+
+            LOG.info('Period: %s', greater_than_underload_period)
+
+
+            return greater_than_underload_period
+
+        else:
+            return 0
+
+    @numeric_rule_variable
     def hosts_overload(self):
-        return "True"
+        return 0
 
     @numeric_rule_variable
     def hosts_overload_time(self):
@@ -83,8 +113,14 @@ class CellActions(BaseActions):
     @rule_action()
     def start_consolidation(self):
         """ Invoke workload consolidation process"""
+        global hosts_underloaded
+        max_underload_period_host = max(hosts_underloaded, key=lambda host: get_period_from_time(host['last_change_at'], host['created_at']))
+        period = max([get_period_from_time(host['last_change_at'],host['created_at']) for host in hosts_underloaded])
 
+        LOG.info('######################################################################################################################')
         LOG.info('Consolidation Request')
+        LOG.info('Host under: %s - period: %s', max_underload_period_host, period)
+        LOG.info('######################################################################################################################')
         # Request Consolidation to Global Controller
         #self.global_controller.consolidate_workload(os_ctx, controller_hostname="controller")
 

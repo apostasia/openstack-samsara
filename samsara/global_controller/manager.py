@@ -114,7 +114,7 @@ class GlobalControllerManager(manager.Manager):
     def check_cell_status(self, context):
             # Run Host Rules Handler
             LOG.info('Run Cell Rules Handler')
-            #self.cell_rules_handler.reason()
+            self.cell_rules_handler.reason()
 
 
     def consolidate_workload(self, context, controller_hostname):

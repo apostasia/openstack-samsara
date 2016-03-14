@@ -61,6 +61,22 @@ def get_time_from_period(period=60):
     time = datetime.utcnow() - timedelta(seconds=period)
     return time.isoformat()
 
+def get_period_from_time(t0, t1):
+    """ Get the period from  times
+    Args:
+        t0 (string ): string in ISO 8601 format
+        t1 (string ): string in ISO 8601 format
+    Returns:
+        period in seconds
+    """
+    time_0 = datetime.strptime(t0,'%Y-%m-%dT%H:%M:%S.%f')
+    time_1 = datetime.strptime(t1,'%Y-%m-%dT%H:%M:%S.%f')
+
+    period = time_1 - time_0
+
+    return (period).seconds
+
+
 
 # def json_load_byteified(file_handle):
 #     return _byteify(
