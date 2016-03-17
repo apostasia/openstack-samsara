@@ -37,9 +37,6 @@ LOG = logging.getLogger(__name__)
 # CONF.register_opts(rules_handler_opts, 'rules_handler')
 
 
-# Global Vars
-hosts_underloaded = None
-
 
 class CellRulesHandler(base.BaseRulesHandler):
         """ Cell Rules Handler """
@@ -63,20 +60,18 @@ class CellVariables(BaseVariables):
     def hosts_underload(self):
         """ Return underloaded hosts amount"""
 
-        global hosts_underloaded
         hosts_underloaded_ctx = self.cell_contexts_handler.get_underloaded_hosts()
 
         if not hosts_underloaded_ctx:
-            hosts_underloaded = None
             return 0
         else:
-            hosts_underloaded = hosts_underloaded_ctx.hosts
             return len(hosts_underloaded_ctx.hosts)
 
 
     @numeric_rule_variable
     def hosts_underload_time(self):
         """ Return underloaded host period"""
+
         hosts_underloaded = self.cell_contexts_handler.get_underloaded_hosts().hosts
 
         if hosts_underloaded:
@@ -105,7 +100,9 @@ class CellVariables(BaseVariables):
 # Action
 class CellActions(BaseActions):
     """ Class with actions """
-    # def __init__(self):
+    def __init__(self):
+        # Instantiates Cell Contexts Handlers
+        self.cell_contexts_handler = cell.CellContexts()
     #
     #     # Samsara Global Controller RPC API
     #     self.global_controller = sgc_rpcapi.GlobalControllerAPI()
@@ -113,14 +110,15 @@ class CellActions(BaseActions):
     @rule_action()
     def start_consolidation(self):
         """ Invoke workload consolidation process"""
-        global hosts_underloaded
+        hosts_underloaded = self.cell_contexts_handler.get_underloaded_hosts().hosts
+
         max_underload_period_host = max(hosts_underloaded, key=lambda host: get_period_from_time(host['last_change_at'], host['created_at']))
         period = max([get_period_from_time(host['last_change_at'],host['created_at']) for host in hosts_underloaded])
 
-        LOG.info('######################################################################################################################')
+        LOG.info('###########################################################')
         LOG.info('Consolidation Request')
         LOG.info('Host under: %s - period: %s', max_underload_period_host, period)
-        LOG.info('######################################################################################################################')
+        LOG.info('###########################################################')
         # Request Consolidation to Global Controller
         #self.global_controller.consolidate_workload(os_ctx, controller_hostname="controller")
 

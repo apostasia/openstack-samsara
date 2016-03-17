@@ -11,7 +11,7 @@
 
                     "name": "hosts_underload_time",
                     "operator": "greater_than",
-                    "value": 60
+                    "value": 120
                 }
             ]
         },
