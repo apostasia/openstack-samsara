@@ -38,6 +38,8 @@
 
 *build
 
+*venv
+
 *.egg-info
 
 *.cache
