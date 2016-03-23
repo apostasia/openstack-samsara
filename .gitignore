@@ -49,3 +49,7 @@
 */.vagrant/
 
 *.vdi
+
+*/.eggs/
+
+*/.tox/
