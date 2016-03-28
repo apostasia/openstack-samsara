@@ -110,7 +110,6 @@ class CellActions(BaseActions):
     @rule_action()
     def start_consolidation(self):
         """ Invoke workload consolidation process"""
-        hosts_underloaded = self.cell_contexts_handler.get_underloaded_hosts().hosts
 
         max_underload_period_host = max(hosts_underloaded, key=lambda host: get_period_from_time(host['last_change_at'], host['created_at']))
         period = max([get_period_from_time(host['last_change_at'],host['created_at']) for host in hosts_underloaded])

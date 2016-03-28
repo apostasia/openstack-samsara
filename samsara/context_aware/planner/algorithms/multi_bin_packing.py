@@ -7,7 +7,7 @@
 from samsara.context_aware.contexts import cell
 
 class BestFitDecreased(object):
-    def generate_plan(self, hosts, instances, compute_threshold=0.7, memory_threshold=0.9, parcial=False):
+    def generate_plan(self, hosts, instances, compute_threshold=0.7, memory_threshold=0.9):
 
         # Sort hosts in available compute increased order and filter fields
         hosts = [{'hostname': host.hostname, 'available_compute': host.available_compute * compute_threshold, 'available_memory': host.available_memory * memory_threshold} for host in sorted(hosts, key=lambda k: k.available_compute, reverse=True)]
@@ -36,7 +36,4 @@ class BestFitDecreased(object):
                         # Remove instances from instances list
                         instances.remove(instance)
 
-        if not instances and not parcial:
-            return plan
-        else:
-            return []
+        return plan

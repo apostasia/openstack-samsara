@@ -33,17 +33,22 @@ class VirtualMachineContexts(base.BaseContext):
 
         uuid                = vm_sensors.VirtualMachineIdSensor(self.id).read_value()
 
-        compute_utilization = vm_sensors.VirtualMachineComputeUsageSensor(self.id).read_value()
+        used_compute = vm_sensors.VirtualMachineComputeUsageSensor(self.id).read_value()
 
-        memory_utilization  = vm_sensors.VirtualMachineMemoryUsageSensor(self.id).read_value()
+        used_memory  = vm_sensors.VirtualMachineMemoryUsageSensor(self.id).read_value()
 
         created_at          = datetime.utcnow().isoformat()
 
         tag = "vm_resources_usage"
 
-        context = collections.namedtuple(tag, ['uuid', 'compute_utilization','memory_utilization','created_at'])
+        context = collections.namedtuple(tag,
+        ['uuid',
+        'used_compute',
+        'used_memory',
+        'created_at'])
+        )
 
-        return context(uuid, compute_utilization, memory_utilization, created_at)
+        return context(uuid, used_compute, used_memory, created_at)
 
     def get_historical_compute_usage(self, limit=10):
         """ Get historical data about host compute usage from local context repository

@@ -120,7 +120,8 @@ class GlobalControllerManager(manager.Manager):
     def consolidate_workload(self, context, controller_hostname):
         """ Perform workload consolidation
         """
-        LOG.info('Starting Consolidation')
+        LOG.info('Starting Consolidation Process')
+        
         time.sleep(30)
         LOG.info('Consolidation Complete')
 

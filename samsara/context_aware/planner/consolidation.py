@@ -19,6 +19,7 @@ from oslo_config import cfg
 from oslo_log import log as logging
 
 from samsara.context_aware.contexts import cell
+from samsara.context_aware.planner.algorithms import multi_bin_packing
 
 LOG = logging.getLogger(__name__)
 
@@ -26,56 +27,42 @@ LOG = logging.getLogger(__name__)
 class Planner(object):
 
     def __init__(self):
-        self.ctx_cell = cell.CellContexts()
+        self.cell_contexts_handler = cell.CellContexts()
 
-    def generate_consolidation_plan(self, instances):
+    def generate_consolidation_plan(self):
 
-        active_hosts = ctx_cell.get_active_hosts()
-        ctx_cell.get_underloaded_hosts()
-        ctx_cell.get_inactive_hosts()
+        consolidation_plan = []
+        hosts_to_deactivate = []
 
+        # Select active hosts
+        active_hosts = self.cell_contexts_handler.get_active_hosts.hosts
 
-OrderedDict(sorted(cell_ctx[0].items, key=lamba t:[0]))
-OrderedDict(sorted(cell_ctx[0].items, key=lamba t: t[0]))
-OrderedDict(sorted(cell_ctx[0].items, key=lambda t: t[0]))
-OrderedDict(sorted(cell_ctx[0].items(), key=lambda t: t[0]))
-OrderedDict(sorted(cell_ctx[0].items(), key=lambda t: t[0]))
-hosts = cell_ctx[0]
-hosts
-sorted(hosts. key=lamba k: k['available_compute'])
-sorted(hosts. key=lambda k: k['available_compute'])
-sorted(hosts, key=lambda k: k['available_compute'])
-sorted(hosts, key=lambda k: k['available_compute'], reverse=True)
-sorted(hosts, key=lambda k: k['available_compute'], reverse=True)
-sorted(hosts, key=lambda k: k['available_compute'])
-[ host[0]  for host in sorted(hosts, key=lambda k: k['available_compute'])
+        # Select underloaded hosts
+        hosts_underloaded = [host for host in active_hosts if host['situation'] == 'underloaded']
 
+        # Get most underloaded host
+        most_underloaded_host = min(hosts_underloaded, key=lambda k: k['used_compute'])
 
+        # Generate hosts candidates without most underloaded host and without overloaded hosts
+        hosts_candidates = [host for host in active_hosts if host != most_underload_host and host['situation'] != 'overloaded']
 
+        # Instantiate planner
+        migration_planner = multi_bin_packing.BestFitDecreased()
 
-]
-[ host[0]  for host in sorted(hosts, key=lambda k: k['available_compute'])]
-[ host[0] for host in sorted(hosts, key=lambda k: k['available_compute'])]
-sorted(hosts, key=lambda k: k['available_compute'])
-for host in sorted(hosts, key=lambda k: k['available_compute']):
-    print host[0][0]
-sorted(hosts, key=lambda k: k['available_compute'])
-host_sorted = sorted(hosts, key=lambda k: k['available_compute'])
-host_sorted[0]
-host_sorted[0][0]
-host_sorted[0]['hostname']
-for host in sorted(hosts, key=lambda k: k['available_compute']):
-    print host[0]['hostname']
-for host in sorted(hosts, key=lambda k: k['available_compute']):
-    print host
-for host in sorted(hosts, key=lambda k: k['available_compute']):
-    print host[0]
-for host in sorted(hosts, key=lambda k: k['available_compute']):
-    print host['hostname']
-for host in sorted(hosts, key=lambda k: k['available_compute']):
-    print host['hostname']
+        # Generate migration plan
+        migration_plan = migration_planner.generate_plan(hosts_candidates, instances)
+
+        # Add host to deactivation plan
+        hosts_to_deactivate.append(most_underloaded_host['hostname'])
+
+        # Return consolidation plan (migrantion plan + deactivation plan)
+        return {'migration_plan': migration_plan, 'hosts_to_deactivate': hosts_to_deactivate}
 
 
-def generate_plan():
 
-    con
+
+    def generate_load_balance_plan(self, instances):
+        pass
+
+    def generate_plan():
+        pass

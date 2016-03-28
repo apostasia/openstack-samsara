@@ -26,7 +26,7 @@ from oslo_log import log as logging
 #LOG = logging.getLogger(__name__)
 
 
-def generate_fake_hosts(hosts_number=2):
+def generate_hosts(hosts_number=2, compute_capacity=6000.50, min_compute=0, memory_capacity=2048, min_memory=128):
 
     hosts_list = []
 
@@ -42,21 +42,19 @@ def generate_fake_hosts(hosts_number=2):
 
     # Get basic host information
 
-    for x in range(0, hosts_number):
+    for x in range(1, hosts_number):
 
         uuid_obj = uuid_func.uuid4()
 
         hostname          = "compute-00{0}".format(x)
         uuid              = str(uuid_obj)
-        compute_capacity  = 6000.50
-        memory_capacity   = 2048
 
         # Calculate average compute usage and compute available
-        used_compute = round(random.uniform(100, 6000), 2)
+        used_compute = round(random.uniform(min_compute, compute_capacity), 2)
         available_compute = compute_capacity - used_compute
 
         # Calculate average memory usage and memory available - TODO: mover para um método especializado
-        used_memory     = random.randint(128, 2048)
+        used_memory      = random.randint(min_memory, memory_capacity)
         available_memory = memory_capacity - used_memory
 
         created_at          = datetime.utcnow().isoformat()
@@ -70,3 +68,30 @@ def generate_fake_hosts(hosts_number=2):
                             created_at))
 
     return hosts_list
+
+
+def generate_instances(instances_number=2, min_compute=100, max_compute=100, min_memory=128, max_memory=128):
+
+    instances = []
+
+    tag = "instances"
+    situation = collections.namedtuple(tag,
+    ['uuid',
+    'used_compute',
+    'used_memory',
+    'created_at'])
+
+    # Get basic host information
+
+    for x in range(0, instances_number):
+
+        uuid_obj = uuid_func.uuid4()
+
+        uuid         = str(uuid_obj)
+        used_compute = round(random.uniform(min_compute, max_compute), 2)
+        used_memory  = random.randint(min_memory, max_memory)
+        created_at   = datetime.utcnow().isoformat()
+
+        instances.append(situation(uuid, used_compute, used_memory, created_at))
+
+    return instances
