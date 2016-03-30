@@ -101,10 +101,10 @@ class LocalControllerManager(manager.Manager):
         self.host_rules_handler.reason()
 
 
-    def retrieve_active_instances(self, context, host_name):
+    def retrieve_active_instances(self, context):
          """Receives information about  to a host's active instances
          """
-         return ['instance-1','instance-2','instances-3']
+         return self.host_contexts_handler.get_active_instances()
 
     def call_actuactor(self, context, host_name, action):
         """ Call actuator """

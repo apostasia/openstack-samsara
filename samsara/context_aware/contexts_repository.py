@@ -123,6 +123,17 @@ class ContextsRepository(base.BaseContextsRepository):
         # Store context or situation
         self.repository[historical_tag].insert(data, types)
 
+    def get_last_context(self, tag, **kwargs):
+        " Return one context by filters. "
+
+        kwargs['_limit'] = 1
+        kwargs['order_by']=['-created_at']
+        iterator = self.repository[tag].find(**kwargs)
+        try:
+            return next(iterator)
+        except StopIteration:
+            return None
+
 
 class LocalContextsRepository(ContextsRepository):
 

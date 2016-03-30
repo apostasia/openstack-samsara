@@ -111,12 +111,9 @@ class CellActions(BaseActions):
     def start_consolidation(self):
         """ Invoke workload consolidation process"""
 
-        max_underload_period_host = max(hosts_underloaded, key=lambda host: get_period_from_time(host['last_change_at'], host['created_at']))
-        period = max([get_period_from_time(host['last_change_at'],host['created_at']) for host in hosts_underloaded])
 
         LOG.info('###########################################################')
         LOG.info('Consolidation Request')
-        LOG.info('Host under: %s - period: %s', max_underload_period_host, period)
         LOG.info('###########################################################')
         # Request Consolidation to Global Controller
         #self.global_controller.consolidate_workload(os_ctx, controller_hostname="controller")

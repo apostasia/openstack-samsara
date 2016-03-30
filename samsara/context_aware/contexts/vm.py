@@ -46,7 +46,6 @@ class VirtualMachineContexts(base.BaseContext):
         'used_compute',
         'used_memory',
         'created_at'])
-        )
 
         return context(uuid, used_compute, used_memory, created_at)
 
@@ -59,24 +58,4 @@ class VirtualMachineContexts(base.BaseContext):
     def get_avg_compute_usage(vm_uuid, limit=10):
         """ Get stored data about host compute usage from local context repository
         """
-        local_ctx_repository = ctx_repository.LocalContextsRepository()
-
-        historical_compute_usage = [ctx['compute_utilization'] for ctx in  local_ctx_repository.retrieve_last_n_contexts('vm_resources_usage', limit)]
-
-        # Calculate average compute usage
-        compute_usage_avg = np.average(historical_compute_usage)
-
-        return compute_usage_avg
-
-    @staticmethod
-    def get_avg_compute_usage_last_period(vm_uuid, period):
-        """ Get stored data about host compute usage from local context repository
-        """
-        local_local_ctx_repository = ctx_repository.LocalContextsRepository()
-
-        historical_compute_usage = [ctx['compute_utilization'] for ctx in  ctx_repository.retrieve_last_contexts_from_period('vm_resources_usage', period)]
-
-        # Calculate average compute usage
-        compute_usage_avg = np.average(historical_compute_usage)
-
-        return compute_usage_avg
+        pass

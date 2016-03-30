@@ -17,14 +17,16 @@ from __future__ import print_function
 from oslo_log import log as logging
 
 from samsara.context_aware.actuactor import base
+from samsara.drivers import openstack
 
 
 LOG = logging.getLogger(__name__)
 
 
 class CellActuactor(base.BaseActuator):
-    def _migrate_to(instance, host):
-            pass
+
+    def __init__(self):
+        self.cloud_driver = openstack.OpenStackDriver()
 
     def _wake_host(self, host):
             pass
@@ -33,7 +35,20 @@ class CellActuactor(base.BaseActuator):
             pass
 
     def consolidate(self, consolidation_plan):
-            pass
+
+        migration_plan    = consolidation_plan['migration_plan']
+        hosts_to_activate = consolidation_plan['hosts_to_deactivate']
+
+        LOG.info("Start consolidation process")
+        self._migration(consolidation_plan)
+
+
 
     def balance(self, load_balance_plan):
+
+
             pass
+    def _migration(self, consolidation_plan):
+        for migration in migration_plan:
+            self.cloud_driver.migrate_server(migration['instance'], migration['host_dest'], False)
+    def _deat

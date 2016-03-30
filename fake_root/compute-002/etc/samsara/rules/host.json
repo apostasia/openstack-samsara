@@ -5,7 +5,7 @@
                 {
                     "name": "percentual_compute_resource_usage",
                     "operator": "greater_than",
-                    "value": 0.8
+                    "value": 0.5
                 }
             ]
         },
@@ -13,7 +13,7 @@
             {
                 "name": "notify_situation_to_controller",
                 "params": {
-                    "situation": "overload"
+                    "situation": "overloaded"
                 }
             }
         ]
@@ -32,7 +32,7 @@
             {
                 "name": "notify_situation_to_controller",
                 "params": {
-                    "situation": "underload"
+                    "situation": "underloaded"
                 }
             }
         ]
@@ -43,7 +43,7 @@
                 {
                     "name": "percentual_compute_resource_usage",
                     "operator": "less_than",
-                    "value": 0.8
+                    "value": 0.5
                 },
                 {
 

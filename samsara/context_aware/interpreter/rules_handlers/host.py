@@ -115,8 +115,14 @@ class HostActions(BaseActions):
 
         os_ctx = os_context.RequestContext()
 
+        host_context     = host_resources_usage_ctx._asdict()
+        active_instances = [{'uuid':host['uuid'], 'used_compute': host['used_compute'], 'used_memory': int(host['used_memory'])} for host in self.host_contexts_handler.get_active_instances().instances]
+
+        host_context.update({'instances': jsonutils.dumps(active_instances)})
+
+
         # Instantiate Host resources situation
-        host_situation = situations.Situation('host_situation', situation, host_resources_usage_ctx._asdict())
+        host_situation = situations.Situation('host_situation', situation, host_context)
 
 
         # Update Host Situation to Global Controller

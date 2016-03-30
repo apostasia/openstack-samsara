@@ -12,15 +12,18 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from oslo_log import log as logging
 from novaclient import client
+
 from samsara.common import authenticate
+
+LOG = logging.getLogger(__name__)
 
 
 class OpenStackDriver(object):
 
     def __init__(self):
-        session = authenticate.get_admin_session()
-        self.novaclient = client.Client(2, session=session)
+        self.novaclient = authenticate.get_nova_client()
 
     def listflavors(self):
         flavors = self.novaclient.flavors.list()
@@ -44,8 +47,20 @@ class OpenStackDriver(object):
             servers_list.append(active_server)
         return servers_list
 
-    def get_servers_by_host(self,host):
+    def get_servers_by_host(self, host):
         all_servers = self.get_all_servers()
         filtered_servers = [server for server in all_servers if server['host_name'] == host]
 
         return filtered_servers
+
+    def get_server_status(self, instance_uuid):
+        status = self.novaclient.servers.get(instance_uuid).status
+        return str(status)
+
+    def migrate_server(self, instance_uuid, host, block_migration):
+        """ Do live migration.
+        :param instance_uuid:  the uuid instance to migrate.
+        :param host: The destination host hostname.
+        """
+        self.novaclient.servers.live_migrate(instance_uuid, host, block_migration, False)
+        LOG.info('Migrating instance %s to host %s', instance_uuid, host)

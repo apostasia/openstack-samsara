@@ -214,9 +214,14 @@ class HostContexts(base.BaseContext):
     def get_active_instances(self):
         """ Return the active virtual machines in the host."""
 
-        context = collections.namedtuple(context_tag, ['active_vms','created_at'])
+        context = collections.namedtuple('active_instances', ['instances','created_at'])
 
-        active_vms = hypervisor_sensors.ActiveVirtualMachinesSensor.read_value()
+        active_instances = []
+
+        for instance_uuid in hypervisor_sensors.ActiveVirtualMachinesSensor.read_value():
+            active_instances.append(self.ctx_repository.get_last_context(tag='vm_resources_usage', uuid=instance_uuid))
+
+
         created_at = datetime.utcnow().isoformat()
 
-        return context(active_vms, created_at)
+        return context(active_instances, created_at)

@@ -36,6 +36,7 @@ from samsara.context_aware.contexts import vm as vm_contexts
 from samsara.context_aware.situations import base as situations
 from samsara.context_aware import contexts_repository
 from samsara.context_aware.interpreter.rules_handlers import cell as cell_rh
+from samsara.local_controller import rpcapi as slc_rpcapi
 
 LOG = logging.getLogger(__name__)
 
@@ -68,12 +69,15 @@ class GlobalControllerManager(manager.Manager):
         # Initiate Host Rules Handler
         self.cell_rules_handler = cell_rh.CellRulesHandler()
 
+        # Samsara Local Controller RPC API
+        self.local_controller = slc_rpcapi.LocalControllerAPI()
+
 
     def update_host_info(self, context, host_name, instance_info):
         """Receives information about changes to a host's instances, and
         updates the driver's HostManager with that information.
         """
-        # self.driver.host_manager.update_instance_info(context, host_name, instance_info)
+        self.driver.host_manager.update_instance_info(context, host_name, instance_info)
 
     def update_host_situation(self, context, host, situation):
         """Receives information about changes to a host situation, and
@@ -121,7 +125,9 @@ class GlobalControllerManager(manager.Manager):
         """ Perform workload consolidation
         """
         LOG.info('Starting Consolidation Process')
-        
+        # Instantiate planner
+        #migration_planner = multi_bin_packing.BestFitDecreased()
+
         time.sleep(30)
         LOG.info('Consolidation Complete')
 
