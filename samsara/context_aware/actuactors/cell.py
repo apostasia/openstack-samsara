@@ -16,8 +16,9 @@ from __future__ import print_function
 
 from oslo_log import log as logging
 
-from samsara.context_aware.actuactor import base
+from samsara.context_aware.actuactors import base
 from samsara.drivers import openstack
+
 
 
 LOG = logging.getLogger(__name__)
@@ -39,16 +40,32 @@ class CellActuactor(base.BaseActuator):
         migration_plan    = consolidation_plan['migration_plan']
         hosts_to_activate = consolidation_plan['hosts_to_deactivate']
 
-        LOG.info("Start consolidation process")
-        self._migration(consolidation_plan)
+        LOG.info("Start migration process")
+        print("Start migration process")
+        self._migrate_instances(migration_plan)
 
+        LOG.info("Set hosts to low power mode")
+        print("Set hosts to low power mode")
+        #self._deactivate_hosts(hosts_to_deactivate)
 
 
     def balance(self, load_balance_plan):
-
-
             pass
-    def _migration(self, consolidation_plan):
+
+
+    def _migrate_instances(self, migration_plan):
+        """ Migrate instance list
+        """
+        retry_migrations = []
         for migration in migration_plan:
-            self.cloud_driver.migrate_server(migration['instance'], migration['host_dest'], False)
-    def _deat
+
+            migration_result = self.cloud_driver.migrate_server(migration['instance'], migration['host_dest'], False)
+
+            if not migration_result:
+                retry_migrations.append(migration)
+
+        # Retry Failed Migrations
+        if retry_migrations:
+            LOG.info("Retry Failed Migrations")
+            for migration in retry_migrations:
+                migration_result = self.cloud_driver.migrate_server(migration['instance'], migration['host_dest'], False)

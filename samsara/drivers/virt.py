@@ -124,7 +124,7 @@ class LibvirtDriver(object):
         dom  = conn.lookupByID(domain_id)
         return dom.UUIDString()
 
-    def list_instaces(self):
+    def list_instances(self):
 
         vm_list = []
 
@@ -134,12 +134,12 @@ class LibvirtDriver(object):
 
         return vm_list
 
-    def get_active_instacesID(self):
+    def get_active_instancesID(self):
         """ Return the active instaces ID list
         """
         return self.conn.listDomainsID()
 
-    def get_active_instacesUUID(self):
+    def get_active_instancesUUID(self):
         """ Return an list with the active instaces UUID
         """
         active_instances_uuid = []

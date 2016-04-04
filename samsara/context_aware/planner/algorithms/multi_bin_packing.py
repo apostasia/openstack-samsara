@@ -22,6 +22,9 @@ LOG = logging.getLogger(__name__)
 
 class BestFitDecreased(base.Planner):
 
+    def __init__(self, *args, **kwargs):
+        super(BestFitDecreased, self).__init__()
+
     def generate_consolidation_plan(self, compute_threshold=1, memory_threshold=1):
 
         migration_plan      = []
@@ -30,6 +33,8 @@ class BestFitDecreased(base.Planner):
 
         # Select active hosts
         active_hosts = self.cell_contexts_handler.get_active_hosts().hosts
+        if not active_hosts:
+            return {}
 
         # Select underloaded hosts
         hosts_underloaded = [host for host in active_hosts if host['situation'] == 'underloaded']
@@ -69,7 +74,7 @@ class BestFitDecreased(base.Planner):
         hosts_to_deactivate.append(most_underloaded_host['hostname'])
 
         # Return consolidation plan if all instances are allocated
-        if instances:
+        if not instances:
              # Return consolidation plan (migrantion plan + deactivation plan)
              return {'migration_plan': migration_plan, 'hosts_to_deactivate': hosts_to_deactivate}
         else:

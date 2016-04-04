@@ -12,8 +12,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import time
+
 from oslo_log import log as logging
 from novaclient import client
+
 
 from samsara.common import authenticate
 
@@ -57,10 +60,27 @@ class OpenStackDriver(object):
         status = self.novaclient.servers.get(instance_uuid).status
         return str(status)
 
+    def get_server_host(self, instance_uuid):
+        host = self.novaclient.servers.get(instance_uuid).__getattr__('OS-EXT-SRV-ATTR:host')
+
+        return str(host)
+
     def migrate_server(self, instance_uuid, host, block_migration):
         """ Do live migration.
         :param instance_uuid:  the uuid instance to migrate.
         :param host: The destination host hostname.
         """
+
+        timeout = time.time() + 300
         self.novaclient.servers.live_migrate(instance_uuid, host, block_migration, False)
         LOG.info('Migrating instance %s to host %s', instance_uuid, host)
+
+        # Check if migration is done
+        while True:
+            if host == self.get_server_host(instance_uuid) and self.get_server_status(instance_uuid) == 'ACTIVE':
+                LOG.info('Migration the instance %s to host %s complete.', instance_uuid, host)
+                return True
+            # Check if instance no migrate to destination host until expire timeout
+            elif host != self.get_server_host(instance_uuid) and self.get_server_status(instance_uuid) == 'ACTIVE' and time.time() < timeout:
+                LOG.info('Migration the instance %s to host %s timeout.', instance_uuid, host)
+                return False

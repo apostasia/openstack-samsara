@@ -111,7 +111,6 @@ class CellActions(BaseActions):
     def start_consolidation(self):
         """ Invoke workload consolidation process"""
 
-
         LOG.info('###########################################################')
         LOG.info('Consolidation Request')
         LOG.info('###########################################################')
