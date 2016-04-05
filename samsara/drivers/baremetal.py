@@ -280,15 +280,15 @@ class BareMetalDriver(object):
 
 
     def get_max_memory(self):
-        """ Get max memory in MBytes
+        """ Get max memory in KBytes
         """
-        max_memory = int(psutil.virtual_memory().total)/1024**2
+        max_memory = int(psutil.virtual_memory().total)/1024
         return max_memory
 
     def get_used_memory(self):
-        """ Get max memory in MBytes
+        """ Get max memory in KBytes
         """
-        used_memory = int(psutil.virtual_memory().used)/1024**2
+        used_memory = int(psutil.virtual_memory().used)/1024
         return used_memory
 
     def get_host_nic_speed(self,nic):

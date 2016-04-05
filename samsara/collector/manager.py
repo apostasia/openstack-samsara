@@ -97,7 +97,7 @@ class CollectorManager(manager.Manager):
 
         # Get Virtual Machines Contexts and store local repository
         LOG.info('Get Virtual Machines Contexts and store local repository')
-        for vm_id in virt_driver.get_active_instacesID():
+        for vm_id in virt_driver.get_active_instancesID():
 
             # Get vm contexts Handlers
             vm_contexts_handler = vm_contexts.VirtualMachineContexts(vm_id)

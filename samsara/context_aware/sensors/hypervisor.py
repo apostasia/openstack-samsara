@@ -35,5 +35,5 @@ class ActiveVirtualMachinesSensor(base.BaseSensor):
     def read_value():
         """Returns the instance allocated memory"""
         driver = virt.LibvirtDriver()
-        value = driver.get_active_instacesUUID()
+        value = driver.get_active_instancesUUID()
         return value

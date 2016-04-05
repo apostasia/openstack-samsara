@@ -118,6 +118,13 @@ class LibvirtDriver(object):
         dom  = conn.lookupByID(domain_id)
         return dom.maxMemory()
 
+    def get_instance_used_memory(self,domain_id):
+
+        conn = self.get_connection()
+        dom  = conn.lookupByID(domain_id)
+        return dom.memoryStats()['actual']
+
+
     def get_instance_uuid(self,domain_id):
 
         conn = self.get_connection()

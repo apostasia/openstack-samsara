@@ -76,7 +76,7 @@ class CellVariables(BaseVariables):
 
         if hosts_underloaded:
             # Get underload period per host
-            underload_period_per_host = [get_period_from_time(host['last_change_at'],host['created_at']) for host in hosts_underloaded]
+            underload_period_per_host = [get_period_from_time(host['last_change_at'], host['created_at']) for host in hosts_underloaded]
 
             # Return greater than underload period
             greater_than_underload_period = max(underload_period_per_host)

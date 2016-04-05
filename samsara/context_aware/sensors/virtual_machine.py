@@ -81,7 +81,17 @@ class VirtualMachineComputeUsageSensor(base.BaseSensor):
 
         return sum(compute_usage_percore)
 
-class VirtualMachineMemoryUsageSensor(base.BaseSensor):
+class VirtualMachineAllocatedMemorySensor(base.BaseSensor):
+    def __init__(self,instance_id=None):
+        self.instance_id = instance_id
+
+    def read_value(self):
+        """Returns the instance allocated memory"""
+        driver = virt.LibvirtDriver()
+        value = driver.get_instance_allocated_memory(self.instance_id)
+        return value
+
+class VirtualMachineUsageMemorySensor(base.BaseSensor):
     def __init__(self,instance_id=None):
         self.instance_id = instance_id
 

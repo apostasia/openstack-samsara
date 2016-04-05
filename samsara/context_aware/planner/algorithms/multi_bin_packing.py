@@ -78,6 +78,7 @@ class BestFitDecreased(base.Planner):
              # Return consolidation plan (migrantion plan + deactivation plan)
              return {'migration_plan': migration_plan, 'hosts_to_deactivate': hosts_to_deactivate}
         else:
+            print('Not all')
             return {}
 
     # def generate_load_balance_plan(self, compute_threshold=1, memory_threshold=1):

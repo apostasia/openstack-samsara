@@ -35,7 +35,9 @@ class VirtualMachineContexts(base.BaseContext):
 
         used_compute = vm_sensors.VirtualMachineComputeUsageSensor(self.id).read_value()
 
-        used_memory  = vm_sensors.VirtualMachineMemoryUsageSensor(self.id).read_value()
+        used_memory  = vm_sensors.VirtualMachineUsageMemorySensor(self.id).read_value()
+
+        allocated_memory  = vm_sensors.VirtualMachineAllocatedMemorySensor(self.id).read_value()
 
         created_at          = datetime.utcnow().isoformat()
 
@@ -44,6 +46,7 @@ class VirtualMachineContexts(base.BaseContext):
         context = collections.namedtuple(tag,
         ['uuid',
         'used_compute',
+        'allocated_memory',
         'used_memory',
         'created_at'])
 

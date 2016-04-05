@@ -126,7 +126,9 @@ class GlobalControllerManager(manager.Manager):
         """
         LOG.info('Starting Consolidation Process')
         # Instantiate planner
-        #migration_planner = multi_bin_packing.BestFitDecreased()
+        migration_planner = multi_bin_packing.BestFitDecreased()
+
+        LOG.info('Generating Migration Plan')
 
         time.sleep(30)
         LOG.info('Consolidation Complete')

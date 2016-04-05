@@ -64,7 +64,7 @@ class CellActuactor(base.BaseActuator):
             if not migration_result:
                 retry_migrations.append(migration)
 
-        # Retry Failed Migrations
+        # Retry if failed migrations
         if retry_migrations:
             LOG.info("Retry Failed Migrations")
             for migration in retry_migrations:
