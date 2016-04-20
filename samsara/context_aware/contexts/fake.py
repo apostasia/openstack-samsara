@@ -97,7 +97,7 @@ class CellContexts(base.BaseContext):
 
 
 
-def generate_hosts(hosts_number=2, compute_capacity=6000.50, min_compute=0, memory_capacity=2048, min_memory=128):
+def generate_random_hosts(hosts_number=2, compute_capacity=6000.50, min_compute=0, memory_capacity=2048, min_memory=128):
     hosts_list = []
     # Generate fake hosts
     for x in range(1, hosts_number):
@@ -107,6 +107,40 @@ def generate_hosts(hosts_number=2, compute_capacity=6000.50, min_compute=0, memo
         host['used_compute'] = round(random.uniform(min_compute, compute_capacity), 2)
         host['available_compute'] = compute_capacity - used_compute
         host['used_memory']       = random.randint(min_memory, memory_capacity)
+        host['available_memory']  = memory_capacity - used_memory
+        host['created_at']        = datetime.utcnow().isoformat()
+        hosts_list.append(host)
+    return hosts_list
+
+
+def generate_hosts(hosts_number=2, compute_capacity=6000.50, min_compute=0, memory_capacity=2048, min_memory=128, load=1.0):
+    hosts_list = []
+    # Generate fake hosts
+    for x in range(1, hosts_number):
+        uuid_obj = uuid_func.uuid4()
+
+        host['hostname']          = "compute-00{0}".format(x)
+        host['uuid']              = str(uuid_obj)
+        host['used_compute']      = round(load*compute_capacity, 2)
+        host['used_memory']       = load*memory_capacity
+        host['available_compute'] = compute_capacity - used_compute
+        host['available_memory']  = memory_capacity - used_memory
+        host['created_at']        = datetime.utcnow().isoformat()
+        hosts_list.append(host)
+    return hosts_list
+
+
+def generate_hosts_by_list(hosts_number=2, compute_capacity=6000.50, min_compute=0, memory_capacity=2048, min_memory=128, hosts):
+    hosts_list = []
+    # Generate fake hosts
+    for x in range(1, hosts_number):
+        uuid_obj = uuid_func.uuid4()
+
+        host['hostname']          = "compute-00{0}".format(x)
+        host['uuid']              = str(uuid_obj)
+        host['used_compute']      = round(load*compute_capacity, 2)
+        host['used_memory']       = load*memory_capacity
+        host['available_compute'] = compute_capacity - used_compute
         host['available_memory']  = memory_capacity - used_memory
         host['created_at']        = datetime.utcnow().isoformat()
         hosts_list.append(host)

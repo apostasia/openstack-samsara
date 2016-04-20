@@ -17,5 +17,5 @@ import abc
 from context_aware import base
 
 
-class ContextsProcessors(object):
+class Interpreter(object):
     pass

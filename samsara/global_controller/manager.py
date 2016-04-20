@@ -36,7 +36,11 @@ from samsara.context_aware.contexts import vm as vm_contexts
 from samsara.context_aware.situations import base as situations
 from samsara.context_aware import contexts_repository
 from samsara.context_aware.interpreter.rules_handlers import cell as cell_rh
+from samsara.context_aware.planner.algorithms import multi_bin_packing
+
 from samsara.local_controller import rpcapi as slc_rpcapi
+
+
 
 LOG = logging.getLogger(__name__)
 

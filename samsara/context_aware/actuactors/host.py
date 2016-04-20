@@ -15,6 +15,7 @@
 """ Host Actuator """
 
 from samsara.context_aware.actuactors import base
+from awake import wol
 
 class HostActuactor(base.BaseActuator):
     def __init__(self, *args, **kwargs):
@@ -23,3 +24,6 @@ class HostActuactor(base.BaseActuator):
     def suspend(self):
         cmd = 'pm-suspend'
         return self.execute(cmd)
+
+    def wake(self):
+        wol.send_magic_packet(mac)

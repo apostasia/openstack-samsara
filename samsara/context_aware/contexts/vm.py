@@ -50,7 +50,7 @@ class VirtualMachineContexts(base.BaseContext):
         'used_memory',
         'created_at'])
 
-        return context(uuid, used_compute, used_memory, created_at)
+        return context(uuid, used_compute, used_memory, allocated_memory, created_at)
 
     def get_historical_compute_usage(self, limit=10):
         """ Get historical data about host compute usage from local context repository

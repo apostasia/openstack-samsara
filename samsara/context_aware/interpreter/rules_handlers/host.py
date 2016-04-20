@@ -53,7 +53,7 @@ class HostRulesHandler(base.BaseRulesHandler):
             # Load host rules
             rules = self.load_rules("host.json")
 
-            super(HostRulesHandler,self).__init__(rules,HostVariables(), HostActions())
+            super(HostRulesHandler, self).__init__(rules,HostVariables(), HostActions())
 
 
 # Variables

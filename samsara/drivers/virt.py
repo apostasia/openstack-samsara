@@ -122,7 +122,7 @@ class LibvirtDriver(object):
 
         conn = self.get_connection()
         dom  = conn.lookupByID(domain_id)
-        return dom.memoryStats()['actual']
+        return dom.memoryStats()['rss']
 
 
     def get_instance_uuid(self,domain_id):
@@ -181,8 +181,11 @@ class LibvirtDriver(object):
         dom  = conn.lookupByID(domain_id)
 
         global instances_vcpu_time
-        if instances_vcpu_time == None:
-            instances_vcpu_time = self.get_vcpu_time_instances()
+        vcpu_time_instances = self.get_vcpu_time_instances()
+
+        # If all intances are removed or one has added
+        if instances_vcpu_time == None or len(instances_vcpu_time) == len(vcpu_time_instances):
+            instances_vcpu_time = vcpu_time_instances
 
         vcpu_time_t0 = [float(vcpu) for vcpu in instances_vcpu_time[domain_id]]
         vcpu_time_t1 = [float(phys_cpu['cpu_time']) for phys_cpu in dom.getCPUStats(False,0)]
@@ -192,8 +195,11 @@ class LibvirtDriver(object):
 
         return busytime_percore
 
-    def update_vcpu_time_instances(self):
+    def update_vcpu_time_instances(self, reset=False):
         """ Update the vcpu time per core/cpu (in seconds) for all VMs
         """
         global instances_vcpu_time
-        instances_vcpu_time = self.get_vcpu_time_instances()
+        if reset:
+            instances_vcpu_time = None
+        else:
+            instances_vcpu_time = self.get_vcpu_time_instances()
