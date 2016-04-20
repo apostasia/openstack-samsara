@@ -26,7 +26,7 @@
       - nova-cert
       - nova-conductor
       - nova-consoleauth
-      - nova-novncproxy
+#      - nova-novncproxy
       - nova-scheduler
       - python-novaclient
 
@@ -53,4 +53,4 @@
       - nova-consoleauth
       - nova-scheduler
       - nova-conductor
-      - nova-novncproxy
+#      - nova-novncproxy
