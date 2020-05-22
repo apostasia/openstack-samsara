@@ -53,3 +53,7 @@
 */.eggs/
 
 */.tox/
+
+*.swp
+
+*.retry
