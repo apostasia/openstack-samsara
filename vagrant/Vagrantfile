@@ -5,7 +5,7 @@
 VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box = 'ubuntu/trusty64'
+    config.vm.box = 'ubuntu/bionic64'
     #config.vm.box_version = '20151218.0.1'
 
     #config.vm.box = 'openstack-base-trusty64'
@@ -126,8 +126,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 node_config.vm.network 'forwarded_port', guest: 15672, host: 15672
             else
                 compute_group << node[:name]
-                node_config.vm.provision :reload
-                #node_config.trigger.after :provision, :execute => "vagrant reload"
+#node_config.vm.provision :reload
             end
 
             # Fake root
@@ -174,7 +173,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 #    vbox.customize ['storageattach', :id, '--storagectl', 'SATAController', '--port', 1, '--device', 0, '--type', 'hdd','--medium', gluster_volume]
 
                 # GUI
-                vbox.gui = true
+                vbox.gui = false
             end
 
             # config.vm.provision "shell", run: "always", inline: <<-SHELL
@@ -200,44 +199,44 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 
         # Start provision after all nodes up
-        all_group = controller_group + compute_group
+        # all_group = controller_group + compute_group
 
-        # OpenStack
-        config.vm.provision "openstack", type: "ansible" do |ansible|
-            ansible.playbook = 'playbooks/openstack/playbook.yml'
-            #ansible.verbose = 'vvvv'
-            ansible.verbose = true
-            ansible.groups = {
-            'controller_group' => ["controller"],
-            'compute_group' => compute_group,
-            'all' => ["compute-001","compute-002", "controller"]
-            }
-        end
+        # # OpenStack
+        # config.vm.provision "openstack", type: "ansible" do |ansible|
+        #     ansible.playbook = 'playbooks/openstack/playbook.yml'
+        #     #ansible.verbose = 'vvvv'
+        #     ansible.verbose = true
+        #     ansible.groups = {
+        #     'controller_group' => ["controller"],
+        #     'compute_group' => compute_group,
+        #     'all' => ["compute-001","compute-002", "controller"]
+        #     }
+        # end
 
-        # Samsara
-        config.vm.provision "samsara", type: "ansible" do |ansible|
-            ansible.playbook = 'playbooks/samsara/playbook.yml'
-            #ansible.verbose = 'vvvv'
-            ansible.verbose = true
-            ansible.groups = {
-            'controller_group' => ["controller"],
-            'compute_group' => compute_group,
-            'all' => ["compute-001","compute-002", "controller"]
-            }
+        # # Samsara
+        # config.vm.provision "samsara", type: "ansible" do |ansible|
+        #     ansible.playbook = 'playbooks/samsara/playbook.yml'
+        #     #ansible.verbose = 'vvvv'
+        #     ansible.verbose = true
+        #     ansible.groups = {
+        #     'controller_group' => ["controller"],
+        #     'compute_group' => compute_group,
+        #     'all' => ["compute-001","compute-002", "controller"]
+        #     }
 
-        end
+        # end
 
-        # Samsara - Update
-        config.vm.provision "samsara-update", run: false, type: "ansible" do |ansible|
-            ansible.playbook = 'playbooks/samsara/playbook-update.yml'
-            #ansible.verbose = 'vvvv'
-            ansible.verbose = true
-            ansible.groups = {
-            'controller_group' => ["controller"],
-            'compute_group' => compute_group,
-            'all' => ["compute-001","compute-002", "controller"]
-            }
+        # # Samsara - Update
+        # config.vm.provision "samsara-update", run: false, type: "ansible" do |ansible|
+        #     ansible.playbook = 'playbooks/samsara/playbook-update.yml'
+        #     #ansible.verbose = 'vvvv'
+        #     ansible.verbose = true
+        #     ansible.groups = {
+        #     'controller_group' => ["controller"],
+        #     'compute_group' => compute_group,
+        #     'all' => ["compute-001","compute-002", "controller"]
+        #     }
 
-        end
+        # end
     end
 end

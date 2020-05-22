@@ -6,14 +6,20 @@
 # machine.
 #
 - hosts: all
+  gather_facts: no
+  become: yes
+  pre_tasks:
+    - name: 'install python'
+      raw: 'apt-get install -y python'
+
+- hosts: all
   gather_facts: yes
-  sudo: true
+  become: yes
   vars_files:
       - vars.yml
+  handlers: 
+    - include: handlers/main.yml
   pre_tasks:
-    - name: update apt cache
-      apt: update_cache=yes
-
     # Make sure our VM's software is ~@Latest
     - name: Apt Update
       apt: update_cache=yes
@@ -75,49 +81,48 @@
 
     # Add OpenStack Repositories
     - name: Install some deps packages
-      sudo: yes
-      apt: pkg={{ item }} state=installed update_cache=yes
-      run_once: true
+      become: yes
+      apt: pkg={{ item }} state=present update_cache=yes
       with_items:
           - software-properties-common
-          - python-software-properties
+          - ubuntu-cloud-keyring
 
     - name: Add OpenStack Repositories
-      shell: sudo add-apt-repository -y cloud-archive:liberty
+      shell: add-apt-repository cloud-archive:ussuri
 
     - name: Update packages
       apt: update_cache=yes upgrade=dist cache_valid_time=86400
 
     - name: "Build hosts file"
-      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}" state=present
-      when: hostvars[item].ansible_default_ipv4.address is defined
-      with_items: groups['all']
+      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item]['ansible_all_ipv4_addresses'][1] }} {{item}}" state=present
+      when: hostvars[item]['ansible_all_ipv4_addresses'][1] is defined
+      with_items: "{{ groups.all }}"
 
   tasks:
        - include: tasks/common.yml
        - include: tasks/credentials.yml
 ###############################################################################
-- hosts: controller
-  sudo: true
-  vars_files:
-      - vars.yml
-  handlers:
-      - include: handlers/main.yml
-  tasks:
-      -  include: tasks/database-server.yml
-      -  include: tasks/rabbitmq-server.yml
-      -  include: tasks/keystone.yml
-      -  include: tasks/nova-controller.yml
-      -  include: tasks/glance.yml
-      -  include: tasks/horizon.yml
-      -  include: tasks/nfs-server.yml
-      -  include: tasks/demo-project.yml
+# - hosts: controller
+#   sudo: true
+#   vars_files:
+#       - vars.yml
+#   handlers:
+#       - include: handlers/main.yml
+#   tasks:
+#       -  include: tasks/database-server.yml
+#       -  include: tasks/rabbitmq-server.yml
+#       -  include: tasks/keystone.yml
+#       -  include: tasks/nova-controller.yml
+#       -  include: tasks/glance.yml
+#       -  include: tasks/horizon.yml
+#       -  include: tasks/nfs-server.yml
+#       -  include: tasks/demo-project.yml
 
-- hosts: compute_group
-  sudo: true
-  vars_files:
-      - vars.yml
-  tasks:
-      - include: tasks/postgresql-client.yml
-      - include: tasks/nova-compute.yml
-      - include: tasks/nfs-client.yml
+# - hosts: compute_group
+#   sudo: true
+#   vars_files:
+#       - vars.yml
+#   tasks:
+#       - include: tasks/postgresql-client.yml
+#       - include: tasks/nova-compute.yml
+#       - include: tasks/nfs-client.yml

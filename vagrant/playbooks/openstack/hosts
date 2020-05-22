@@ -1,0 +1,6 @@
+[controller]
+controller
+
+[compute_group]
+compute-001
+compute-002

@@ -1,0 +1,10 @@
+---
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp0s8:
+      addresses:
+      - {{ ansible_all_ipv4_addresses[1] }}/24
+    enp0s9:
+      dhcp4: yes

@@ -2,16 +2,19 @@
   service: name=apache2 state=restarted
 
 - name: Restart Postgres
-  sudo: yes
+  become: yes
   service: name=postgresql state=restarted
 
+- name: netplan apply
+  become: yes
+  command: netplan apply
 
   #
   # OpenStack Services
   #
 
 - name: Restart Nova Controller Services
-  sudo: yes
+  become: yes
   service: name={{ item }} state=restarted
   with_items:
       - nova-api
@@ -22,7 +25,7 @@
       - nova-novncproxy
 
 - name: Restart Nova Compute Services
-  sudo: yes
+  become: yes
   service: name={{ item }} state=restarted
   with_items:
       - nova-compute
