@@ -25,6 +25,7 @@
 ###########################################################
 # OpenStack Configuration                                 #
 ###########################################################
+openstack_release: ussuri
 
 # RabbitMQ Server
 rabbitmq:

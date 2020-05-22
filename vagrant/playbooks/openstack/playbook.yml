@@ -16,7 +16,7 @@
   gather_facts: yes
   become: yes
   vars_files:
-      - vars.yml
+      - vars/main.yml
   handlers: 
     - include: handlers/main.yml
   pre_tasks:
@@ -88,7 +88,7 @@
           - ubuntu-cloud-keyring
 
     - name: Add OpenStack Repositories
-      shell: add-apt-repository cloud-archive:ussuri
+      shell: add-apt-repository cloud-archive:{{ openstack_release }}
 
     - name: Update packages
       apt: update_cache=yes upgrade=dist cache_valid_time=86400
@@ -102,15 +102,17 @@
        - include: tasks/common.yml
        - include: tasks/credentials.yml
 ###############################################################################
-# - hosts: controller
-#   sudo: true
-#   vars_files:
-#       - vars.yml
-#   handlers:
-#       - include: handlers/main.yml
-#   tasks:
-#       -  include: tasks/database-server.yml
-#       -  include: tasks/rabbitmq-server.yml
+- hosts: controller
+  become: yes
+  vars_files:
+    - vars/main.yml
+  handlers:
+    - include: handlers/main.yml
+  tasks:
+    -  include: tasks/database-server.yml
+      # tags: db-server
+    -  include: tasks/rabbitmq-server.yml
+      # tags: rabbitmq-server
 #       -  include: tasks/keystone.yml
 #       -  include: tasks/nova-controller.yml
 #       -  include: tasks/glance.yml

@@ -3,31 +3,39 @@
 ###############################################################################
 
 - name: Install packages
-  sudo: yes
-  apt: pkg={{ item }} state=installed update_cache=yes
+  become: yes
+  apt: pkg={{ item }} state=present update_cache=yes
   with_items:
       - postgresql
       - libpq-dev # Required for Ansible to interact with postgres
       - python-psycopg2 # Required for Ansible to interact with postgres
+  tags:
+    - db-server
 
 - name: Allow TCP/IP socket connections
   lineinfile:
-        dest: "/etc/postgresql/9.3/main/postgresql.conf"
+        dest: "/etc/postgresql/10/main/postgresql.conf"
         regexp: "^#listen_addresses = 'localhost' "
         line: "listen_addresses = '*'"
         state: present
+  tags:
+    - db-server
 
 
 - name: Enable client auth
   lineinfile:
-        dest: "/etc/postgresql/9.3/main/pg_hba.conf"
+        dest: "/etc/postgresql/10/main/pg_hba.conf"
         insertafter: EOF
         line: "host    all             all             0.0.0.0/0            md5"
         state: present
+  tags:
+    - db-server
 
 - name: Restart Postgres
-  sudo: yes
+  become: yes
   service: name=postgresql state=restarted
+  tags:
+    - db-server
 
 
 ###############################################################################
@@ -35,19 +43,19 @@
 ###############################################################################
 
 - name: Create Databases
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   postgresql_db: name={{ item.key }}
   with_dict: "{{databases}}"
 
 - name: Create Users
-  sudo: yes
-  sudo_user: postgres
-  postgresql_user: name={{ item.value.user }} password={{ item.value.password }} state=present role_attr_flags=NOSUPERUSER,CREATEDB
+  become: yes
+  become_user: postgres
+  postgresql_user: name={{ item.value.user }} password={{ item.value.password }} state=present role_attr_flags=NOSUPERUSER,CREATEDB encrypted=yes
   with_dict: "{{databases}}"
 
 - name: Provide users with DB permissions
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   postgresql_user: user={{ item.value.user }} db={{ item.key }} priv=ALL
   with_dict: "{{databases}}"
