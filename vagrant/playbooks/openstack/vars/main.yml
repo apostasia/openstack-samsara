@@ -45,7 +45,15 @@ databases:
     nova:
         user: nova
         password: nova
+
+    nova_api:
+        user: nova
+        password: nova       
    
+    nova_cell0:
+        user: nova
+        password: nova
+
     placement:
         user: placement
         password: placement

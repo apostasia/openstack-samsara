@@ -1,56 +1,76 @@
 - name: Create nova user
   environment: "{{ admin_env }}"
   command: openstack user create --password "{{ openstack_users.nova_password }}" nova
-  run_once: true
+  tags:
+    - nova-controller
 
 - name: Add admin role to nova user and service project
   environment: "{{ admin_env }}"
   command: openstack role add --project service --user nova admin
-  run_once: true
+  tags:
+    - nova-controller
 
 - name: Create Service Entity Nova
   environment: "{{ admin_env }}"
   command: openstack service create --name nova --description "OpenStack Compute" compute
-  run_once: true
+  tags:
+    - nova-controller
 
 - name: Create Nova Service Endpoint
   environment: "{{ admin_env }}"
-  command: openstack endpoint create --publicurl http://controller:8774/v2/%\(tenant_id\)s --internalurl http://controller:8774/v2/%\(tenant_id\)s --adminurl http://controller:8774/v2/%\(tenant_id\)s --region RegionOne compute
-  run_once: true
+  command: openstack endpoint create --publicurl http://controller:8774/v2.1 --internalurl http://controller:8774/v2.1 --adminurl http://controller:8774/v2.1 --region RegionOne compute
+  tags:
+    - nova-controller
 
 - name: Install Nova Controller packages
-  sudo: yes
-  apt: pkg={{ item }} state=installed update_cache=yes
+  become: yes
+  apt: pkg={{ item }} state=present update_cache=yes
   with_items:
       - nova-api
-      - nova-cert
       - nova-conductor
-      - nova-consoleauth
-#      - nova-novncproxy
+      - nova-novncproxy
       - nova-scheduler
-      - python-novaclient
+  tags:
+    - nova-controller
 
 - name: Copy Nova config file
   template:
-      src: "nova.conf"
+      src: "nova-controller.conf.j2"
       dest: "/etc/nova/nova.conf"
       owner: root
       group: root
       mode: 0644
+  tags:
+    - nova-controller
+
+- name: Nova Api DB Populate
+  become: yes
+  environment: "{{ admin_env }}"
+  shell: su -s /bin/sh -c "nova-manage api_db sync" nova
+  tags:
+    - nova-controller
+
+- name: Register cell0 database
+  become: yes
+  environment: "{{ admin_env }}"
+  shell: su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
+  tags:
+    - nova-controller
 
 - name: Nova DB Populate
-  sudo: yes
+  become: yes
   environment: "{{ admin_env }}"
-  shell: su -s /bin/sh -c "nova-manage db sync" nova
-  run_once: true
+  shell: su -s /bin/sh -c "nova-manage db sync" nova 
+  tags:
+    - nova-controller
 
 - name: Restart Nova Controller Services
-  sudo: yes
+  become: yes
   service: name={{ item }} state=restarted
   with_items:
       - nova-api
-      - nova-cert
-      - nova-consoleauth
       - nova-scheduler
       - nova-conductor
-#      - nova-novncproxy
+      - nova-novncproxy
+  tags:
+    - nova-controller
