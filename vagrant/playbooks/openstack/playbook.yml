@@ -103,7 +103,7 @@
   tasks:
        - include: tasks/common.yml
        - include: tasks/credentials.yml
-###############################################################################
+###############################################################################"
 - hosts: controller
   become: yes
   user: vagrant
@@ -122,8 +122,10 @@
       # tags: etcd
     -  include: tasks/keystone.yml
       # tags: keystone
-#       -  include: tasks/nova-controller.yml
-#       -  include: tasks/glance.yml
+    -  include: tasks/glance.yml
+      # tags: glance
+#    -  include: tasks/nova-controller.yml
+      # tags: nova-controller
 #       -  include: tasks/horizon.yml
 #       -  include: tasks/nfs-server.yml
 #       -  include: tasks/demo-project.yml

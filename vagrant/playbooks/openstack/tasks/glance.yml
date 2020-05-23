@@ -1,41 +1,43 @@
 - name: Create glance user
-  environment: "{{ keystone_env }}"
-  command: openstack user create --password "{{ openstack_users.glance_password }}" glance
+  environment: "{{ admin_env }}"
+  command: openstack user create --domain default --password "{{ openstack_users.glance_password }}" glance
   register: check_glance_create_user
   changed_when: False
+  tags:
+    - glance
 
 - name: Add admin role to glance user and service project
-  environment: "{{ keystone_env }}"
+  environment: "{{ admin_env }}"
   command: openstack role add --project service --user glance admin
   register: check_glance_add_glance_to_admin_role
   changed_when: False
+  tags:
+    - glance
 
 - name: Create Service Entity Glance
-  environment: "{{ keystone_env }}"
+  environment: "{{ admin_env }}"
   command: openstack service create --name glance --description "OpenStack Image service" image
   register: check_glance_identity
   changed_when: False
+  tags:
+    - glance
 
 - name: Create Glance Service Endpoint
-  environment: "{{ keystone_env }}"
+  environment: "{{ admin_env }}"
   command: openstack endpoint create --publicurl http://controller:9292 --internalurl http://controller:9292 --adminurl http://controller:9292 --region RegionOne image
   register: check_glance_endpoint
   changed_when: False
+  tags:
+    - glance
 
 - name: Install Glance packages
-  sudo: yes
-  apt: pkg={{ item }} state=installed update_cache=yes
+  become: yes
+  apt: pkg={{ item }} state=present update_cache=yes
   with_items:
       - glance
-      - python-glanceclient
-
-- name: Copy Glance Registry config file
-  template:
-      src: "glance-registry.conf"
-      dest: "/etc/glance/glance-registry.conf"
-      owner: root
-      group: root
-      mode: 0644
+#- python-glanceclient
+  tags:
+    - glance
 
 - name: Copy Glance API config file
   template:
@@ -44,29 +46,33 @@
       owner: root
       group: root
       mode: 0644
+  tags:
+    - glance
 
 - name:  Glance DB Populate
-  sudo: yes
+  become: yes
   shell: su -s /bin/sh -c "glance-manage db_sync" glance
   register: check_glance_db_populate
   changed_when: False
-
-- name: Restart Glance Registry
-  sudo: yes
-  service: name=glance-registry state=restarted
+  tags:
+    - glance
 
 - name: Restart Glance API
-  sudo: yes
+  become: yes
   service: name=glance-api state=restarted
+  tags:
+    - glance
 
 - name: Get Cirros Image
-  shell: wget -P /tmp http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+  shell: wget -P /tmp/cirros-0.4.0-x86_64-disk.img http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
   register: check_cirros_download
   changed_when: False
+  tags:
+    - glance
 
 - name: Create Image for Cirros
   environment: "{{ admin_env }}"
-  shell: glance image-create --name "cirros-0.3.4-x86_64" --file /tmp/cirros-0.3.4-x86_64-disk.img --disk-format "qcow2" --container-format "bare" --progress --visibility public
+  shell: glance image-create --name "cirros" --file cirros-0.4.0-x86_64-disk.img  --disk-format qcow2 --container-format bare --visibility public
   register: check_cirros_create
   changed_when: False
 
@@ -75,6 +81,6 @@
   command: glance image-list
 
 - name: Remove Cirros Image
-  shell: rm /tmp/cirros-0.3.4-x86_64-disk.img
+  shell: rm /tmp/cirros-0.4.0-x86_64-disk.img
   register: check_remove_cirros
   changed_when: False
