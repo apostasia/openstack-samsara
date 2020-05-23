@@ -45,6 +45,10 @@ databases:
     nova:
         user: nova
         password: nova
+   
+    placement:
+        user: placement
+        password: placement
 
 #
 # Keystone
@@ -59,6 +63,7 @@ openstack_users:
     samsara_password: samsara
     glance_password: nova
     nova_password: nova
+    placement_password: placement
 
 #
 # Environments

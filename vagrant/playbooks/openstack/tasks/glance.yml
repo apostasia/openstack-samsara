@@ -41,7 +41,7 @@
 
 - name: Copy Glance API config file
   template:
-      src: "glance-api.conf"
+      src: "glance-api.conf.j2"
       dest: "/etc/glance/glance-api.conf"
       owner: root
       group: root

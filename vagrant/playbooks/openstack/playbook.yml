@@ -124,6 +124,8 @@
       # tags: keystone
     -  include: tasks/glance.yml
       # tags: glance
+    - include: tasks/placement.yml
+      # tags: placement
 #    -  include: tasks/nova-controller.yml
       # tags: nova-controller
 #       -  include: tasks/horizon.yml

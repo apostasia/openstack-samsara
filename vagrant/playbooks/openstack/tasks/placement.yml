@@ -1,0 +1,61 @@
+- name: Create placement user
+  environment: "{{ admin_env }}"
+  command: openstack user create --domain default --password "{{ openstack_users.placement_password }}" placement
+  register: check_placement_create_user
+  changed_when: False
+  tags:
+    - placement
+
+- name: Add admin role to placement user and service project
+  environment: "{{ admin_env }}"
+  command: openstack role add --project service --user placement admin
+  register: check_placement_add_placement_to_admin_role
+  changed_when: False
+  tags:
+    - placement
+
+- name: Create the Placement API entry in the service catalog
+  environment: "{{ admin_env }}"
+  command: openstack service create --name placement --description "Placement API" placement
+  register: check_placement_identity
+  changed_when: False
+  tags:
+    - placement
+
+- name: Create the Placement API service endpoints
+  environment: "{{ admin_env }}"
+  command: openstack endpoint create --publicurl http://controller:8778 --internalurl http://controller:8778 --adminurl http://controller:8778 --region RegionOne image
+  register: check_placement_endpoint
+  changed_when: False
+  tags:
+    - placement
+
+- name: Install Placement packages
+  become: yes
+  apt: pkg={{ item }} state=present update_cache=yes
+  with_items:
+      - placement-api
+#- python-glanceclient
+  tags:
+    - placement
+
+- name: Copy Placement API config file
+  template:
+      src: "placement.conf.j2"
+      dest: "/etc/placement/placement.conf"
+      owner: root
+      group: root
+      mode: 0644
+  tags:
+    - placement
+
+- name:  Placement DB Populate
+  become: yes
+  shell: su -s /bin/sh -c "placement-manage db sync" placement
+  register: check_placement_db_populate
+  changed_when: False
+  notify: restart apache
+  tags:
+    - placement
+
+# Restart apache
