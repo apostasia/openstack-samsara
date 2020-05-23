@@ -1,0 +1,21 @@
+[DEFAULT]
+; admin_token = {{ admin_token }}
+debug = true
+
+verbose = false
+log_dir = /var/log/keystone
+
+[database]
+connection = postgresql://keystone:{{ databases.keystone.password  }}@controller/keystone
+
+; [memcache]
+; servers = localhost:11211
+
+; [oslo_messaging_rabbit]
+
+[token]
+provider = fernet
+; driver = keystone.token.persistence.backends.memcache.Token
+
+; [extra_headers]
+; Distribution = Ubuntu

@@ -1,9 +1,22 @@
 - name: restart apache
+  become: yes
   service: name=apache2 state=restarted
 
 - name: Restart Postgres
   become: yes
   service: name=postgresql state=restarted
+
+- name: restart memcached
+  become: yes
+  service: name=memcached state=restarted
+
+- name: enable etcd
+  become: yes
+  service: name=etcd state=started
+
+- name: restart etcd
+  become: yes
+  service: name=etcd state=restarted
 
 - name: netplan apply
   become: yes

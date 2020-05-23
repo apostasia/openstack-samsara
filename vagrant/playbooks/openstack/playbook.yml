@@ -8,6 +8,7 @@
 - hosts: all
   gather_facts: no
   become: yes
+  user: vagrant
   pre_tasks:
     - name: 'install python'
       raw: 'apt-get install -y python'
@@ -15,6 +16,7 @@
 - hosts: all
   gather_facts: yes
   become: yes
+  user: vagrant
   vars_files:
       - vars/main.yml
   handlers: 
@@ -84,8 +86,8 @@
       become: yes
       apt: pkg={{ item }} state=present update_cache=yes
       with_items:
-          - software-properties-common
-          - ubuntu-cloud-keyring
+        - software-properties-common
+        - ubuntu-cloud-keyring
 
     - name: Add OpenStack Repositories
       shell: add-apt-repository cloud-archive:{{ openstack_release }}
@@ -104,6 +106,7 @@
 ###############################################################################
 - hosts: controller
   become: yes
+  user: vagrant
   vars_files:
     - vars/main.yml
   handlers:
@@ -113,7 +116,12 @@
       # tags: db-server
     -  include: tasks/rabbitmq-server.yml
       # tags: rabbitmq-server
-#       -  include: tasks/keystone.yml
+    -  include: tasks/memcached.yml
+      # tags: memcached
+    -  include: tasks/etcd.yml
+      # tags: etcd
+    -  include: tasks/keystone.yml
+      # tags: keystone
 #       -  include: tasks/nova-controller.yml
 #       -  include: tasks/glance.yml
 #       -  include: tasks/horizon.yml

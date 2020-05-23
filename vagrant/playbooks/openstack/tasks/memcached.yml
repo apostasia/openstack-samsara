@@ -1,0 +1,16 @@
+- name: Install Memcached packages
+  become: yes
+  apt: pkg={{ item }} state=present update_cache=yes
+  with_items:
+    - memcached
+  tags:
+    - memcached
+
+- name: Replace after the expression till the end of the file (requires Ansible >= 2.4)
+  lineinfile:
+    path: /etc/memcached.conf
+    regexp: '^-l\s127.0.0.1$'
+    line: -l {{ ansible_all_ipv4_addresses[1] }}
+  tags:
+    - memcached
+  notify: restart memcached

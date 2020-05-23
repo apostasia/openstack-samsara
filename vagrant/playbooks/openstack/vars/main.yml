@@ -56,6 +56,7 @@ admin_token: 57d82
 # OpenStack Users
 openstack_users:
     admin_password: samsara
+    samsara_password: samsara
     glance_password: nova
     nova_password: nova
 
@@ -67,28 +68,22 @@ keystone_env:
     OS_URL: "http://controller:35357/v2.0"
 
 admin_env:
-    OS_REGION_NAME: RegionOne
-    OS_PROJECT_DOMAIN_ID: default
-    OS_USER_DOMAIN_ID: default
-    OS_PROJECT_NAME: admin
-    OS_TENANT_NAME: admin
     OS_USERNAME: admin
-    OS_PASSWORD: samsara
-    OS_AUTH_URL: "http://controller:35357/v3"
-    OS_IMAGE_API_VERSION: 2
-    OS_VOLUME_API_VERSION: 2
+    OS_PASSWORD: "{{ openstack_users.admin_password }}"
+    OS_PROJECT_NAME: admin
+    OS_USER_DOMAIN_NAME: Default
+    OS_PROJECT_DOMAIN_NAME: Default
+    OS_AUTH_URL: http://controller:5000/v3
+    OS_IDENTITY_API_VERSION: 3
 
 user_env:
-    OS_REGION_NAME: RegionOne
-    OS_PROJECT_DOMAIN_ID: default
-    OS_USER_DOMAIN_ID: default
-    OS_PROJECT_NAME: samsara-test
-    OS_TENANT_NAME: samsara-test
-    OS_USERNAME: samsara-user
-    OS_PASSWORD: samsara
-    OS_AUTH_URL: "http://controller:35357/v3"
-    OS_IMAGE_API_VERSION: 2
-    OS_VOLUME_API_VERSION: 2
+    OS_USERNAME: samsara
+    OS_PASSWORD: "{{ openstack_users.samsara_password }}"
+    OS_PROJECT_NAME: samsara
+    OS_USER_DOMAIN_NAME: Default
+    OS_PROJECT_DOMAIN_NAME: Default
+    OS_AUTH_URL: http://controller:5000/v3
+    OS_IDENTITY_API_VERSION: 3
 
 
 #

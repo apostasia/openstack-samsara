@@ -2,13 +2,13 @@
 # Install packages
 ###############################################################################
 
-- name: Install packages
+- name: Install Postgres packages
   become: yes
   apt: pkg={{ item }} state=present update_cache=yes
   with_items:
       - postgresql
       - libpq-dev # Required for Ansible to interact with postgres
-      - python-psycopg2 # Required for Ansible to interact with postgres
+      - python3-psycopg2 # Required for Ansible to interact with postgres
   tags:
     - db-server
 

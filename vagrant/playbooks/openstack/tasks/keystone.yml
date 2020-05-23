@@ -1,118 +1,145 @@
-- name: Disable Keystone autostart
-  sudo: yes
-  shell: su -c 'echo "manual" > /etc/init/keystone.override'
-
-- name: Install packages
-  sudo: yes
-  apt: pkg={{ item }} state=installed update_cache=yes
+- name: Install Keystone packages
+  become: yes
+  apt: pkg={{ item }} state=present
   with_items:
       - keystone
-      - python-openstackclient
-      - apache2
-      - libapache2-mod-wsgi
-      - memcached
-      - python-memcache
+      - python3-openstackclient
+      # - apache2
+      # - libapache2-mod-wsgi
+      # - memcached
+      # - python-memcache
+  tags:
+    - keystone
+
+# - name: Disable Keystone autostart
+#   become: yes
+#   shell: su -c 'echo "manual" > /etc/init/keystone.override'
+#   tags:
+#     - keystone
 
 - name: Copy Keystone config file
+  become: yes
   template:
-      src: "keystone.conf"
+      src: "keystone.conf.j2"
       dest: "/etc/keystone/keystone.conf"
       owner: root
       group: root
       mode: 0644
+  tags:
+    - keystone
 
-- name:  Keystone DB Populate
-  sudo: yes
-  shell: su -s /bin/sh -c "keystone-manage db_sync" keystone
+- name: Populate the Identity service database
+  become: yes
   run_once: true
+  shell: su -s /bin/sh -c "keystone-manage db_sync" keystone
+  tags:
+    - keystone
 
 - name: Refs to Controller Node
   lineinfile:
       dest:  "/etc/apache2/apache2.conf"
       regexp: "^ServerName "
       line: "ServerName controller"
-
-- name: Copy Keystone WSGI site file
-  template:
-      src: "wsgi-keystone.conf"
-      dest: "/etc/apache2/sites-available/wsgi-keystone.conf"
-      owner: keystone
-      group: keystone
-      mode: 0755
   notify: restart apache
+  tags:
+    - keystone
 
-- name: Enable WSGI Site
-  sudo: yes
-  command: a2ensite wsgi-keystone
-  notify: restart apache
+# - name: Copy Keystone WSGI site file
+#   template:
+#       src: "wsgi-keystone.conf.j2"
+#       dest: "/etc/apache2/sites-available/wsgi-keystone.conf"
+#       owner: keystone
+#       group: keystone
+#       mode: 0755
+#   notify: restart apache
+#   tags:
+#     - keystone
 
-- name: Create directory for WSGI components
-  file:
-      path: "/var/www/cgi-bin/keystone"
-      state: directory
-      owner: keystone
-      group: keystone
-      mode: 0755
-  notify: restart apache
+# - name: Enable WSGI Site
+#   become: yes
+#   command: a2ensite wsgi-keystone
+#   notify: restart apache
+#   tags:
+#     - keystone
 
-- name: Copy Keystone WSGI main File
-  template:
-      src: "main"
-      dest: "/var/www/cgi-bin/keystone/main"
-      owner: keystone
-      group: keystone
-      mode: 0755
-  notify: restart apache
+# - name: Create directory for WSGI components
+#   file:
+#       path: "/var/www/cgi-bin/keystone"
+#       state: directory
+#       owner: keystone
+#       group: keystone
+#       mode: 0755
+#   notify: restart apache
+#   tags:
+#     - keystone
 
-- name: Copy Keystone WSGI admin file
-  template:
-      src: "admin"
-      dest: "/var/www/cgi-bin/keystone/admin"
-      owner: keystone
-      group: keystone
-      mode: 0755
-  notify: restart apache
+# - name: Copy Keystone WSGI main File
+#   template:
+#       src: "main"
+#       dest: "/var/www/cgi-bin/keystone/main"
+#       owner: keystone
+#       group: keystone
+#       mode: 0755
+#   notify: restart apache
+#   tags:
+#     - keystone
 
-- name: restart apache
-  sudo: yes
-  service: name=apache2 state=restarted
+# - name: Copy Keystone WSGI admin file
+#   template:
+#       src: "admin"
+#       dest: "/var/www/cgi-bin/keystone/admin"
+#       owner: keystone
+#       group: keystone
+#       mode: 0755
+#   notify: restart apache
+#   tags:
+#     - keystone
 
-- name: Create Keystone Service Entity
-  environment: "{{ keystone_env }}"
-  command: openstack service create --name keystone --description "OpenStack Identity" identity
+# - name: restart apache
+#   become: yes
+#   service: name=apache2 state=restarted
+#     tags:
+#     - keystone
+
+- name: Initialize Fernet key repositories
+  become: yes
+  run_once: true
+  shell:
+    cmd: "{{ item }}"
+  with_items:
+    - keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+    - keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+  tags:
+    - keystone
+  
+- name: Bootstrap Identity service
+  become: yes
+  run_once: true
+  shell: keystone-manage bootstrap --bootstrap-password {{ openstack_users['admin_password'] }} --bootstrap-admin-url http://controller:5000/v3/ --bootstrap-internal-url http://controller:5000/v3/ --bootstrap-public-url http://controller:5000/v3/ --bootstrap-region-id RegionOne
+  tags:
+    - keystone
+
+- name: Create Service Project
+  environment: "{{ admin_env }}"
+  command: openstack project create --domain default --description "Service Project" service
   run_once: true
 
-- name: Create Keystone Service Endpoint
-  environment: "{{ keystone_env }}"
-  command: openstack endpoint create --publicurl http://controller:5000/v2.0 --internalurl http://controller:5000/v2.0 --adminurl http://controller:35357/v2.0 --region RegionOne identity
+- name: Create Samsara Demo Project
+  environment: "{{ admin_env }}"
+  command: openstack project create --domain default --description "Demo Project" samsaraproject
   run_once: true
 
-- name: Create Admin Project
-  environment: "{{ keystone_env }}"
-  command: openstack project create --description "Admin Project" admin
+- name: Create Samsara User
+  environment: "{{ admin_env }}"
+  command: openstack user create --domain default --password {{ openstack_users['samsara_password'] }} samsara
   run_once: true
 
-- name: Create admin user
-  environment: "{{ keystone_env }}"
-  command: openstack user create --password "{{ openstack_users.admin_password }}" admin
+- name: Create Samsara Role
+  environment: "{{ admin_env }}"
+  command: openstack role create samsararole
   run_once: true
 
-- name: Create admin role
-  environment: "{{ keystone_env }}"
-  command: openstack role create admin
-  run_once: true
-
-- name: Add admin role to admin user and admin project
-  environment: "{{ keystone_env }}"
-  command: openstack role add --project admin --user admin admin
-  run_once: true
-
-- name: Create Service project
-  environment: "{{ keystone_env }}"
-  command: openstack project create --description "Service Project" service
-  run_once: true
-
-- name: Create user role
-  environment: "{{ keystone_env }}"
-  command: openstack role create user
+- name: Add Samsara Role to Samsara User
+  environment: "{{ admin_env }}"
+  command: openstack role add --project samsaraproject --user samsara samsararole
   run_once: true
