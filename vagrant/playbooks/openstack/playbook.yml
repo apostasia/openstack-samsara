@@ -126,7 +126,7 @@
       # tags: glance
     - include: tasks/placement.yml
       # tags: placement
-#    -  include: tasks/nova-controller.yml
+    -  include: tasks/nova-controller.yml
       # tags: nova-controller
 #       -  include: tasks/horizon.yml
 #       -  include: tasks/nfs-server.yml

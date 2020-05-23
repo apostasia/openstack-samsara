@@ -8,6 +8,7 @@
   with_items:
       - postgresql
       - libpq-dev # Required for Ansible to interact with postgres
+      - python3-postgresql
       - python3-psycopg2 # Required for Ansible to interact with postgres
   tags:
     - db-server

@@ -1,24 +1,33 @@
-- name: Create nova user
+- name: Create Nova user
   environment: "{{ admin_env }}"
   command: openstack user create --password "{{ openstack_users.nova_password }}" nova
+  register: nova_create_user
+  ignore_errors: true
   tags:
     - nova-controller
 
-- name: Add admin role to nova user and service project
+- name: Add admin role to Nova user and service project
   environment: "{{ admin_env }}"
   command: openstack role add --project service --user nova admin
+  when: nova_create_user is succeeded
   tags:
     - nova-controller
 
 - name: Create Service Entity Nova
   environment: "{{ admin_env }}"
   command: openstack service create --name nova --description "OpenStack Compute" compute
+  when: nova_create_user is succeeded
   tags:
     - nova-controller
 
 - name: Create Nova Service Endpoint
   environment: "{{ admin_env }}"
-  command: openstack endpoint create --publicurl http://controller:8774/v2.1 --internalurl http://controller:8774/v2.1 --adminurl http://controller:8774/v2.1 --region RegionOne compute
+  command: openstack endpoint create --region RegionOne compute {{ item }} http://controller:8774/v2.1 
+  with_items:
+    - public
+    - internal
+    - admin  
+  when: nova_create_user is succeeded
   tags:
     - nova-controller
 

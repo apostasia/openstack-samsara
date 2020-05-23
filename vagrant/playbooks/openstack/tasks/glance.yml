@@ -1,32 +1,33 @@
-- name: Create glance user
+- name: Create Glance user
   environment: "{{ admin_env }}"
   command: openstack user create --domain default --password "{{ openstack_users.glance_password }}" glance
-  register: check_glance_create_user
-  changed_when: False
+  register: glance_create_user
+  ignore_errors: true
   tags:
     - glance
 
-- name: Add admin role to glance user and service project
+- name: Add admin role to Glance user and service project
   environment: "{{ admin_env }}"
   command: openstack role add --project service --user glance admin
-  register: check_glance_add_glance_to_admin_role
-  changed_when: False
+  when: glance_create_user is succeeded
   tags:
     - glance
 
 - name: Create Service Entity Glance
   environment: "{{ admin_env }}"
   command: openstack service create --name glance --description "OpenStack Image service" image
-  register: check_glance_identity
-  changed_when: False
+  when: glance_create_user is succeeded
   tags:
     - glance
 
 - name: Create Glance Service Endpoint
   environment: "{{ admin_env }}"
-  command: openstack endpoint create --publicurl http://controller:9292 --internalurl http://controller:9292 --adminurl http://controller:9292 --region RegionOne image
-  register: check_glance_endpoint
-  changed_when: False
+  command: openstack endpoint create --region RegionOne image {{ item }} http://controller:9292
+  with_items:
+    - public
+    - internal
+    - admin
+  when: glance_create_user is succeeded
   tags:
     - glance
 
@@ -35,7 +36,6 @@
   apt: pkg={{ item }} state=present update_cache=yes
   with_items:
       - glance
-#- python-glanceclient
   tags:
     - glance
 
@@ -53,7 +53,6 @@
   become: yes
   shell: su -s /bin/sh -c "glance-manage db_sync" glance
   register: check_glance_db_populate
-  changed_when: False
   tags:
     - glance
 
@@ -65,22 +64,21 @@
 
 - name: Get Cirros Image
   shell: wget -P /tmp/cirros-0.4.0-x86_64-disk.img http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
-  register: check_cirros_download
-  changed_when: False
+  register: download_cirros_image
   tags:
     - glance
 
 - name: Create Image for Cirros
   environment: "{{ admin_env }}"
-  shell: glance image-create --name "cirros" --file cirros-0.4.0-x86_64-disk.img  --disk-format qcow2 --container-format bare --visibility public
-  register: check_cirros_create
-  changed_when: False
+  shell: glance image-create --name "cirros" --file /tmp/cirros-0.4.0-x86_64-disk.img  --disk-format qcow2 --container-format bare --visibility public
+  when: download_cirros_image is succeeded
 
 - name: Get Glance Image List
   environment: "{{ admin_env }}"
   command: glance image-list
+  when: download_cirros_image is succeeded
 
 - name: Remove Cirros Image
   shell: rm /tmp/cirros-0.4.0-x86_64-disk.img
   register: check_remove_cirros
-  changed_when: False
+  when: download_cirros_image is succeeded
