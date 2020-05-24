@@ -22,6 +22,11 @@
 # gluster_brick_dir: /srv/gluster/brick
 # gluster_brick_name: gluster
 
+####### Network Interfaces Config
+provider_interface_name: enp0s9
+overlay_interface_ip_address: 172.16.0.10
+metadata_secret: metadata_secret
+
 ###########################################################
 # OpenStack Configuration                                 #
 ###########################################################
@@ -57,7 +62,10 @@ databases:
     placement:
         user: placement
         password: placement
-
+   
+    neutron:
+        user: neutron
+        password: neutron
 #
 # Keystone
 #
@@ -69,10 +77,10 @@ admin_token: 57d82
 openstack_users:
     admin_password: samsara
     samsara_password: samsara
-    glance_password: nova
+    glance_password: glance
     nova_password: nova
     placement_password: placement
-
+    neutron_password: neutron
 #
 # Environments
 #

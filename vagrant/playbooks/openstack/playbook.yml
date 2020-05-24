@@ -128,6 +128,8 @@
       # tags: placement
     -  include: tasks/nova-controller.yml
       # tags: nova-controller
+    -  include: tasks/neutron-controller.yml
+      # tags: neutron-controller
 #       -  include: tasks/horizon.yml
 #       -  include: tasks/nfs-server.yml
 #       -  include: tasks/demo-project.yml
