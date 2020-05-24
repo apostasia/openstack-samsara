@@ -1,13 +1,13 @@
 - name: Install NFS Server package
-  sudo: yes
-  apt: pkg=nfs-kernel-server state=installed
+  become: yes
+  apt: pkg=nfs-kernel-server state=present
 
 - name: Create Folder to store Nova instances
-  sudo: yes
+  become: yes
   command: mkdir -p /var/lib/nova/instances
 
 - name: Add Nova instances folder to /etc/exports
-  sudo: yes
+  become: yes
   shell: |
     su -c "cat >> /etc/exports << EOF
                 # Nova instances folder - work directory
@@ -16,7 +16,7 @@
             "
 
 - name: Restart NFS/IMAP Services
-  sudo: yes
+  become: yes
   service: name={{ item }} state=restarted
   with_items:
       - nfs-kernel-server
@@ -27,7 +27,7 @@
   file: path=/var/lib/nova/instances mode="o+x"
 
 - name: Add Nova instances folder to FSTAB
-  sudo: yes
+  become: yes
   shell: |
     su -c "cat >> /etc/fstab << EOF
                 # NFS - Nova work directory

@@ -94,7 +94,12 @@
 
     - name: Update packages
       apt: update_cache=yes upgrade=dist cache_valid_time=86400
-
+    
+    - name: Install Openstack Client
+      apt: pkg={{ item }} state=present update_cache=yes
+      with_items:
+        - python3-openstackclient
+        
     - name: "Build hosts file"
       lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item]['ansible_all_ipv4_addresses'][1] }} {{item}}" state=present
       when: hostvars[item]['ansible_all_ipv4_addresses'][1] is defined
@@ -112,6 +117,8 @@
   handlers:
     - include: handlers/main.yml
   tasks:
+    -  include: tasks/chrony-controller.yml
+      # tags: chrony
     -  include: tasks/database-server.yml
       # tags: db-server
     -  include: tasks/rabbitmq-server.yml
@@ -135,13 +142,18 @@
 #       -  include: tasks/demo-project.yml
 
 - hosts: compute_group
-  become: true
+  become: yes
+  user: vagrant
   vars_files:
-    - vars.yml
-   tasks:
-     - include: tasks/postgresql-client.yml
-     - include: tasks/nova-compute.yml
-      # tags: nova-compute
-     - include: tasks/neutron-compute.yml
-      # tags: neutron-compute
+    - vars/main.yml
+  handlers:
+    - include: handlers/main.yml
+  tasks:
+    -  include: tasks/chrony-compute.yml
+      # tags: chrony
+    - include: tasks/postgresql-client.yml
+    - include: tasks/nova-compute.yml
+     # tags: nova-compute
+    - include: tasks/neutron-compute.yml
+     # tags: neutron-compute
 #       - include: tasks/nfs-client.yml

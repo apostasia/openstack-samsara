@@ -14,6 +14,10 @@
   become: yes
   service: name=etcd state=started
 
+- name: restart chrony
+  become: yes
+  service: name=chrony state=restarted
+
 - name: restart etcd
   become: yes
   service: name=etcd state=restarted

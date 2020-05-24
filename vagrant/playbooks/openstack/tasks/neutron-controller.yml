@@ -46,22 +46,19 @@
 
 - name: Copy Neutron config files
   template:
-      src: "{{ item.src }}"
-      dest: "{{ item.dest }}"
-      owner: root
-      group: root
-      mode: 0644
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
   with_items:
-   - { src: "neutron-controller.conf.j2", dest: : "/etc/neutron/neutron.conf" }
-   - { src: "ml2_conf.ini.j2", dest: "etc/neutron/plugins/ml2/ml2_conf.ini" }
+   - { src: "neutron-controller.conf.j2", dest: "/etc/neutron/neutron.conf" }
+   - { src: "ml2_conf.ini.j2", dest: "/etc/neutron/plugins/ml2/ml2_conf.ini" }
    - { src: "linuxbridge_agent.ini.j2", dest: "/etc/neutron/plugins/ml2/linuxbridge_agent.ini"}
    - { src: "l3_agent.ini.j2", dest: "/etc/neutron/l3_agent.ini" }
    - { src: "dhcp_agent.ini.j2", dest: "/etc/neutron/dhcp_agent.ini" }
-   - { src: "metada_agent.ini.j2", dest: "/etc/neutron/metadata_agent.ini" }
+   - { src: "metadata_agent.ini.j2", dest: "/etc/neutron/metadata_agent.ini" }
    - { src: "nova-controller.conf.j2", dest: "/etc/nova/nova.conf" }
-      owner: root
-      group: root
-      mode: 0644
   tags:
     - neutron-controller
 

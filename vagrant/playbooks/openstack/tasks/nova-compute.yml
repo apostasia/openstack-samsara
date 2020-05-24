@@ -8,14 +8,14 @@
 
 - name: Copy Nova Compute config files
   template:
-    src: {{ item.src }}
-    dest: {{ item.dest }}
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: root
     group: root
     mode: 0644
   with_items:
-    - {"nova.conf-compute.j2", dest: "/etc/nova/nova.conf" }
-    - {"nova-compute.j2", dest: "/etc/nova/nova-compute.conf" }
+    - {src: "nova.conf-compute.j2", dest: "/etc/nova/nova.conf" }
+    - {src: "nova-compute.conf.j2", dest: "/etc/nova/nova-compute.conf" }
   tags:
     - nova-compute
 

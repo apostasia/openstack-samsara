@@ -1,0 +1,36 @@
+- name: Install Libvirt packages
+  become: yes
+  apt:
+    state: present 
+    pkg:
+      - libvirt-bin
+
+- name: Disable libvirt TLS connections
+  lineinfile:
+      dest:  "/etc/libvirt/libvirtd.conf"
+      regexp: "^#listen_tls = 0"
+      line: "listen_tls = 0"
+
+- name: Enable listen for unencrypted TCP connections
+  lineinfile:
+      dest:  "/etc/libvirt/libvirtd.conf"
+      regexp: "^#listen_tcp = 1"
+      line: "listen_tcp = 1"
+
+- name: Disable auth connections
+  lineinfile:
+      dest:  "/etc/libvirt/libvirtd.conf"
+      regexp: '^#auth_tcp = "sasl"'
+      line: 'auth_tcp = "none"'
+
+- name: Enable libvirt TCP listen - /etc/init/libvirt-bin.conf
+  lineinfile:
+      dest:  "/etc/init/libvirt-bin.conf"
+      regexp: 'env\slibvirtd_opts="-d"'
+      line: 'env libvirtd_opts="-l"'
+
+- name: Restart Libvirt
+  become: yes
+  service: name={{ item }} state=restarted
+  with_items:
+      - libvirtd

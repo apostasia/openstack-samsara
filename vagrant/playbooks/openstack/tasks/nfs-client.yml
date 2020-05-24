@@ -1,9 +1,9 @@
 - name: Install NFSv4 Client package
-  sudo: yes
+  become: yes
   apt: pkg=nfs-common state=installed
 
 - name: Add Nova instances folder to FSTAB
-  sudo: yes
+  become: yes
   shell: |
     su -c "cat >> /etc/fstab << EOF
                 # NFS - Nova work directory
@@ -12,7 +12,7 @@
             "
 
 - name: Remount device
-  sudo: yes
+  become: yes
   shell: mount -av
 
 # This enable the ‘execute/search’ bit on your shared directory to allow qemu to be able to use the images within the directories

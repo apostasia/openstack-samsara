@@ -8,18 +8,15 @@
 
 - name: Copy Neutron config files
   template:
-      src: "{{ item.src }}"
-      dest: "{{ item.dest }}"
-      owner: root
-      group: root
-      mode: 0644
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
   with_items:
-   - { src: "neutron-compute.conf.j2", dest: : "/etc/neutron/neutron.conf" }
+   - { src: "neutron-compute.conf.j2", dest: "/etc/neutron/neutron.conf" }
    - { src: "linuxbridge-compute.ini.j2", dest: "/etc/neutron/plugins/ml2/linuxbridge_agent.ini"}
    - { src: "nova.conf-compute.j2", dest: "/etc/nova/nova.conf" }
-      owner: root
-      group: root
-      mode: 0644
   tags:
     - neutron-compute
 
