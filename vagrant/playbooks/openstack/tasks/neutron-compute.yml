@@ -1,0 +1,33 @@
+- name: Install Neutron Compute packages
+  become: yes
+  apt: pkg={{ item }} state=present update_cache=yes
+  with_items:
+      - neutron-linuxbridge-agent
+  tags:
+    - neutron-compute
+
+- name: Copy Neutron config files
+  template:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: root
+      group: root
+      mode: 0644
+  with_items:
+   - { src: "neutron-compute.conf.j2", dest: : "/etc/neutron/neutron.conf" }
+   - { src: "linuxbridge-compute.ini.j2", dest: "/etc/neutron/plugins/ml2/linuxbridge_agent.ini"}
+   - { src: "nova.conf-compute.j2", dest: "/etc/nova/nova.conf" }
+      owner: root
+      group: root
+      mode: 0644
+  tags:
+    - neutron-compute
+
+- name: Restart Nova Compute and Neutron services
+  become: yes
+  service: name={{ item }} state=restarted
+  with_items:
+      - nova-compute
+      - neutron-linuxbridge-agent 
+  tags:
+    - neutron-compute

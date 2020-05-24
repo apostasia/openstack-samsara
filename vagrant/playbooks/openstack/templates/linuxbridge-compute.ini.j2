@@ -216,17 +216,19 @@ physical_interface_mappings = provider:{{ provider_interface_name }}
 
 [securitygroup]
 
+enable_security_group = true
+firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 #
 # From neutron.ml2.linuxbridge.agent
 #
 
 # Driver for security groups firewall in the L2 agent (string value)
-firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+#firewall_driver = <None>
 
 # Controls whether the neutron security group API is enabled in the server. It
 # should be false when using no security groups or using the nova security
 # group API. (boolean value)
-enable_security_group = true
+#enable_security_group = true
 
 # Use ipset to speed-up the iptables based security groups. Enabling ipset
 # support requires that ipset is installed on L2 agent node. (boolean value)
@@ -295,7 +297,7 @@ local_ip = {{ ansible_all_ipv4_addresses[1] }}
 
 # Extension to use alongside ml2 plugin's l2population mechanism driver. It
 # enables the plugin to populate VXLAN forwarding table. (boolean value)
-#l2_population = false
+l2_population = true
 
 # Enable local ARP responder which provides local responses instead of
 # performing ARP broadcast into the overlay. Enabling local ARP responder is

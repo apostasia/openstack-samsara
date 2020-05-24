@@ -134,11 +134,14 @@
 #       -  include: tasks/nfs-server.yml
 #       -  include: tasks/demo-project.yml
 
-# - hosts: compute_group
-#   sudo: true
-#   vars_files:
-#       - vars.yml
-#   tasks:
-#       - include: tasks/postgresql-client.yml
-#       - include: tasks/nova-compute.yml
+- hosts: compute_group
+  become: true
+  vars_files:
+    - vars.yml
+   tasks:
+     - include: tasks/postgresql-client.yml
+     - include: tasks/nova-compute.yml
+      # tags: nova-compute
+     - include: tasks/neutron-compute.yml
+      # tags: neutron-compute
 #       - include: tasks/nfs-client.yml

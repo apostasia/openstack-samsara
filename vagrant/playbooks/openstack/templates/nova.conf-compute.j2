@@ -1,8 +1,7 @@
 [DEFAULT]
-#log_dir = /var/log/nova
+log_dir = /var/log/nova
 lock_path = /var/lock/nova
 state_path = /var/lib/nova
-
 
 use_neutron = true
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
@@ -500,6 +499,7 @@ firewall_driver = nova.virt.firewall.NoopFirewallDriver
 # below.
 my_ip = {{ ansible_all_ipv4_addresses[1] }}
 
+
 #
 # The IP address which is used to connect to the block storage network. For more
 # information, refer to the documentation. (string value)
@@ -833,7 +833,7 @@ my_ip = {{ ansible_all_ipv4_addresses[1] }}
 # The network address and optional user credentials for connecting to the
 # messaging backend, in URL format. The expected format is. For more
 # information, refer to the documentation. (string value)
-transport_url = rabbit://openstack:{{ rabbitmq.password }}@controller:5672/
+transport_url = rabbit://openstack:{{ rabbitmq.password }}@controller
 
 # The default exchange under which topics are scoped. May be overridden by an
 # exchange name specified in the transport_url option (string value)
@@ -1083,7 +1083,7 @@ auth_strategy = keystone
 
 
 [api_database]
-connection = postgresql://nova:{{ databases.nova_api.password }}@controller/nova_api
+connection = sqlite:////var/lib/nova/nova_api.sqlite
 #
 # The *Nova API Database* is a separate database which is used for information
 # which is used across *cells*. This database is mandatory since the Mitaka
@@ -1621,7 +1621,7 @@ connection = postgresql://nova:{{ databases.nova_api.password }}@controller/nova
 
 
 [database]
-connection = postgresql://nova:{{ databases.nova.password }}@controller/nova 
+connection = sqlite:////var/lib/nova/nova.sqlite
 
 #
 # From oslo.db
@@ -1937,6 +1937,8 @@ connection = postgresql://nova:{{ databases.nova.password }}@controller/nova
 
 
 [glance]
+api_servers = http://controller:9292
+
 # Configuration options for the Image service
 
 #
@@ -3353,8 +3355,6 @@ region_name = RegionOne
 project_name = service
 username = neutron
 password = {{ openstack_users.neutron_password }}
-service_metadata_proxy = true
-metadata_proxy_shared_secret = {{ metadata_secret }}
 
 #
 # Configuration options for neutron (network connectivity as a service).
@@ -3606,6 +3606,7 @@ metadata_proxy_shared_secret = {{ metadata_secret }}
 # to environment variable OSLO_LOCK_PATH. If external locks are used, a lock
 # path must be set (string value)
 lock_path = /var/lib/nova/tmp
+
 
 [oslo_messaging_amqp]
 
@@ -4531,7 +4532,7 @@ password = {{ openstack_users.placement_password }}
 
 
 [scheduler]
-discover_hosts_in_cells_interval = 300
+
 #
 # From nova.conf
 #
@@ -5081,7 +5082,6 @@ discover_hosts_in_cells_interval = 300
 #
 # Specifies the directory where the Virtual Serial Port Concentrator is
 # storing console log files. It should match the 'serial_log_dir' config
-
 # value of VSPC.
 #  (string value)
 #serial_log_dir = /opt/vmware/vspc
@@ -5194,6 +5194,12 @@ discover_hosts_in_cells_interval = 300
 
 
 [vnc]
+
+enabled = true
+server_listen = 0.0.0.0
+server_proxyclient_address = $my_ip
+novncproxy_base_url = http://controller:6080/vnc_auto.html
+
 #
 # Virtual Network Computer (VNC) can be used to provide remote desktop
 # console access to instances for tenants and/or administrators.
@@ -5206,7 +5212,7 @@ discover_hosts_in_cells_interval = 300
 # Enable VNC related features. For more information, refer to the documentation.
 # (boolean value)
 # Deprecated group/name - [DEFAULT]/vnc_enabled
-enabled = true
+#enabled = true
 
 # DEPRECATED:
 # Keymap for VNC. For more information, refer to the documentation. (string
@@ -5229,14 +5235,14 @@ enabled = true
 #  (host address value)
 # Deprecated group/name - [DEFAULT]/vncserver_listen
 # Deprecated group/name - [vnc]/vncserver_listen
-server_listen = $my_ip
+#server_listen = 127.0.0.1
 
 #
 # Private, internal IP address or hostname of VNC console proxy. For more
 # information, refer to the documentation. (host address value)
 # Deprecated group/name - [DEFAULT]/vncserver_proxyclient_address
 # Deprecated group/name - [vnc]/vncserver_proxyclient_address
-server_proxyclient_address = $my_ip
+#server_proxyclient_address = 127.0.0.1
 
 #
 # Public address of noVNC VNC console proxy. For more information, refer to the

@@ -1,76 +1,28 @@
-- name: Install nova packages
-  sudo: yes
-  apt: pkg={{ item }} state=installed update_cache=yes
-  run_once: true
+- name: Install Nova Compute packages
+  become: yes
+  apt: pkg={{ item }} state=present update_cache=yes
   with_items:
       - nova-compute
-      - python-novaclient
-      - sysfsutils
-      - nova-network # Nova Legacy
-      - nova-api-metadata # Nova Legacy
+  tags:
+    - nova-compute
 
-- name: Copy Nova config file
+- name: Copy Nova Compute config files
   template:
-      src: "nova.conf.compute.j2"
-      dest: "/etc/nova/nova.conf"
-      owner: root
-      group: root
-      mode: 0644
-
-- name: Copy Nova Compute config file
-  template:
-      src: "nova-compute.conf"
-      dest: "/etc/nova/nova-compute.conf"
-      owner: root
-      group: root
-      mode: 0644
-
-- name: Disable libvirt TLS connections
-  lineinfile:
-      dest:  "/etc/libvirt/libvirtd.conf"
-      regexp: "^#listen_tls = 0"
-      line: "listen_tls = 0"
-
-- name: Enable listen for unencrypted TCP connections
-  lineinfile:
-      dest:  "/etc/libvirt/libvirtd.conf"
-      regexp: "^#listen_tcp = 1"
-      line: "listen_tcp = 1"
-
-- name: Disable auth connections
-  lineinfile:
-      dest:  "/etc/libvirt/libvirtd.conf"
-      regexp: '^#auth_tcp = "sasl"'
-      line: 'auth_tcp = "none"'
-
-- name: Enable libvirt TCP listen - /etc/init/libvirt-bin.conf
-  lineinfile:
-      dest:  "/etc/init/libvirt-bin.conf"
-      regexp: 'env\slibvirtd_opts="-d"'
-      line: 'env libvirtd_opts="-d -l"'
-
-- name: Enable libvirt TCP listen - /etc/default/libvirt-bin
-  lineinfile:
-      dest:  "/etc/default/libvirt-bin"
-      regexp: 'libvirtd_opts="-d"'
-      line: 'libvirtd_opts="-d -l"'
+    src: {{ item.src }}
+    dest: {{ item.dest }}
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - {"nova.conf-compute.j2", dest: "/etc/nova/nova.conf" }
+    - {"nova-compute.j2", dest: "/etc/nova/nova-compute.conf" }
+  tags:
+    - nova-compute
 
 - name: Restart Nova Compute Services
-  sudo: yes
+  become: yes
   service: name={{ item }} state=restarted
   with_items:
       - nova-compute
-      - nova-network
-      - nova-api-metadata
-      - libvirt-bin
-
-- name: Check nova network
-  environment: "{{ admin_env }}"
-  shell: /usr/bin/nova tenant-network-list | grep net | cut -d"|" -f3
-  register: shell_result
-  ignore_errors: True
-
-- name: Create Network
-  environment: "{{ admin_env }}"
-  command: /usr/bin/nova network-create openstack-net --bridge br100 --multi-host T  --fixed-range-v4 203.0.113.24/29
-  when: "'ERROR (NotFound):' in shell_result.stderr"
+  tags:
+    - nova-compute
