@@ -1,6 +1,6 @@
 - name: Config chrony
   become: yes
-  template: src=chony_controller.j2 dest=/etc/chrony/chrony.conf
+  template: src=chrony_controller.j2 dest=/etc/chrony/chrony.conf
   notify: restart chrony
   tags:
     - chrony

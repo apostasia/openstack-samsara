@@ -33,9 +33,7 @@
 
 - name: Install Placement packages
   become: yes
-  apt: pkg={{ item }} state=present update_cache=yes
-  with_items:
-      - placement-api
+  apt: pkg=placement-api state=present update_cache=yes
   tags:
     - placement
 

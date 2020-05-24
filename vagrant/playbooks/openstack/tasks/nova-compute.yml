@@ -1,8 +1,6 @@
 - name: Install Nova Compute packages
   become: yes
-  apt: pkg={{ item }} state=present update_cache=yes
-  with_items:
-      - nova-compute
+  apt: pkg=nova-compute state=present update_cache=yes
   tags:
     - nova-compute
 
@@ -21,8 +19,6 @@
 
 - name: Restart Nova Compute Services
   become: yes
-  service: name={{ item }} state=restarted
-  with_items:
-      - nova-compute
+  service: name=nova-compute state=restarted
   tags:
     - nova-compute

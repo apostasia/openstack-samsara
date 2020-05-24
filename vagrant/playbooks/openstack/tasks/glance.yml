@@ -33,9 +33,7 @@
 
 - name: Install Glance packages
   become: yes
-  apt: pkg={{ item }} state=present update_cache=yes
-  with_items:
-      - glance
+  apt: pkg=glance state=present update_cache=yes
   tags:
     - glance
 

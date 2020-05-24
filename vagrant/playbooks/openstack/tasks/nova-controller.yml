@@ -33,8 +33,10 @@
 
 - name: Install Nova Controller packages
   become: yes
-  apt: pkg={{ item }} state=present update_cache=yes
-  with_items:
+  apt:
+    state: present
+    update_cache: yes
+    pkg:
       - nova-api
       - nova-conductor
       - nova-novncproxy
@@ -70,6 +72,13 @@
   become: yes
   environment: "{{ admin_env }}"
   shell: su -s /bin/sh -c "nova-manage db sync" nova 
+  tags:
+    - nova-controller
+
+- name: Create the cell1 cell
+  become: yes
+  environment: "{{ admin_env }}"
+  shell: su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
   tags:
     - nova-controller
 

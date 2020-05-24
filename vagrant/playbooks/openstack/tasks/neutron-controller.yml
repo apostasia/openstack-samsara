@@ -33,8 +33,10 @@
 
 - name: Install Neutron Controller packages
   become: yes
-  apt: pkg={{ item }} state=present update_cache=yes
-  with_items:
+  apt:
+    state: present
+    update_cache: yes
+    pkg:
       - neutron-server
       - neutron-plugin-ml2
       - neutron-linuxbridge-agent

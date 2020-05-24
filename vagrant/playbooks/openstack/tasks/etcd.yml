@@ -1,8 +1,6 @@
 - name: Install etcd packages
   become: yes
-  apt: pkg={{ item }} state=present update_cache=yes
-  with_items:
-    - etcd
+  apt: pkg=etcd state=present update_cache=yes
   notify: enable etcd
   tags:
     - etcd

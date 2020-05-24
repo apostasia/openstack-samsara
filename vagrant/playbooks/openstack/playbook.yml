@@ -84,10 +84,11 @@
     # Add OpenStack Repositories
     - name: Install some deps packages
       become: yes
-      apt: pkg={{ item }} state=present update_cache=yes
-      with_items:
-        - software-properties-common
-        - ubuntu-cloud-keyring
+      apt: 
+        state: present
+        pkg:
+          - software-properties-common
+          - ubuntu-cloud-keyring
 
     - name: Add OpenStack Repositories
       shell: add-apt-repository cloud-archive:{{ openstack_release }}
@@ -96,12 +97,13 @@
       apt: update_cache=yes upgrade=dist cache_valid_time=86400
     
     - name: Install Openstack Client
-      apt: pkg={{ item }} state=present update_cache=yes
-      with_items:
-        - python3-openstackclient
+      apt:
+        state: present
+        pkg:
+          - python3-openstackclient
         
     - name: "Build hosts file"
-      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item]['ansible_all_ipv4_addresses'][1] }} {{item}}" state=present
+      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line= "{{ hostvars[item]['ansible_all_ipv4_addresses'][1] }} {{item}}" state=present
       when: hostvars[item]['ansible_all_ipv4_addresses'][1] is defined
       with_items: "{{ groups.all }}"
 
