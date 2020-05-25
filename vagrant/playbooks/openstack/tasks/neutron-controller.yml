@@ -35,7 +35,6 @@
   become: yes
   apt:
     state: present
-    update_cache: yes
     pkg:
       - neutron-server
       - neutron-plugin-ml2

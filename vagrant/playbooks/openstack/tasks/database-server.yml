@@ -6,7 +6,6 @@
   become: yes
   apt:
     state: present
-    update_cache: yes
     pkg:
       - postgresql
       - libpq-dev # Required for Ansible to interact with postgres

@@ -35,7 +35,6 @@
   become: yes
   apt:
     state: present
-    update_cache: yes
     pkg:
       - nova-api
       - nova-conductor

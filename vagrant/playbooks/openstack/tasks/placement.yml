@@ -33,7 +33,7 @@
 
 - name: Install Placement packages
   become: yes
-  apt: pkg=placement-api state=present update_cache=yes
+  apt: pkg=placement-api state=present
   tags:
     - placement
 

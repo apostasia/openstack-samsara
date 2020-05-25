@@ -1,6 +1,6 @@
 - name: Install RabbitMQ packages
   become: yes
-  apt: pkg=rabbitmq-server state=present update_cache=yes
+  apt: pkg=rabbitmq-server state=present
   tags:
     - rabbitmq-server
 

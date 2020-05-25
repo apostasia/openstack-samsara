@@ -33,7 +33,7 @@
 
 - name: Install Glance packages
   become: yes
-  apt: pkg=glance state=present update_cache=yes
+  apt: pkg=glance state=present
   tags:
     - glance
 

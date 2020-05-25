@@ -4,10 +4,6 @@
   with_items:
       - keystone
       - python3-openstackclient
-      # - apache2
-      # - libapache2-mod-wsgi
-      # - memcached
-      # - python-memcache
   tags:
     - keystone
 

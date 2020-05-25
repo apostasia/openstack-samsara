@@ -2,7 +2,6 @@
   become: yes
   apt:
     state: present
-    update_cache: yes
     pkg:
       - neutron-linuxbridge-agent
   tags:

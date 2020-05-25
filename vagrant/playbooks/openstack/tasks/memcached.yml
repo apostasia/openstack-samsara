@@ -1,8 +1,6 @@
 - name: Install Memcached packages
   become: yes
-  apt: pkg={{ item }} state=present update_cache=yes
-  with_items:
-    - memcached
+  apt: pkg=memcached state=present
   tags:
     - memcached
 

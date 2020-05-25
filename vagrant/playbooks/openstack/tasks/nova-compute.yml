@@ -1,6 +1,6 @@
 - name: Install Nova Compute packages
   become: yes
-  apt: pkg=nova-compute state=present update_cache=yes
+  apt: pkg=nova-compute state=present
   tags:
     - nova-compute
 

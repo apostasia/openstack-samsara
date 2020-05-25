@@ -2,7 +2,6 @@
   become: yes
   apt:
     state: present
-    update_cache: yes
     pkg:
       - libpq-dev # Required for Ansible to interact with postgres
       - python3-psycopg2 # Required for Ansible to interact with postgres

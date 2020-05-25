@@ -7,9 +7,9 @@
   template: src=50-vagrant.yaml.j2 dest=/etc/netplan/50-vagrant.yaml
   notify: netplan apply
 
-- name: Install NTP package
+- name: Install Chrony package
   become: yes
-  apt: pkg=chrony state=present update_cache=yes
+  apt: pkg=chrony state=present
 
 - name: Update Timezone to Etc/UTC
   copy: content="America/Sao_Paulo\n" dest=/etc/timezone owner=root group=root mode=0644
