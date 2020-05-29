@@ -140,7 +140,8 @@
     -  include: tasks/neutron-controller.yml
       # tags: neutron-controller
 #       -  include: tasks/horizon.yml
-#       -  include: tasks/nfs-server.yml
+    -  include: tasks/nfs-server.yml
+      # tags: nfs
 #       -  include: tasks/demo-project.yml
 
 - hosts: compute_group
@@ -153,9 +154,10 @@
   tasks:
     -  include: tasks/chrony-compute.yml
       # tags: chrony
-    - include: tasks/postgresql-client.yml
+#    - include: tasks/postgresql-client.yml
     - include: tasks/nova-compute.yml
      # tags: nova-compute
     - include: tasks/neutron-compute.yml
      # tags: neutron-compute
-#       - include: tasks/nfs-client.yml
+    - include: tasks/nfs-client.yml
+     # tags: nfs

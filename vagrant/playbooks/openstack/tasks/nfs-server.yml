@@ -1,36 +1,53 @@
 - name: Install NFS Server package
   become: yes
   apt: pkg=nfs-kernel-server state=present
+  tags:
+    - nfs
 
 - name: Create Folder to store Nova instances
   become: yes
   command: mkdir -p /var/lib/nova/instances
+  tags:
+    - nfs
+
+- name: Test for /etc/exports entry
+  shell: grep -c "^/var/lib/nova/instances" /etc/exports || true
+  register: test_entry
+  tags:
+    - nfs
 
 - name: Add Nova instances folder to /etc/exports
-  become: yes
-  shell: |
-    su -c "cat >> /etc/exports << EOF
-                # Nova instances folder - work directory
-                /var/lib/nova/instances 172.16.0.10/255.255.255.0(rw,sync,fsid=0,no_root_squash)
-            EOF
-            "
+  lineinfile:
+    path: /etc/exports
+    line: /var/lib/nova/instances 172.16.0.10/255.255.255.0(rw,sync,fsid=0,no_root_squash)
+  when: test_entry.stdout == "0"
+  tags:
+    - nfs
 
-- name: Restart NFS/IMAP Services
+- name: Restart NFS Services
   become: yes
   service: name={{ item }} state=restarted
   with_items:
       - nfs-kernel-server
-      - idmapd
+  tags:
+    - nfs
 
 # This enable the ‘execute/search’ bit on your shared directory to allow qemu to be able to use the images within the directories
 - name: Change Nova instances folder permissions.
   file: path=/var/lib/nova/instances mode="o+x"
+  tags:
+    - nfs
 
-- name: Add Nova instances folder to FSTAB
-  become: yes
-  shell: |
-    su -c "cat >> /etc/fstab << EOF
-                # NFS - Nova work directory
-                172.16.0.10:/ /var/lib/instances nfs4 defaults 0 0
-            EOF
-            "
+- name: Test for fstab entry
+  shell: grep -c "^/var/lib/nova/instances" /etc/exports || true
+  register: test_entry
+  tags:
+    - nfs
+
+- name: Add Nova folder to fstab
+  lineinfile:
+    path: /etc/exports
+    line: /var/lib/nova/instances 172.16.0.10/255.255.255.0(rw,sync,fsid=0,no_root_squash)
+  when: test_entry.stdout == "0"
+  tags:
+    - nfs

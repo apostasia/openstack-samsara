@@ -1,20 +1,31 @@
 - name: Install NFSv4 Client package
   become: yes
-  apt: pkg=nfs-common state=installed
+  apt: pkg=nfs-common state=present
+  tags:
+    - nfs
+
+- name: Test for /etc/fstab entry
+  shell: grep -c "^172.16.0.10" /etc/fstab || true
+  register: test_entry
+  tags:
+    - nfs
 
 - name: Add Nova instances folder to FSTAB
-  become: yes
-  shell: |
-    su -c "cat >> /etc/fstab << EOF
-                # NFS - Nova work directory
-                172.16.0.10:/ /var/lib/nova/instances nfs4 defaults 0 0
-            EOF
-            "
+  lineinfile:
+    path: /etc/fstab
+    line: 172.16.0.10:/ /var/lib/nova/instances nfs4 defaults 0 0
+  when: test_entry.stdout == "0"
+  tags:
+    - nfs
 
 - name: Remount device
   become: yes
   shell: mount -av
+  tags:
+    - nfs
 
 # This enable the ‘execute/search’ bit on your shared directory to allow qemu to be able to use the images within the directories
 - name: Change Nova instances folder permissions.
   file: path=/var/lib/nova/instances owner=nova group=nova recurse=yes
+  tags:
+    - nfs
