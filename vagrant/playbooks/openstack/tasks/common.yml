@@ -1,6 +1,8 @@
-# - name: change hosts
-#   become: yes
-#   template: src=hosts.j2 dest=/etc/hosts
+- name: change hosts
+  become: yes
+  template: src=hosts.j2 dest=/etc/hosts
+  tags:
+    - build_hosts
 
 - name: Config enp0s9 interface
   become: yes

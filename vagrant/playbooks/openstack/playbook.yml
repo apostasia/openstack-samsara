@@ -102,10 +102,15 @@
         pkg:
           - python3-openstackclient
         
-    - name: "Build hosts file"
-      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line= "{{ hostvars[item]['ansible_all_ipv4_addresses'][1] }} {{item}}" state=present
-      when: hostvars[item]['ansible_all_ipv4_addresses'][1] is defined
-      with_items: "{{ groups.all }}"
+    - name: "Build hosts file [DEPRECATED IN ANSIBLE 2.9]"
+      debug:
+        msg: "now /etc/hosts is build in common.yml"
+#      become: yes
+#      lineinfile: dest=/etc/hosts regexp=".*{{ item }}$" line= "{{ hostvars[item]['ansible_all_ipv4_addresses'][1] }} {{ item }}" state=present
+#when: hostvars[item]['ansible_all_ipv4_addresses'][1] is defined
+#      with_items: "{{ groups.all }}"
+      tags:
+        - build_hosts
 
   tasks:
        - include: tasks/common.yml
