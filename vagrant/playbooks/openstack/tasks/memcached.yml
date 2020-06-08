@@ -4,7 +4,7 @@
   tags:
     - memcached
 
-- name: Replace after the expression till the end of the file (requires Ansible >= 2.4)
+- name: References to Controller Node
   lineinfile:
     path: /etc/memcached.conf
     regexp: '^-l\s127.0.0.1$'

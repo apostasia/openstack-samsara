@@ -53,11 +53,17 @@
 - name: Create Users
   become: yes
   become_user: postgres
-  postgresql_user: name={{ item.value.user }} password={{ item.value.password }} state=present role_attr_flags=NOSUPERUSER,CREATEDB encrypted=yes
+  postgresql_user: name={{ item.value.user }} password={{ item.value.password }} state=present role_attr_flags=NOSUPERUSER,CREATEDB
   with_dict: "{{databases}}"
+
+#- name: Provide users with DB permissions
+#  become: yes
+#  become_user: postgres
+#  postgresql_user: user={{ item.value.user }} db={{ item.key }} priv=ALL
+#  with_dict: "{{databases}}"
 
 - name: Provide users with DB permissions
   become: yes
   become_user: postgres
-  postgresql_user: user={{ item.value.user }} db={{ item.key }} priv=ALL
+  postgresql_privs: roles={{ item.value.user }} db={{ item.key }} privs=ALL objs=ALL_IN_SCHEMA
   with_dict: "{{databases}}"
