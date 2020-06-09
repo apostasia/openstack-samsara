@@ -1,6 +1,6 @@
 - name: Create Nova user
   environment: "{{ admin_env }}"
-  command: openstack user create --password "{{ openstack_users.nova_password }}" nova
+  command: openstack user create --domain default --password "{{ openstack_users.nova_password }}" nova
   register: nova_create_user
   ignore_errors: true
   tags:
@@ -55,8 +55,7 @@
 
 - name: Nova Api DB Populate
   become: yes
-  environment: "{{ admin_env }}"
-  shell: su -s /bin/sh -c "nova-manage api_db sync" nova
+  shell: /bin/sh -c "nova-manage api_db sync" nova
   tags:
     - nova-controller
 

@@ -1,0 +1,7 @@
+- include: create-provider-network.yml
+  tags:
+    create-networks
+
+- include: create-selfservice-network.yml
+  tags:
+    create-networks

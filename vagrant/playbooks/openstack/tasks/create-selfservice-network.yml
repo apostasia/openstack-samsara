@@ -1,0 +1,35 @@
+- name: Create selfservice network
+  environment: "{{ user_env }}"
+  command: openstack network create selfservice
+  register: create_selfservice_network
+  ignore_errors: true
+  tags:
+    - create-selfservice-network
+
+- name: Create subnet in selfservice network
+  environment: "{{ user_env }}"
+  command: openstack subnet create --network selfservice --dns-nameserver 8.8.4.4 --gateway 172.16.2.1 --subnet-range 172.16.2.0/24 selfservice
+  when: create_selfservice_network is succeeded
+  tags:
+    - create-selfservice-network
+
+- name: Create router
+  environment: "{{ user_env }}"
+  command: neutron router-create router
+  when: create_selfservice_network is succeeded
+  tags:
+    - create-selfservice-network
+
+- name: Add the self-service network subnet as an interface on the router
+  environment: "{{ user_env }}"
+  command: openstack router add subnet router selfservice
+  when: create_selfservice_network is succeeded
+  tags:
+    - create-selfservice-network
+
+- name: Set a gateway on the provider network on the router
+  environment: "{{ user_env }}"
+  command: openstack router set router --external-gateway provider
+  when: create_selfservice_network is succeeded
+  tags:
+    - create-selfservice-network

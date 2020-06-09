@@ -26,7 +26,7 @@
 
 - name: Populate the Identity service database
   become: yes
-  shell: su -s /bin/sh -c "keystone-manage db_sync" keystone
+  shell: /bin/sh -c "keystone-manage db_sync" keystone
   tags:
     - keystone
 

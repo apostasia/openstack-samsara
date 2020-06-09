@@ -1,0 +1,21 @@
+- name: Create provider network
+  environment: "{{ admin_env }}"
+  command: openstack network create --share --external --provider-physical-network provider --provider-network-type flat provider
+  register: create_provider_network
+  ignore_errors: true
+  tags:
+    - create-provider-network
+
+- name: Create subnet in provider network
+  environment: "{{ admin_env }}"
+  command: openstack subnet create --network provider --allocation-pool start=172.16.1.100,end=172.16.1.200 --dns-nameserver 8.8.4.4 --gateway 172.16.1.1 --subnet-range 172.16.1.0/24 provider
+  when: create_provider_network is succeeded
+  tags:
+    - create-provider-network
+
+#- name: Create external router for provider network
+#  environment: "{{ admin_env }}"
+#  command: neutron net-update provider --router:external 
+#  when: create_provider_network is succeeded
+#  tags:
+#    - create-provider-network

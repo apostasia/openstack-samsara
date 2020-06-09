@@ -48,13 +48,13 @@
   become: yes
   become_user: postgres
   postgresql_db: name={{ item.key }}
-  with_dict: "{{databases}}"
+  with_dict: "{{ databases }}"
 
 - name: Create Users
   become: yes
   become_user: postgres
   postgresql_user: name={{ item.value.user }} password={{ item.value.password }} state=present role_attr_flags=NOSUPERUSER,CREATEDB
-  with_dict: "{{databases}}"
+  with_dict: "{{ databases }}"
 
 #- name: Provide users with DB permissions
 #  become: yes
@@ -65,5 +65,7 @@
 - name: Provide users with DB permissions
   become: yes
   become_user: postgres
-  postgresql_privs: roles={{ item.value.user }} db={{ item.key }} privs=ALL objs=ALL_IN_SCHEMA
-  with_dict: "{{databases}}"
+  postgresql_privs: roles={{ item.value.user }} db={{ item.key }} privs=ALL objs=ALL_IN_SCHEMA state=present
+  with_dict: "{{ databases }}"
+  tags:
+    - db_permissions

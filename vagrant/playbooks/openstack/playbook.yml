@@ -11,7 +11,7 @@
   user: vagrant
   pre_tasks:
     - name: 'install python'
-      raw: 'apt-get install -y python'
+      raw: 'apt-get install -y python3'
 
 - hosts: all
   gather_facts: yes
@@ -144,10 +144,11 @@
       # tags: nova-controller
     -  include: tasks/neutron-controller.yml
       # tags: neutron-controller
-#       -  include: tasks/horizon.yml
+#    -  include: tasks/horizon.yml
     -  include: tasks/nfs-server.yml
       # tags: nfs
-#       -  include: tasks/demo-project.yml
+    -  include: tasks/create-networks.yml
+      # create-networks
 
 - hosts: compute_group
   become: yes

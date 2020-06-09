@@ -49,7 +49,7 @@
 
 - name:  Placement DB Populate
   become: yes
-  shell: su -s /bin/sh -c "placement-manage db sync" placement
+  shell: /bin/sh -c "placement-manage db sync" placement
   notify: restart apache
   tags:
     - placement

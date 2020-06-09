@@ -66,12 +66,6 @@ databases:
     neutron:
         user: neutron
         password: neutron
-#
-# Keystone
-#
-
-# Admin Token
-admin_token: 57d82
 
 # OpenStack Users
 openstack_users:
@@ -84,10 +78,6 @@ openstack_users:
 #
 # Environments
 #
-keystone_env:
-    OS_TOKEN: "57d82"
-    OS_URL: "http://controller:35357/v2.0"
-
 admin_env:
     OS_PROJECT_DOMAIN_NAME: Default
     OS_USER_DOMAIN_NAME: Default

@@ -1,6 +1,6 @@
 - name: Create Neutron user
   environment: "{{ admin_env }}"
-  command: openstack user create --password "{{ openstack_users.neutron_password }}" neutron
+  command: openstack user create --domain default --password "{{ openstack_users.neutron_password }}" neutron
   register: neutron_create_user
   ignore_errors: true
   tags:
@@ -65,8 +65,7 @@
 
 - name: Neutron DB Populate
   become: yes
-  environment: "{{ admin_env }}"
-  shell: su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
+  shell: /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
   tags:
     - neutron-controller
 
