@@ -2001,7 +2001,7 @@
 
 
 [database]
-connection = postgresql://glance:{{ databases.glance.password }}@controller/glance
+connection = postgresql+psycopg2://glance:{{ databases.glance.password }}@controller/glance
 backend = sqlalchemy
 
 #

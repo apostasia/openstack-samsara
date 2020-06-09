@@ -6,14 +6,6 @@
 # machine.
 #
 - hosts: all
-  gather_facts: no
-  become: yes
-  user: vagrant
-  pre_tasks:
-    - name: 'install python'
-      raw: 'apt-get install -y python3'
-
-- hosts: all
   gather_facts: yes
   become: yes
   user: vagrant
@@ -147,7 +139,7 @@
 #    -  include: tasks/horizon.yml
     -  include: tasks/nfs-server.yml
       # tags: nfs
-    -  include: tasks/create-networks.yml
+#  -  include: tasks/create-networks.yml
       # create-networks
 
 - hosts: compute_group

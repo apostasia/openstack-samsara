@@ -513,7 +513,7 @@ password = {{ openstack_users.placement_password }}
 
 
 [placement_database]
-connection = postgresql://placement:{{ databases.placement.password }}@controller/placement
+connection = postgresql+psycopg2://placement:{{ databases.placement.password }}@controller/placement
 #
 # The *Placement API Database* is a the database used with the placement
 # service. If the connection option is not set, the placement service will

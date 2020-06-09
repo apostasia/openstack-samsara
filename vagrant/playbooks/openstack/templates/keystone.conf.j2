@@ -551,7 +551,7 @@ log_dir = /var/log/keystone
 
 
 [database]
-connection = postgresql://keystone:{{ databases.keystone.password }}@controller/keystone
+connection = postgresql+psycopg2://keystone:{{ databases.keystone.password }}@controller/keystone
 #
 # From oslo.db
 #

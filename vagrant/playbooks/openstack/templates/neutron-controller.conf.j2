@@ -638,7 +638,7 @@ root_helper = "sudo /usr/bin/neutron-rootwrap /etc/neutron/rootwrap.conf"
 
 
 [database]
-connection = postgresql://neutron:{{ databases.neutron.password }}@controller/neutron 
+connection = postgresql+psycopg2://neutron:{{ databases.neutron.password }}@controller/neutron 
 
 #
 # From neutron.db

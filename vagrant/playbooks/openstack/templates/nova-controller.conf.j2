@@ -1083,7 +1083,7 @@ auth_strategy = keystone
 
 
 [api_database]
-connection = postgresql://nova:{{ databases.nova_api.password }}@controller/nova_api
+connection = postgresql+psycopg2://nova:{{ databases.nova_api.password }}@controller/nova_api
 #
 # The *Nova API Database* is a separate database which is used for information
 # which is used across *cells*. This database is mandatory since the Mitaka
@@ -1621,7 +1621,7 @@ connection = postgresql://nova:{{ databases.nova_api.password }}@controller/nova
 
 
 [database]
-connection = postgresql://nova:{{ databases.nova.password }}@controller/nova 
+connection = postgresql+psycopg2://nova:{{ databases.nova.password }}@controller/nova 
 
 #
 # From oslo.db
