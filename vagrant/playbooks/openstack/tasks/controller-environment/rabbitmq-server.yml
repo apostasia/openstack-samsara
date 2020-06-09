@@ -1,0 +1,22 @@
+---
+- name: Config Databases in Controller Node
+- hosts: controller
+  gather_facts: yes
+  become: yes
+  user: vagrant
+  vars_files:
+    - vars/main.yml
+  handlers:
+    - handlers/main.yml
+  tasks:
+    - name: Install RabbitMQ packages
+      apt: pkg=rabbitmq-server state=present
+
+    - name: Add user to server and assign full access control
+      rabbitmq_user: user={{ rabbitmq.user }}
+                    password={{ rabbitmq.password }}
+                    vhost=/
+                    configure_priv=.*
+                    read_priv=.*
+                    write_priv=.*
+                    state=present

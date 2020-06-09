@@ -1,0 +1,3 @@
+---
+- include: neutron-controller.yml
+- include: neutron-compute.yml

@@ -1,0 +1,67 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: yes
+  user: vagrant
+  vars_files:
+    - vars/main.yml
+  handlers: 
+    - handlers/main.yml
+  tasks:
+  # Make sure our VM's software is ~@Latest
+    - name: Apt Update
+      apt: update_cache=yes
+          upgrade=dist
+          cache_valid_time=86400
+
+    - name: Adjusting Locale
+      shell: locale-gen pt_BR.UTF-8
+
+    - name: Check if packages need to be autoremoved
+      command: apt-get --dry-run autoremove
+      register: check_autoremove
+      changed_when: False
+
+    - name: Autoremove unused packages
+      command: apt-get -y autoremove
+      when: "'packages will be REMOVED' in check_autoremove.stdout"
+
+    # Add OpenStack Repositories
+    - name: Install some deps packages
+      apt: 
+        state: present
+        pkg:
+          - software-properties-common
+          - ubuntu-cloud-keyring
+
+    - name: Add OpenStack Repositories
+      shell: add-apt-repository cloud-archive:{{ openstack_release }}
+
+    - name: Update packages
+      apt: update_cache=yes upgrade=dist cache_valid_time=86400
+    
+    - name: Install Openstack Client
+      apt:
+        state: present
+        pkg:
+          - python3-openstackclient
+
+    - name: change hosts
+      template: src=hosts.j2 dest=/etc/hosts
+      tags:
+        - build_hosts
+
+    - name: Config enp0s9 interface
+      become: yes
+      template: src=50-vagrant.yaml.j2 dest=/etc/netplan/50-vagrant.yaml
+      notify: netplan apply
+
+    - name: Update Timezone to Etc/UTC
+      copy: content="America/Sao_Paulo\n" dest=/etc/timezone owner=root group=root mode=0644
+      become: yes
+      register: timezone
+
+    - name: Reconfigure Timezone Data
+      shell: dpkg-reconfigure -f noninteractive tzdata
+      become: yes
+      when: timezone.changed

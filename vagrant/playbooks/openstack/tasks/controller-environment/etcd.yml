@@ -1,0 +1,18 @@
+---
+- name: Config Etcd in Controller Node
+- hosts: controller
+  gather_facts: yes
+  become: yes
+  user: vagrant
+  vars_files:
+    - vars/main.yml
+  handlers:
+    - handlers/main.yml
+  tasks:
+    - name: Install etcd packages
+      apt: pkg=etcd state=present update_cache=yes
+      notify: enable etcd
+
+    - name: Copy config file
+      template: src=etcd.j2 dest=/etc/default/etcd
+      notify: restart etcd

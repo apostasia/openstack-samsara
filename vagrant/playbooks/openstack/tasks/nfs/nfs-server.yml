@@ -1,0 +1,45 @@
+---
+- name: Setup NFS Server
+- hosts: compute_group
+  gather_facts: yes
+  become: yes
+  user: vagrant
+  vars_files:
+    - vars/main.yml
+  handlers:
+    - handlers/main.yml
+  tasks:
+    - name: Install NFS Server package
+      apt: pkg=nfs-kernel-server state=present
+
+    - name: Create Folder to store Nova instances
+      command: mkdir -p /var/lib/nova/instances
+
+    - name: Test for /etc/exports entry
+      shell: grep -c "^/var/lib/nova/instances" /etc/exports || true
+      register: test_entry
+
+    - name: Add Nova instances folder to /etc/exports
+      lineinfile:
+        path: /etc/exports
+        line: /var/lib/nova/instances 172.16.0.10/255.255.255.0(rw,sync,fsid=0,no_root_squash)
+      when: test_entry.stdout == "0"
+
+    - name: Restart NFS Services
+      service: name={{ item }} state=restarted
+      with_items:
+          - nfs-kernel-server
+
+    # This enable the ‘execute/search’ bit on your shared directory to allow qemu to be able to use the images within the directories
+    - name: Change Nova instances folder permissions.
+      file: path=/var/lib/nova/instances mode="o+x"
+
+    - name: Test for fstab entry
+      shell: grep -c "^/var/lib/nova/instances" /etc/exports || true
+      register: test_entry
+
+    - name: Add Nova folder to fstab
+      lineinfile:
+        path: /etc/exports
+        line: /var/lib/nova/instances 172.16.0.10/255.255.255.0(rw,sync,fsid=0,no_root_squash)
+      when: test_entry.stdout == "0"

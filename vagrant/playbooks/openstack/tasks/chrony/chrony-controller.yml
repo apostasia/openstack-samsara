@@ -1,0 +1,19 @@
+---
+- name: Install Chrony on Controller
+- hosts: controller
+  gather_facts: yes
+  become: yes
+  user: vagrant
+  vars_files:
+      - vars/main.yml
+  handlers: 
+    - include: handlers/main.yml
+  tasks:
+    - name: Install Chrony package
+      become: yes
+      apt: pkg=chrony state=present
+      
+    - name: Config chrony
+      become: yes
+      template: src=chrony_controller.j2 dest=/etc/chrony/chrony.conf
+      notify: restart chrony

@@ -1,0 +1,36 @@
+---
+- name: Launch Selfservice Network
+- hosts: controller
+  gather_facts: yes
+  become: no
+  user: vagrant
+  vars_files:
+    - vars/main.yml
+  handlers:
+    - handlers/main.yml
+  tasks:
+      - name: Create selfservice network
+      environment: "{{ user_env }}"
+      command: openstack network create selfservice
+      register: create_selfservice_network
+      ignore_errors: true
+
+    - name: Create subnet in selfservice network
+      environment: "{{ user_env }}"
+      command: openstack subnet create --network selfservice --dns-nameserver 8.8.4.4 --gateway 172.16.2.1 --subnet-range 172.16.2.0/24 selfservice
+      when: create_selfservice_network is succeeded
+
+    - name: Create router
+      environment: "{{ user_env }}"
+      command: neutron router-create router
+      when: create_selfservice_network is succeeded
+
+    - name: Add the self-service network subnet as an interface on the router
+      environment: "{{ user_env }}"
+      command: openstack router add subnet router selfservice
+      when: create_selfservice_network is succeeded
+
+    - name: Set a gateway on the provider network on the router
+      environment: "{{ user_env }}"
+      command: openstack router set router --external-gateway provider
+      when: create_selfservice_network is succeeded

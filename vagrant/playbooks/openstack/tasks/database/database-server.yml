@@ -1,0 +1,56 @@
+---
+- name: Config Databases in Controller Node
+- hosts: controller
+  gather_facts: yes
+  become: yes
+  user: vagrant
+  vars_files:
+      - vars/main.yml
+  handlers: 
+    - include: handlers/main.yml
+  tasks:
+    - name: Install Postgres packages
+      become: yes
+      apt:
+        state: present
+        pkg:
+          - postgresql
+          - libpq-dev
+          - python3-postgresql
+          - python3-psycopg2
+
+    - name: Allow TCP/IP socket connections
+      lineinfile:
+            dest: "/etc/postgresql/10/main/postgresql.conf"
+            regexp: "^#listen_addresses = 'localhost' "
+            line: "listen_addresses = '*'"
+            state: present
+
+    - name: Enable client auth
+      lineinfile:
+            dest: "/etc/postgresql/10/main/pg_hba.conf"
+            insertafter: EOF
+            line: "host    all             all             0.0.0.0/0            md5"
+            state: present
+
+    - name: Restart Postgres
+      become: yes
+      service: name=postgresql state=restarted
+
+    - name: Create Databases
+      become: yes
+      become_user: postgres
+      postgresql_db: name={{ item.key }}
+      with_dict: "{{ databases }}"
+
+    - name: Create Users
+      become: yes
+      become_user: postgres
+      postgresql_user: name={{ item.value.user }} password={{ item.value.password }} state=present role_attr_flags=NOSUPERUSER,CREATEDB
+      with_dict: "{{ databases }}"
+
+    - name: Provide users with DB permissions
+      become: yes
+      become_user: postgres
+      postgresql_privs: roles={{ item.value.user }} db={{ item.key }} privs=ALL objs=ALL_IN_SCHEMA state=present
+      with_dict: "{{ databases }}"

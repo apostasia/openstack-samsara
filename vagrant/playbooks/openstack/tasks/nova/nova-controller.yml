@@ -1,0 +1,76 @@
+---
+- name: Install Nova
+- hosts: controller
+  gather_facts: yes
+  become: yes
+  user: vagrant
+  vars_files:
+    - vars/main.yml
+  handlers:
+    - handlers/main.yml
+  tasks:
+    - name: Create Nova user
+      environment: "{{ admin_env }}"
+      command: openstack user create --domain default --password "{{ openstack_users.nova_password }}" nova
+      register: nova_create_user
+      ignore_errors: true
+
+    - name: Add admin role to Nova user and service project
+      environment: "{{ admin_env }}"
+      command: openstack role add --project service --user nova admin
+      when: nova_create_user is succeeded
+
+    - name: Create Service Entity Nova
+      environment: "{{ admin_env }}"
+      command: openstack service create --name nova --description "OpenStack Compute" compute
+      when: nova_create_user is succeeded
+
+    - name: Create Nova Service Endpoint
+      environment: "{{ admin_env }}"
+      command: openstack endpoint create --region RegionOne compute {{ item }} http://controller:8774/v2.1 
+      with_items:
+        - public
+        - internal
+        - admin  
+      when: nova_create_user is succeeded
+
+    - name: Install Nova Controller packages
+      become: yes
+      apt:
+        state: present
+        pkg:
+          - nova-api
+          - nova-conductor
+          - nova-novncproxy
+          - nova-scheduler
+
+    - name: Copy Nova config file
+      template:
+          src: "nova-controller.conf.j2"
+          dest: "/etc/nova/nova.conf"
+          owner: root
+          group: root
+          mode: 0644
+
+    - name: Nova Api DB Populate
+      shell: /bin/sh -c "nova-manage api_db sync" nova
+
+    - name: Register cell0 database
+      environment: "{{ admin_env }}"
+      shell: su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
+
+    - name: Nova DB Populate
+      environment: "{{ admin_env }}"
+      shell: su -s /bin/sh -c "nova-manage db sync" nova 
+
+    - name: Create the cell1 cell
+      environment: "{{ admin_env }}"
+      shell: su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
+
+    - name: Restart Nova Controller Services
+      service: name={{ item }} state=restarted
+      with_items:
+          - nova-api
+          - nova-scheduler
+          - nova-conductor
+          - nova-novncproxy

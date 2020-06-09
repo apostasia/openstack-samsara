@@ -1,0 +1,3 @@
+---
+- include: nova-controller.yml
+- include: nova-compute.yml
