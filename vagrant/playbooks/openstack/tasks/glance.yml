@@ -59,24 +59,3 @@
   service: name=glance-api state=restarted
   tags:
     - glance
-
-#- name: Get Cirros Image
-#  shell: wget -P /tmp/cirros-0.4.0-x86_64-disk.img http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
-#  register: download_cirros_image
-#  tags:
-#    - glance
-#
-#- name: Create Image for Cirros
-#  environment: "{{ admin_env }}"
-#  command: glance image-create --name "cirros" --file /tmp/cirros-0.4.0-x86_64-disk.img  --disk-format qcow2 --container-format bare --visibility public
-#  when: download_cirros_image is succeeded
-#
-#- name: Get Glance Image List
-#  environment: "{{ admin_env }}"
-#  command: glance image-list
-#  when: download_cirros_image is succeeded
-#
-#- name: Remove Cirros Image
-#  shell: rm /tmp/cirros-0.4.0-x86_64-disk.img
-#  register: check_remove_cirros
-#  when: download_cirros_image is succeeded

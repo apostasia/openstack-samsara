@@ -1,0 +1,87 @@
+- name: Download Cirros image
+  get_url:
+    url: http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
+    dest: /tmp/cirros.img
+
+- name: Add Cirros Image to Openstack
+  environment: "{{ admin_env }}"
+  os_image:
+    name: cirros
+    container_format: bare
+    disk_format: qcow2
+    state: present
+    filename: /tmp/cirros.img
+    interface: public
+    kernel: cirros-vmlinuz
+    ramdisk: cirros-initrd
+    is_public: yes
+  
+- name: Create nano flavor
+  environment: "{{ admin_env }}"
+  os_nova_flavor:
+    state: present
+    name: nano
+    ram: 64
+    vcpus: 1
+    disk: 1
+
+- name: Generate SSH Key
+  environment: "{{ user_env }}"
+  openssh_keypair:
+    path: /home/vagrant/.ssh/id_rsa
+    owner: vagrant
+    group: root
+  register: new_ssh_key
+
+- name: Add public keypair
+  environment: "{{ user_env }}"
+  os_keypair:
+    state: present
+    name: mykey
+    public_key_file: /home/vagrant/.ssh/id_rsa.pub
+  when: new_ssh_key is changed
+
+- name: Enable ICPM to default Security Group
+  environment: "{{ user_env }}"
+  os_security_group_rule:
+    security_group: default
+    protocol: icmp
+    remote_ip_prefix: 0.0.0.0/0
+
+- name: Enable SSH to default Security Group
+  environment: "{{ user_env }}"
+  os_security_group_rule:
+    security_group: default
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+    remote_ip_prefix: 0.0.0.0/0
+
+- name: Launch Instances in SelfService Network
+  environment: "{{ user_env }}"
+  os_server:
+    state: present
+    name: "{{ item }}"
+    image: cirros
+    key_name: mykey
+    timeout: 200
+    flavor: nano
+    network: selfservice
+  with_items:
+    - instance_000
+    - instance_001
+    - instance_002
+
+- name: Add Floating IPs to Instances
+  environment: "{{ user_env }}"
+  os_floating_ip:
+    state: present
+    server: "{{ item }}"
+    timeout: 200
+    wait: true
+    network: provider
+    nat_destination: selfservice
+  with_items:
+    - instance_000
+    - instance_001
+    - instance_002

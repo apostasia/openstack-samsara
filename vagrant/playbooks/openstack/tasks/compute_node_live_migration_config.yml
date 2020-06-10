@@ -1,0 +1,65 @@
+- name: enable login for nova user
+  become: yes
+  shell: usermod -s /bin/bash nova
+  tags:
+    - compute-node-live-migration
+
+- name: create nova-compute ssh key
+  user:
+    name: nova
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: /var/lib/nova/.ssh/id_rsa
+    force: no
+  tags:
+    - compute-node-live-migration
+
+- name: install sshpass and pip3
+  apt:
+    pkg:
+      - sshpass
+      - python3-pip
+    state: present
+  tags:
+    - compute-node-live-migration
+
+- name: install pexpect
+  pip:
+    name: pexpect
+  tags:
+    - compute-node-live-migration
+
+- name: change nova password
+  expect:
+    command: passwd nova
+    responses:
+      (?i)password: nova
+  tags:
+    - compute-node-live-migration
+
+- name: exchange compute nodes ssh keys
+  shell:
+    cmd: sshpass -p nova ssh-copy-id -i /var/lib/nova/.ssh/id_rsa.pub nova@{{ item }}
+  with_items:
+    - compute-001
+    - compute-002
+  tags:
+    - compute-node-live-migration
+
+- name: copy sshd config files
+  become_user: nova
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: 'ssh_config', dest: '/etc/ssh/ssh_config'}
+    - { src: 'sshd_config', dest: '/etc/ssh/sshd_config'}
+  tags:
+    - compute-node-live-migration
+
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted
+  tags:
+    - compute-node-live-migration

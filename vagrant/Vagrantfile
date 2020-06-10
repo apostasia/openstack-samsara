@@ -144,23 +144,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             # Configurações da máquina
             #
             node_config.vm.provider :virtualbox do |vbox|
-                # Memory - default 1GB
-                vbox.customize ['modifyvm', :id, '--memory', node[:memory]]
-
-                # CPU Number - default: 1
+                
+	    	vbox.customize ['modifyvm', :id, '--memory', node[:memory]]
                 vbox.customize ['modifyvm', :id, '--cpus', node[:cpu]]
-
-                ### Change network card to PCnet-FAST III
-                # For NAT adapter - Fix cloud-init stuck
-#               vbox.customize ["modifyvm", :id, "--nictype1", "Am79C973"]
-
-                # For host-only adapter
-#                vbox.customize ["modifyvm", :id, "--nictype2", "Am79C973"]
-
-                # Configuração - OpenStack Networking - Legacy (eth2)
-#                vbox.customize ['modifyvm', :id, '--nic3', 'intnet', "--nictype3", "Am79C973"]
-
-                #
+		vbox.customize ['modifyvm', :id, "--nicpromisc2", "allow-all"]
+		vbox.customize ['modifyvm', :id, "--nicpromisc3", "allow-all"]
+                
+		#
                 # Gluster Volume
                 #
                 #

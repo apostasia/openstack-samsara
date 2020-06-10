@@ -1,0 +1,4 @@
+---
+- include: launch-instances.yml
+  tags:
+    - launch-instances

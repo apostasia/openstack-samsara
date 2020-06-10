@@ -1,0 +1,38 @@
+- name: create nova-compute ssh key
+  user:
+    name: nova
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+
+name: install sshpass
+  apt:
+     name: sshpass
+     state: present
+
+- name: change nova password
+  expect:
+    command: passwd nova
+    responses:
+      (?i)password: nova
+
+- name: exchange compute nodes ssh keys
+  become: no
+  shell:
+    cmd: sshpass -p nova ssh-copy-id nova@{{ item }}
+  with_items:
+    - compute-001
+    - compute-002
+
+- name: copy sshd config files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: 'ssh_config', dest: '/etc/ssh/ssh_config'}
+    - { src: 'sshd_config', dest: '/etc/ssh/sshd_config'}
+
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted

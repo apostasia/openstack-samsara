@@ -118,8 +118,6 @@
     -  include: tasks/neutron-controller.yml
 #    -  include: tasks/horizon.yml
     -  include: tasks/nfs-server.yml
-    -  include: tasks/libvirt.yml
-    -  include: tasks/create-networks.yml
 
 - hosts: compute_group
   become: yes
@@ -130,11 +128,20 @@
     - include: handlers/main.yml
   tasks:
     -  include: tasks/chrony-compute.yml
-      # tags: chrony
-#    - include: tasks/postgresql-client.yml
-    - include: tasks/nova-compute.yml
-     # tags: nova-compute
-    - include: tasks/neutron-compute.yml
-     # tags: neutron-compute
-    - include: tasks/nfs-client.yml
-     # tags: nfs
+    -  include: tasks/nova-compute.yml
+    -  include: tasks/neutron-compute.yml
+    -  include: tasks/nfs-client.yml
+#-  include: tasks/libvirt.yml
+    -  include: tasks/compute_node_live_migration_config.yml
+
+- hosts: controller
+  become: yes
+  user: vagrant
+  vars_files:
+    - vars/main.yml
+  handlers:
+    - include: handlers/main.yml
+  tasks:
+    -  include: tasks/create-networks.yml
+    -  include: tasks/create-instances.yml
+
