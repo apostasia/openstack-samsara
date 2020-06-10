@@ -94,16 +94,6 @@
         pkg:
           - python3-openstackclient
         
-    - name: "Build hosts file [DEPRECATED IN ANSIBLE 2.9]"
-      debug:
-        msg: "now /etc/hosts is build in common.yml"
-#      become: yes
-#      lineinfile: dest=/etc/hosts regexp=".*{{ item }}$" line= "{{ hostvars[item]['ansible_all_ipv4_addresses'][1] }} {{ item }}" state=present
-#when: hostvars[item]['ansible_all_ipv4_addresses'][1] is defined
-#      with_items: "{{ groups.all }}"
-      tags:
-        - build_hosts
-
   tasks:
        - include: tasks/common.yml
        - include: tasks/credentials.yml
@@ -117,30 +107,19 @@
     - include: handlers/main.yml
   tasks:
     -  include: tasks/chrony-controller.yml
-      # tags: chrony
     -  include: tasks/database-server.yml
-      # tags: db-server
     -  include: tasks/rabbitmq-server.yml
-      # tags: rabbitmq-server
     -  include: tasks/memcached.yml
-      # tags: memcached
     -  include: tasks/etcd.yml
-      # tags: etcd
     -  include: tasks/keystone.yml
-      # tags: keystone
     -  include: tasks/glance.yml
-      # tags: glance
-    - include: tasks/placement.yml
-      # tags: placement
+    -  include: tasks/placement.yml
     -  include: tasks/nova-controller.yml
-      # tags: nova-controller
     -  include: tasks/neutron-controller.yml
-      # tags: neutron-controller
 #    -  include: tasks/horizon.yml
     -  include: tasks/nfs-server.yml
-      # tags: nfs
+    -  include: tasks/libvirt.yml
     -  include: tasks/create-networks.yml
-      # create-networks
 
 - hosts: compute_group
   become: yes

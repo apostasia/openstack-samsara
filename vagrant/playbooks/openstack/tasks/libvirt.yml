@@ -4,33 +4,45 @@
     state: present 
     pkg:
       - libvirt-bin
+  tags:
+    - libvirt
 
 - name: Disable libvirt TLS connections
   lineinfile:
       dest:  "/etc/libvirt/libvirtd.conf"
       regexp: "^#listen_tls = 0"
       line: "listen_tls = 0"
+  tags:
+    - libvirt
 
 - name: Enable listen for unencrypted TCP connections
   lineinfile:
       dest:  "/etc/libvirt/libvirtd.conf"
       regexp: "^#listen_tcp = 1"
       line: "listen_tcp = 1"
+  tags:
+    - libvirt
 
 - name: Disable auth connections
   lineinfile:
       dest:  "/etc/libvirt/libvirtd.conf"
       regexp: '^#auth_tcp = "sasl"'
       line: 'auth_tcp = "none"'
+  tags:
+    - libvirt
 
-- name: Enable libvirt TCP listen - /etc/init/libvirt-bin.conf
+- name: Enable libvirt TCP listen - /etc/default/libvirtd
   lineinfile:
-      dest:  "/etc/init/libvirt-bin.conf"
-      regexp: 'env\slibvirtd_opts="-d"'
+      dest:  "/etc/default/libvirtd"
+      regexp: '#libvirtd_opts='
       line: 'env libvirtd_opts="-l"'
+  tags:
+    - libvirt
 
 - name: Restart Libvirt
   become: yes
   service: name={{ item }} state=restarted
   with_items:
       - libvirtd
+  tags:
+    - libvirt
