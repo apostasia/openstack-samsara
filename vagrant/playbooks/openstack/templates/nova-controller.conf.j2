@@ -3347,8 +3347,8 @@ password = {{ openstack_users.nova_password }}
 
 auth_url = http://controller:5000
 auth_type = password
-project_domain_name = default
-user_domain_name = default
+project_domain_name = Default
+user_domain_name = Default
 region_name = RegionOne
 project_name = service
 username = neutron
@@ -3468,6 +3468,7 @@ metadata_proxy_shared_secret = {{ metadata_secret }}
 # the user and project domain in v3 and ignored in v2 authentication (string
 # value)
 #default_domain_id = <None>
+#    -  include: tasks/horizon.yml
 
 # Optional domain name to use with v3 API and v2 parameters. It will be used for
 # both the user and project domain in v3 and ignored in v2 authentication

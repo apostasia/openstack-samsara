@@ -139,7 +139,7 @@
 #    -  include: tasks/horizon.yml
     -  include: tasks/nfs-server.yml
       # tags: nfs
-#  -  include: tasks/create-networks.yml
+    -  include: tasks/create-networks.yml
       # create-networks
 
 - hosts: compute_group
