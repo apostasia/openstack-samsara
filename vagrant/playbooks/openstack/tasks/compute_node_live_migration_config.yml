@@ -10,7 +10,17 @@
     generate_ssh_key: yes
     ssh_key_bits: 2048
     ssh_key_file: /var/lib/nova/.ssh/id_rsa
-    force: no
+    force: yes
+  tags:
+    - compute-node-live-migration
+
+- name: create root ssh key
+  user:
+    name: root
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: /root/.ssh/id_rsa
+    force: yes
   tags:
     - compute-node-live-migration
 
@@ -37,17 +47,15 @@
   tags:
     - compute-node-live-migration
 
-- name: exchange compute nodes ssh keys
-  shell:
-    cmd: sshpass -p nova ssh-copy-id -i /var/lib/nova/.ssh/id_rsa.pub nova@{{ item }}
-  with_items:
-    - compute-001
-    - compute-002
+- name: change root password
+  expect:
+    command: passwd root
+    responses:
+      (?i)password: root
   tags:
     - compute-node-live-migration
 
 - name: copy sshd config files
-  become_user: nova
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -61,5 +69,24 @@
   service:
     name: sshd
     state: restarted
+  tags:
+    - compute-node-live-migration
+
+- name: exchange nova compute nodes ssh keys
+  become_user: nova
+  shell:
+    cmd: sshpass -p nova ssh-copy-id -i /var/lib/nova/.ssh/id_rsa.pub nova@{{ item }}
+  with_items:
+    - compute-001
+    - compute-002
+  tags:
+    - compute-node-live-migration
+
+- name: exchange root compute nodes ssh keys
+  shell:
+    cmd: sshpass -p root ssh-copy-id -i /root/.ssh/id_rsa.pub root@{{ item }}
+  with_items:
+    - compute-001
+    - compute-002
   tags:
     - compute-node-live-migration

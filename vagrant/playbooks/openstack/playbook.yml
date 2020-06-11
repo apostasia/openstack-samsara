@@ -131,7 +131,7 @@
     -  include: tasks/nova-compute.yml
     -  include: tasks/neutron-compute.yml
     -  include: tasks/nfs-client.yml
-#-  include: tasks/libvirt.yml
+    -  include: tasks/libvirt.yml
     -  include: tasks/compute_node_live_migration_config.yml
 
 - hosts: controller

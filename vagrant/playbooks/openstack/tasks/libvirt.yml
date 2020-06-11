@@ -4,26 +4,30 @@
     state: present 
     pkg:
       - libvirt-bin
-      - libvirt-daemon
-      - nova-compute-qemu
+  tags:
+    - libvirt
+    
+- name: Mask Libvirt systemd
+  become: yes
+  shell: systemctl mask libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket libvirtd-tls.socket libvirtd-tcp.socket
   tags:
     - libvirt
 
-- name: Disable libvirt TLS connections
-  lineinfile:
-      dest:  "/etc/libvirt/libvirtd.conf"
-      regexp: "^#listen_tls = 0"
-      line: "listen_tls = 0"
-  tags:
-    - libvirt
-
-- name: Enable listen for unencrypted TCP connections
+- name: Enable TCP
   lineinfile:
       dest:  "/etc/libvirt/libvirtd.conf"
       regexp: "^#listen_tcp"
-      line: "listen_tcp = 0"
+      line: "listen_tcp = 1"
   tags:
     - libvirt
+
+- name: Disable TLS
+  lineinfile:
+      dest:  "/etc/libvirt/libvirtd.conf"
+      regexp: "^#listen_tls"
+      line: "listen_tls = 0"
+  tags:
+   - libvirt
 
 - name: Disable auth connections
   lineinfile:
@@ -33,15 +37,15 @@
   tags:
     - libvirt
 
-- name: Enable libvirt TCP listen - /etc/default/libvirtd
+- name: Enable libvirt TCP listen
   lineinfile:
-      dest:  "/etc/default/libvirtd"
-      regexp: '#libvirtd_opts='
-      line: 'libvirtd_opts="-l"'
+    dest:  "/etc/default/libvirtd"
+    regexp: '#libvirtd_opts'
+    line: 'libvirtd_opts="-l"'
   tags:
     - libvirt
 
-- name: Restart Libvirt and nova-compute
+- name: Restart Nova-compute and Libvirtd
   become: yes
   service: name={{ item }} state=restarted
   with_items:
