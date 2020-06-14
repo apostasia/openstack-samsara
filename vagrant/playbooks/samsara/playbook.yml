@@ -7,34 +7,31 @@
 #
 - hosts: all
   gather_facts: no
-  sudo: true
+  become: yes
   vars_files:
-      - vars.yml
-      - ../openstack/vars.yml
+    - vars/main.yml
   tasks:
-       - include: tasks/system-config.yml
+    - include: tasks/system-config.yml
+    - include: tasks/install-deps.yml
+    - include: tasks/samsara-common-config.yml
 ###############################################################################
 - hosts: controller
-  sudo: true
+  become: yes
   vars_files:
-      - vars.yml
-      - ../openstack/vars.yml
+    - vars/main.yml
   handlers:
-      - include: handlers/main.yml
+    - handlers/main.yml
   tasks:
       - include: tasks/database-server.yml
       - include: tasks/openstack-config-setup.yml
-      - include: tasks/install-deps.yml
-      - include: tasks/samsara-controller-config.yml
 
 - hosts: compute_group
-  sudo: true
+  become: yes
   vars_files:
-      - vars.yml
-      - ../openstack/vars.yml
+    - vars/main.yml
+  handlers:
+    - handlers/main.yml
   tasks:
-      - include: tasks/install-deps.yml
       - include: tasks/rootwrap-config.yml
-      - include: tasks/samsara-compute-config.yml
       - include: tasks/add-users-to-libvirtd-group.yml
       - include: tasks/cpuacct-ubuntu-fix.yml
