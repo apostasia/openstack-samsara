@@ -1,6 +1,6 @@
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
-export OS_PROJECT_NAME=projectsamsara
+export OS_PROJECT_NAME=samsaraproject
 export OS_USERNAME=samsara
 export OS_PASSWORD=samsara
 export OS_AUTH_URL=http://controller:5000/v3
