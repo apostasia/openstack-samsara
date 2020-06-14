@@ -1,0 +1,9 @@
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[controller]
+controller
+
+[compute_group]
+compute-001
+compute-002

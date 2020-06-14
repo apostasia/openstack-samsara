@@ -23,6 +23,7 @@
 # gluster_brick_name: gluster
 
 ####### Network Interfaces Config
+mgmt_nic: enp0s8
 provider_interface_name: enp0s9
 overlay_interface_ip_address: 172.16.0.10
 metadata_secret: metadata_secret
@@ -67,6 +68,10 @@ databases:
         user: neutron
         password: neutron
 
+    samsara:
+        user: samsara
+        password: samsara
+        
 # OpenStack Users
 openstack_users:
     admin_password: samsara

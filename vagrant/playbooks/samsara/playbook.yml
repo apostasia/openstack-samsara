@@ -6,7 +6,7 @@
 # machine.
 #
 - hosts: all
-  gather_facts: no
+  gather_facts: yes
   become: yes
   vars_files:
     - vars/main.yml
@@ -16,22 +16,19 @@
     - include: tasks/samsara-common-config.yml
 ###############################################################################
 - hosts: controller
+  gather_facts: yes
   become: yes
   vars_files:
     - vars/main.yml
-  handlers:
-    - handlers/main.yml
   tasks:
       - include: tasks/database-server.yml
       - include: tasks/openstack-config-setup.yml
-
 - hosts: compute_group
+  gather_facts: yes
   become: yes
   vars_files:
     - vars/main.yml
-  handlers:
-    - handlers/main.yml
   tasks:
       - include: tasks/rootwrap-config.yml
       - include: tasks/add-users-to-libvirtd-group.yml
-      - include: tasks/cpuacct-ubuntu-fix.yml
+#      - include: tasks/cpuacct-ubuntu-fix.yml

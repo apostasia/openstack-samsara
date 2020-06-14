@@ -10,7 +10,7 @@ log_dir=/var/log/samsara
 mgmt_nic = {{ mgmt_nic }}
 
 # Management IPv4 address
-mgmt_ip = {{ ansible_eth1.ipv4.address }}
+mgmt_ip = {{ ansible_all_ipv4_addresses[1] }}
 
 [local_storage]
 path = 'sqlite:////var/lib/samsara/context_store.db'
@@ -42,17 +42,21 @@ rabbit_password = {{ rabbitmq.password }}
 rabbit_virtual_host = /
 
 [database]
-connection = postgresql://samsara:{{ samsara_database_password }}@controller/samsara
+connection = postgresql://samsara:{{ databases.samsara.password }}@controller/samsara
 
 [keystone_authtoken]
-auth_uri = http://controller:5000
-auth_url = http://controller:35357
-auth_plugin = password
-project_domain_id = default
-user_domain_id = default
+# auth_uri = http://controller:5000
+www_authenticate_uri = http://controller:5000
+auth_url = http://controller:5000
+# memcached
+memcached_servers = controller:11211
+# auth_plugin = password
+auth_type = password
+project_domain_id = Default
+user_domain_id = Default
 project_name = service
 username = samsara
-password = {{ samsara_database_password }}
+password = {{ openstack_users.samsara_password }}
 
 [oslo_concurrency]
 lock_path=/var/lock/samsara

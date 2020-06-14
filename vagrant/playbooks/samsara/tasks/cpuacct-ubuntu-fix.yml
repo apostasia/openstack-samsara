@@ -30,4 +30,4 @@
   service: name={{ item }} state=restarted
   with_items:
       - nova-compute
-      - libvirt-bin
+      - libvirtd
