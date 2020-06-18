@@ -6,6 +6,9 @@ debug = True
 #log_config_append = /etc/samsara/logging.conf
 log_dir=/var/log/samsara
 
+# RabbitMQ
+transport_url = rabbit://openstack:{{ rabbitmq.password }}@controller
+
 # Management NIC used to live migration
 mgmt_nic = {{ mgmt_nic }}
 
@@ -32,14 +35,6 @@ auth_strategy = keystone
 
 #RabbitMQ
 rpc_backend = rabbit
-
-[oslo_messaging_rabbit]
-rabbit_host = controller
-rabbit_port = 5672
-rabbit_use_ssl = false
-rabbit_userid = {{ rabbitmq.user }}
-rabbit_password = {{ rabbitmq.password }}
-rabbit_virtual_host = /
 
 [database]
 connection = postgresql://samsara:{{ databases.samsara.password }}@controller/samsara
