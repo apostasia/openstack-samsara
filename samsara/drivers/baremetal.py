@@ -234,10 +234,10 @@ class BareMetalDriver(object):
         for max_mips, max_freq, current_freq, busytime in zip(maxmips_percore, maxfreq_percore, currentfreq_percore, busytime_percore):
             try:
                 # Calculate current_compute_capacity in BogoMips
-		        current_compute_capacity = (current_freq * max_mips) / max_freq
+                current_compute_capacity = (current_freq * max_mips) / max_freq
 
 		        # Calculate current cpu usage in bogomips
-		        current_usage = current_compute_capacity * busytime
+                current_usage = current_compute_capacity * busytime
 
 		        #usage_core = (((current_freq * max_mips)/max_freq) * busytime)
 
@@ -300,7 +300,7 @@ class BareMetalDriver(object):
             nic_speed = open(file_path,"r").read().strip("\n")
             return int(nic_speed)
         except IOError as e:
-            print "I/O error({0}): {1}".format(e.errno, e.strerror)
+            print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
     def get_host_nic_rx_tx_bytes(self,nic):
         """ Get current status of Rx and Tx for informed NIC
@@ -314,7 +314,7 @@ class BareMetalDriver(object):
 
             return nic_status
         except IOError as e:
-            print "I/O error({0}): {1}".format(e.errno, e.strerror)
+            print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
     def get_hostname(self):
         """ Return Node Hostname

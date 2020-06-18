@@ -109,7 +109,7 @@ class ConductorManager(periodic_task.PeriodicTasks):
 
     target = messaging.Target(version=RPC_API_VERSION)
 
-    def __init__(self, host="teste-default-conductor", topic):
+    def __init__(self, topic, host="teste-default-conductor"):
         super(ConductorManager, self).__init__(CONF)
         if not host:
             host = CONF.host
@@ -162,4 +162,5 @@ class ConductorManager(periodic_task.PeriodicTasks):
 
         
     def get_info(self, context, node_obj):
+        pass
             

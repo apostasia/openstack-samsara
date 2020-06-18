@@ -130,7 +130,7 @@ def generate_hosts(hosts_number=2, compute_capacity=6000.50, min_compute=0, memo
     return hosts_list
 
 
-def generate_hosts_by_list(hosts_number=2, compute_capacity=6000.50, min_compute=0, memory_capacity=2048, min_memory=128, hosts):
+def generate_hosts_by_list(hosts, hosts_number=2, compute_capacity=6000.50, min_compute=0, memory_capacity=2048, min_memory=128):
     hosts_list = []
     # Generate fake hosts
     for x in range(1, hosts_number):
