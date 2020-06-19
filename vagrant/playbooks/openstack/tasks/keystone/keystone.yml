@@ -10,10 +10,11 @@
     - handlers/main.yml
   tasks:
     - name: Install Keystone packages
-      apt: pkg={{ item }} state=present
-      with_items:
+      apt: 
+        name:
           - keystone
           - python3-openstackclient
+        state: present
       tags:
         - keystone
 

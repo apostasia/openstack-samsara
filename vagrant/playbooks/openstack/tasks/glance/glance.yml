@@ -46,6 +46,7 @@
           mode: 0644
 
     - name:  Glance DB Populate
+      became: yes
       shell: su -s /bin/sh -c "glance-manage db_sync" glance
       register: check_glance_db_populate
 
