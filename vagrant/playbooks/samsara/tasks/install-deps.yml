@@ -7,14 +7,14 @@
     name:
       - python3-pip
       - python-dev
-      - python-tox
-      - python-oslo.config
+      - tox
+      - python3-oslo.config
       - python3-psycopg2
       - python-numpy
       - git
       - htop
-      - ipython
-      - python-libvirt
+      - ipython3
+      - python3-libvirt
 
 ############################################################################
 # Install Required PIP Packages
