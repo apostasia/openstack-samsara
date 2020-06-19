@@ -3,7 +3,9 @@
   apt:
     state: present 
     pkg:
-      - libvirt-bin
+      - libvirt-daemon-system
+      - libvirt-clients
+      - qemu-kvm
   tags:
     - libvirt
     

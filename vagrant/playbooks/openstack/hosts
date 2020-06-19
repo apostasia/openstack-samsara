@@ -2,8 +2,8 @@
 ansible_python_interpreter=/usr/bin/python3
 
 [controllers_group]
-controller
+controller nic_1=eth1 nic_2=eth2 nic_1_addr=172.16.0.10/24
 
 [compute_group]
-compute-001
-compute-002
+compute-001 nic_1=eth1 nic_2=eth2 nic_1_addr=172.16.0.21/24
+compute-002 nic_1=eth1 nic_2=eth2 nic_1_addr=172.16.0.22/24

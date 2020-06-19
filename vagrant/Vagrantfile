@@ -5,7 +5,9 @@
 VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box = 'ubuntu/bionic64'
+    #config.vm.box = 'ubuntu/bionic64'
+    config.vm.box = 'bento/ubuntu-20.04'
+    
     #config.vm.box_version = '20151218.0.1'
 
     #config.vm.box = 'openstack-base-trusty64'
@@ -145,10 +147,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             #
             node_config.vm.provider :virtualbox do |vbox|
                 
-	    	vbox.customize ['modifyvm', :id, '--memory', node[:memory]]
+	    	    vbox.customize ['modifyvm', :id, '--memory', node[:memory]]
                 vbox.customize ['modifyvm', :id, '--cpus', node[:cpu]]
-		vbox.customize ['modifyvm', :id, "--nicpromisc2", "allow-all"]
-		vbox.customize ['modifyvm', :id, "--nicpromisc3", "allow-all"]
+		        vbox.customize ['modifyvm', :id, "--nicpromisc2", "allow-all"]
+                vbox.customize ['modifyvm', :id, "--nicpromisc3", "allow-all"]
+                vbox.customize ["modifyvm", :id, "--cableconnected1", "on"]
+                vbox.customize ["modifyvm", :id, "--cableconnected2", "on"]
+                vbox.customize ["modifyvm", :id, "--cableconnected3", "on"]
                 
 		#
                 # Gluster Volume

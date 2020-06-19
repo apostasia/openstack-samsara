@@ -44,7 +44,9 @@
 
 *.cache
 
+#
 # Vagrant and VirtualBox stuffs
+#
 
 */.vagrant/
 
@@ -57,3 +59,7 @@
 *.swp
 
 *.retry
+
+# Samsara fake_root
+
+fake_root/
