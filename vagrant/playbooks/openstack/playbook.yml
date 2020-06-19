@@ -23,15 +23,6 @@
     - name: Adjusting Locale
       shell: locale-gen pt_BR.UTF-8
 
-    - name: Check if packages need to be autoremoved
-      command: apt-get --dry-run autoremove
-      register: check_autoremove
-      changed_when: False
-
-    - name: Autoremove unused packages
-      command: apt-get -y autoremove
-      when: "'packages will be REMOVED' in check_autoremove.stdout"
-
     # - name: Remove cgroup-lite package
     #   apt: name=cgroup-lite state=absent
 
@@ -97,6 +88,16 @@
   tasks:
        - include: tasks/common.yml
        - include: tasks/credentials.yml
+  
+  post_tasks:
+    - name: Remove useless packages from the cache
+      apt:
+        autoclean: yes
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
+
 ###############################################################################"
 - hosts: controllers_group
   become: yes

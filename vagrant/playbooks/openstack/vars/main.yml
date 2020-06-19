@@ -1,4 +1,9 @@
 ---
+###########################################################
+# Nodes Configuration                                     #
+###########################################################
+
+
 # # Firewall configuration.
 # firewall_allowed_tcp_ports:
 #   - 22
@@ -22,10 +27,7 @@
 # gluster_brick_dir: /srv/gluster/brick
 # gluster_brick_name: gluster
 
-####### Network Interfaces Config
-provider_interface_name: enp0s9
-overlay_interface_ip_address: 172.16.0.10
-metadata_secret: metadata_secret
+
 
 ###########################################################
 # OpenStack Configuration                                 #
@@ -108,3 +110,9 @@ user_env:
 
 # qemu for vagrant or kvm for baremetal deploy
 virt_type_option: qemu
+
+
+####### OpenStack Network Interfaces Config
+provider_interface_name: eth2
+overlay_interface_ip_address: 172.16.0.10
+metadata_secret: metadata_secret
