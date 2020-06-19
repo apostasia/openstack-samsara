@@ -21,6 +21,7 @@ import fcntl
 import struct
 import sys
 import time
+import binascii
 
 from datetime import datetime
 from operator import sub
@@ -199,7 +200,7 @@ class BareMetalDriver(object):
         cpu_time_t1  = self.get_cpu_time_percore()
 
         # compute the delta time for each cpu and generate an list
-        busytime_percore = map(sub,cpu_time_t1, cpu_time_t0)
+        busytime_percore = list(map(sub,cpu_time_t1, cpu_time_t0))
 
         return busytime_percore
 
@@ -215,7 +216,7 @@ class BareMetalDriver(object):
         self._last_busytime_percore = cpu_time_t1
 
         # compute the delta cpu time for each cpu and generate an list
-        busytime_percore = map(sub,cpu_time_t1,cpu_time_t0)
+        busytime_percore = list(map(sub,cpu_time_t1,cpu_time_t0))
 
         return busytime_percore
 
@@ -234,10 +235,10 @@ class BareMetalDriver(object):
         for max_mips, max_freq, current_freq, busytime in zip(maxmips_percore, maxfreq_percore, currentfreq_percore, busytime_percore):
             try:
                 # Calculate current_compute_capacity in BogoMips
-		        current_compute_capacity = (current_freq * max_mips) / max_freq
+                current_compute_capacity = (current_freq * max_mips) / max_freq
 
 		        # Calculate current cpu usage in bogomips
-		        current_usage = current_compute_capacity * busytime
+                current_usage = current_compute_capacity * busytime
 
 		        #usage_core = (((current_freq * max_mips)/max_freq) * busytime)
 
@@ -300,7 +301,7 @@ class BareMetalDriver(object):
             nic_speed = open(file_path,"r").read().strip("\n")
             return int(nic_speed)
         except IOError as e:
-            print "I/O error({0}): {1}".format(e.errno, e.strerror)
+            print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
 
     def get_host_nic_rx_tx_bytes(self,nic):
         """ Get current status of Rx and Tx for informed NIC
@@ -314,20 +315,27 @@ class BareMetalDriver(object):
 
             return nic_status
         except IOError as e:
-            print "I/O error({0}): {1}".format(e.errno, e.strerror)
+            print(("I/O error({0}): {1}".format(e.errno, e.strerror)))
 
     def get_hostname(self):
         """ Return Node Hostname
         """
         return socket.getfqdn()
 
+    # def get_mac_address(self, nic):
+    #     """ Return HW address to specific NIC
+    #     """
+    #     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #     info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', bytes(nic[:15], 'utf-8')))
+    #     return ''.join(['%02x:'.format(ord(char)) for char in info[18:24]])[:-1]
+
     def get_mac_address(self, nic):
         """ Return HW address to specific NIC
         """
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', nic[:15]))
-        return ''.join(['%02x:' % ord(char) for char in info[18:24]])[:-1]
-
+        info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s',  bytes(nic[:15], 'utf-8')))
+        return ''.join(l + ':' * (n % 2 == 1) for n, l in enumerate(binascii.hexlify(info[18:24]).decode('utf-8')))[:-1]
+        
     def get_delta_time(self):
             global _global_timestamp
 
