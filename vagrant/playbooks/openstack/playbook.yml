@@ -82,8 +82,8 @@
           - software-properties-common
           - ubuntu-cloud-keyring
 
-    - name: Add OpenStack Repositories
-      shell: add-apt-repository cloud-archive:{{ openstack_release }}
+   # - name: Add OpenStack Repositories
+   #   shell: add-apt-repository cloud-archive:{{ openstack_release }}
 
     - name: Update packages
       apt: update_cache=yes upgrade=dist cache_valid_time=86400
@@ -98,7 +98,7 @@
        - include: tasks/common.yml
        - include: tasks/credentials.yml
 ###############################################################################"
-- hosts: controller
+- hosts: controllers_group
   become: yes
   user: vagrant
   vars_files:
