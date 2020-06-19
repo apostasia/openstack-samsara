@@ -11,6 +11,10 @@
 - name: Creates /etc/samsara directory
   file: path=/etc/samsara state=directory owner=samsara group=samsara mode=0775 recurse=yes
 
+# Create /etc/samsara/rules directory
+- name: Creates /etc/samsara/rules directory
+  file: path=/etc/samsara/rules state=directory owner=samsara group=samsara mode=0775 recurse=yes
+
 # Create /var/lock/samsara directory
 - name: Creates /var/lock/samsara directory
   file: path=/var/lock/samsara state=directory owner=samsara group=samsara mode=0775 recurse=yes

@@ -1,0 +1,7 @@
+- name: Copy Samsara Cell Rules File
+  template:
+      src: "cell_rules.json.j2"
+      dest: "/etc/samsara/rules/cell.json"
+      owner: root
+      group: root
+      mode: 0644
