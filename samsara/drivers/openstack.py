@@ -65,22 +65,36 @@ class OpenStackDriver(object):
 
         return str(host)
 
-    def migrate_server(self, instance_uuid, host, block_migration):
+    def migrate_server(self, instance_uuid, host, block_migration=False):
         """ Do live migration.
         :param instance_uuid:  the uuid instance to migrate.
         :param host: The destination host hostname.
         """
 
-        timeout = time.time() + 300
+        # Timeout: 60s
+        timeout = time.time() + 3600
+
+        # Start Migration
+        LOG.info('Start Migration instance %s to host %s', instance_uuid, host)
+        print("Start Migration Instance {0} to host {1}.".format(instance_uuid, host))
+
         self.novaclient.servers.live_migrate(instance_uuid, host, block_migration, False)
-        LOG.info('Migrating instance %s to host %s', instance_uuid, host)
+
 
         # Check if migration is done
         while True:
-            if host == self.get_server_host(instance_uuid) and self.get_server_status(instance_uuid) == 'ACTIVE':
+            actual_host     = self.get_server_host(instance_uuid)
+            instance_status = self.get_server_status(instance_uuid)
+
+            # Check if the instance has been migrated to destination host and is ACTIVE.
+            if actual_host == host and instance_status == 'ACTIVE':
                 LOG.info('Migration the instance %s to host %s complete.', instance_uuid, host)
+
+                print('Migration the instance {0} to host {1} complete.'.format( instance_uuid, host))
                 return True
+
             # Check if instance no migrate to destination host until expire timeout
-            elif host != self.get_server_host(instance_uuid) and self.get_server_status(instance_uuid) == 'ACTIVE' and time.time() < timeout:
+            if host != actual_host and instance_status == 'ACTIVE' and time.time() > timeout:
                 LOG.info('Migration the instance %s to host %s timeout.', instance_uuid, host)
+                print('Migration the instance {0} to host {1} timeout.'.format( instance_uuid, host))
                 return False

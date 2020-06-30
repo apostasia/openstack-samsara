@@ -1,0 +1,16 @@
+# Create /etc/samsara/rules directory
+# - name: Creates /etc/samsara/rules directory
+#   file: dest=/etc/samsara/rules state=directory owner=samsara group=samsara mode=0775 recurse=yes
+
+- name: Creates /etc/samsara/rules directory
+  file: dest=/etc/samsara/rules/{{ item }} state=directory owner=samsara group=samsara mode=0775 recurse=yes
+  with_items:
+    - eca
+    - fuzzy
+
+
+- name: Copy default eca rules files
+
+  copy: src={{ item }} dest=/etc/samsara/rules/eca/ owner=root group=root mode=0644
+  with_fileglob:
+    - templates/rules/eca/*

@@ -48,17 +48,19 @@ class LocalControllerAPI(object):
 
     VERSION_ALIASES = {
         'kilo': '1.0',
+        'liberty': '1.0',
     }
 
     def __init__(self):
         super(LocalControllerAPI, self).__init__()
+
         target = messaging.Target(topic=CONF.samsara_local_controller_topic, version='1.0')
-        version_cap = self.VERSION_ALIASES.get(CONF.upgrade_levels.samsara_local,
-                                               CONF.upgrade_levels.samsara_local)
+
+        version_cap = self.VERSION_ALIASES.get(CONF.upgrade_levels.samsara_local)
 
         serializer = objects_base.SamsaraObjectSerializer()
-        self.client = rpc.get_client(target, version_cap=version_cap,
-                                     serializer=serializer)
+
+        self.client = rpc.get_client(target, version_cap=version_cap, serializer=serializer)
 
 
 

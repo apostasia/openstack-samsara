@@ -7,27 +7,25 @@
 - name: Creates /sys/fs/cgroup/cpu directory
   file: path=/sys/fs/cgroup/cpu state=directory owner=root
 
-- name: Test for /etc/fstab entry
-  shell: grep -c "^cgroup_cpuacct" /etc/fstab || true
-  register: test_entry
+- name: Add cgroup entries to FSTAB
+  sudo: yes
+  shell: |
+    su -c "cat >> /etc/fstab << EOF
+                # cgroup
+                cgroup_cpuacct /sys/fs/cgroup/cpuacct cgroup rw,nosuid,nodev,noexec,relatime,cpuacct 0 0
 
-- name: Add cpuacct entry to /etc/stab
-  lineinfile:
-    path: /etc/fstab
-    line: "{{ item }}"
-  with_items:
-    - cgroup_cpuacct /sys/fs/cgroup/cpuacct cgroup rw,nosuid,nodev,noexec,relatime,cpuacct 0 0
-    - none /sys/fs/cgroup/cpu cgroup cpu 0 0
-  when: test_entry.stdout == "0"
-
+                none /sys/fs/cgroup/cpu cgroup cpu 0 0
+            EOF
+            "
 - name: Remount device
-  become: yes
+  sudo: yes
   shell: mount -av
-  ignore_errors: true
 
 - name: Restart Nova Compute and libvirt Services
-  become: yes
+  sudo: yes
   service: name={{ item }} state=restarted
   with_items:
       - nova-compute
-      - libvirtd
+      - nova-network
+      - nova-api-metadata
+      - libvirt-bin

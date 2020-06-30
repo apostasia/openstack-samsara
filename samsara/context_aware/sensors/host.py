@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
+from __future__ import print_function
 
 from oslo_config import cfg
 
@@ -109,3 +109,12 @@ class HostNetworkNicHwAddressSensor(base.BaseSensor):
         driver = baremetal.BareMetalDriver()
         value = driver.get_mac_address(CONF.mgmt_nic)
         return value
+
+class HostComputeNativeLoadSensor(base.BaseSensor):
+    @staticmethod
+    def read_value():
+        """Returns the host native compute load in percentual"""
+        global baremetal_driver
+        driver = baremetal_driver
+        compute_load = driver.get_sys_cpu_percentual()
+        return compute_load

@@ -1,18 +1,16 @@
-- name: Create libvirtd group
-  become: yes
-  group: name=libvirtd state=present
-
 - name: Add user vagrant to libvirtd
-  become: yes
+  sudo: yes
   user: name=vagrant group=libvirtd
 
 # - name: Add user samsara to libvirtd
 #   sudo: yes
 #   user: name=vagrant group=libvirtd
 
-- name: Restart Nova-Compute and Libvirtd Services
-  become: yes
+- name: Restart Nova Compute Services
+  sudo: yes
   service: name={{ item }} state=restarted
   with_items:
       - nova-compute
-      - libvirtd
+      - nova-network
+      - nova-api-metadata
+      - libvirt-bin

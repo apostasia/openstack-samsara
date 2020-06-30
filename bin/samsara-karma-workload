@@ -1,0 +1,129 @@
+#!/bin/bash
+
+echo "+--------------------------------------------------------------+"
+echo "|            Samsara Karma: Iniciando Teste de Stress          |"
+echo "+--------------------------------------------------------------+"
+
+
+
+#!/bin/bash
+
+BASE_DIR='/home/lups/experiments'
+experiment_session_dir=$BASE_DIR"/experiment-session-$(date -u +%Y-%m-%d)"
+
+unset random_loads
+while getopts ":r" opt; do
+  case $opt in
+    r) random_loads=true
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+
+if [ $random_loads ]
+then
+
+    echo "+--------------------------------------------------------------+"
+    echo "|                  Testes com cargas Aleatórias                |"
+    echo "+--------------------------------------------------------------+"
+
+    TIME_ELAPSED=0
+
+    echo "[*] Executando primeira Rodada "
+    #Wait 3min
+    sleep 3m
+
+
+    # First 30 min of misc load/time
+    while [  $TIME_ELAPSED -lt 1800 ]; do
+            LOAD=$(shuf -i1-100 -n1)
+            TIME=$(shuf -i5-60 -n1)
+            let TIME_ELAPSED=$((TIME_ELAPSED + $TIME))
+            stress-ng -c0 -l$LOAD -t$TIME
+    done
+    TIME_ELAPSED=0
+
+    # Full Load during 10 min
+    stress-ng -c0 -l100 -t600
+
+    # 7 min of misc load/time
+    while [  $TIME_ELAPSED -lt 420 ]; do
+            LOAD=$(shuf -i1-100 -n1)
+            TIME=$(shuf -i5-60 -n1)
+            let TIME_ELAPSED=$((TIME_ELAPSED + $TIME))
+            stress-ng -c0 -l$LOAD -t$TIME
+    done
+
+    TIME_ELAPSED=0
+
+    # Wait 10min (no execution)
+    sleep 10m
+
+    echo "[*] Executando segunda Rodada"
+    # More 30 min of misc load/time
+    while [  $TIME_ELAPSED -lt 1800 ]; do
+            LOAD=$(shuf -i1-100 -n1)
+            TIME=$(shuf -i5-60 -n1)
+            let TIME_ELAPSED=$((TIME_ELAPSED + $TIME))
+            stress-ng -c0 -l$LOAD -t$TIME
+    done
+    TIME_ELAPSED=0
+
+    # Full Load during 10 min
+    stress-ng -c0 -l100 -t600
+
+    # 10 min of misc load/time
+    while [  $TIME_ELAPSED -lt 600 ]; do
+            LOAD=$(shuf -i1-100 -n1)
+            TIME=$(shuf -i5-60 -n1)
+            let TIME_ELAPSED=$((TIME_ELAPSED + $TIME))
+            stress-ng -c0 -l$LOAD -t$TIME
+    done
+
+    # Wait 10min (no execution)
+    sleep 10m
+
+    echo "[*] Fim do Teste"
+
+else
+  echo "+--------------------------------------------------------------+"
+  echo "|              Testes com cargas predefinidas                  |"
+  echo "+--------------------------------------------------------------+"
+
+  #Espera 3 min para estabilização do sistema
+  sleep 3m
+
+  echo "[*] Executando primeira Rodada"
+  #  Load during 5.5 min each
+  stress-ng -c0 -l100 -t330
+  stress-ng -c0 -l90 -t330
+  stress-ng -c0 -l80 -t330
+  stress-ng -c0 -l70 -t330
+  stress-ng -c0 -l60 -t330
+  stress-ng -c0 -l50 -t330
+  stress-ng -c0 -l40 -t330
+  stress-ng -c0 -l30 -t330
+  stress-ng -c0 -l20 -t330
+  stress-ng -c0 -l10 -t330
+
+  echo "[*] Executando segunda Rodada"
+  # Load during 5.5  min each
+  stress-ng -c0 -l10 -t330
+  stress-ng -c0 -l20 -t330
+  stress-ng -c0 -l30 -t330
+  stress-ng -c0 -l40 -t330
+  stress-ng -c0 -l50 -t330
+  stress-ng -c0 -l60 -t330
+  stress-ng -c0 -l70 -t330
+  stress-ng -c0 -l80 -t330
+  stress-ng -c0 -l00 -t330
+  stress-ng -c0 -l100 -t330
+
+  # Wait 7 minutes (no execution)
+  sleep 7m
+  echo "[*] Fim do Teste"
+fi
+
+exit

@@ -37,7 +37,6 @@ def main():
     config.parse_args(sys.argv)
     logging.setup(CONF,'samsara')
     eventlet.monkey_patch()
-    objects.register_all()
 
     gmr.TextGuruMeditation.setup_autorun(version)
 

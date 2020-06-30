@@ -18,4 +18,11 @@ from context_aware import base
 
 
 class Interpreter(object):
-    pass
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def reason(self):
+        raise Exception("Unimplemented method")
+    @abc.abstractmethod
+    def load_rules(self, filename):
+         raise Exception("Unimplemented method")

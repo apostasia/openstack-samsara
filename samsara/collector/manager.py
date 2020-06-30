@@ -40,19 +40,19 @@ from samsara.drivers import virt
 LOG = logging.getLogger(__name__)
 
 collector_manager_opts = [
-    cfg.IntOpt('host_collect_context_period',
+    cfg.IntOpt('host_collect_contexts_period',
                default=10,
                help='How often (in seconds) to run periodic host contexts collect.'),
 
-    cfg.IntOpt('instances_collect_context_period',
+    cfg.IntOpt('instances_collect_contexts_period',
                default=10,
                help='How often (in seconds) to run periodic instances contexts collect.'
                ),
 ]
 CONF = cfg.CONF
-CONF.register_opts(collector_manager_opts, 'collector')
+CONF.register_opts(collector_manager_opts, group = 'collector')
 
-virt_driver      = virt.LibvirtDriver()
+virt_driver = virt.LibvirtDriver()
 
 
 class CollectorManager(manager.Manager):
@@ -73,7 +73,7 @@ class CollectorManager(manager.Manager):
         #
         self.host_contexts_handler = host_contexts.HostContexts()
 
-    @periodic_task.periodic_task(spacing=CONF.collector.host_collect_context_period, run_immediately=True)
+    @periodic_task.periodic_task(spacing=CONF.collector.host_collect_contexts_period, run_immediately=True)
     def _get_host_context(self,context):
         """ Get Host Contexts and store into repository"""
 
@@ -88,10 +88,9 @@ class CollectorManager(manager.Manager):
         self.ctx_global_repository.store_context(ctx_host_resources_usage)
         LOG.info('Store host resources usage context into global repository')
 
-        LOG.info('Get Host Contexts and store into repository')
 
 
-    @periodic_task.periodic_task(spacing=CONF.collector.instances_collect_context_period, run_immediately=True)
+    @periodic_task.periodic_task(spacing=CONF.collector.instances_collect_contexts_period, run_immediately=True)
     def _get_instances_context(self,context):
         """ Get Virtual Machine Resource Usage Contexts and store into repository"""
 
@@ -116,3 +115,20 @@ class CollectorManager(manager.Manager):
             # Reset
             virt_driver.update_vcpu_time_instances(reset=True)
             LOG.info('Reset VCPU time')
+
+
+
+    @periodic_task.periodic_task(spacing=CONF.collector.host_collect_contexts_period, run_immediately=True)
+    def _get_native_resources_use_context(self,context):
+        """ Get Native Host Resources Use contexts and store into repository - To test"""
+
+        # Get host resources usage context
+        LOG.info('Get native host resources usage context')
+        ctx_host_resources_usage = self.host_contexts_handler.get_native_current_resources_usage()
+
+        # Store into repository
+        self.ctx_repository.store_context(ctx_host_resources_usage)
+        LOG.info('Store native host resources usage context into local repository')
+
+        self.ctx_global_repository.store_context(ctx_host_resources_usage)
+        LOG.info('Store native host resources usage context into global repository')

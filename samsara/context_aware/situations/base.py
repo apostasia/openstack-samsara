@@ -22,7 +22,7 @@ from samsara.context_aware import base
 
 class Situation(base.BaseSituation):
     """  """
-    def __init__(self, tag, description, related_context):
+    def __init__(self, tag, description, related_context=[]):
         self.tag = tag
         self.description = description
         self.related_context = related_context

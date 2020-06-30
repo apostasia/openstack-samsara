@@ -1,0 +1,99 @@
+[
+    {
+        "conditions": {
+            "all": [
+                {
+                    "name": "percentual_compute_resource_usage",
+                    "operator": "greater_than",
+                    "value": 0.7
+                },
+                {
+                    "name": "active_instances",
+                    "operator": "greater_than",
+                    "value": 0 
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "notify_situation_to_controller",
+                "params": {
+                    "situation": "overloaded"
+                }
+            }
+        ]
+    },
+    {
+        "conditions": {
+            "all": [
+                {
+                    "name": "percentual_compute_resource_usage",
+                    "operator": "less_than",
+                    "value": 0.3
+                },
+                {
+                    "name": "active_instances",
+                    "operator": "greater_than",
+                    "value": 0 
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "notify_situation_to_controller",
+                "params": {
+                    "situation": "underloaded"
+                }
+            }
+        ]
+    },
+    {
+        "conditions": {
+            "all": [
+                {
+                    "name": "percentual_compute_resource_usage",
+                    "operator": "less_than",
+                    "value": 0.7
+                },
+                {
+
+                    "name": "percentual_compute_resource_usage",
+                    "operator": "greater_than",
+                    "value": 0.3
+                },
+                {
+                    "name": "active_instances",
+                    "operator": "greater_than",
+                    "value": 0 
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "notify_situation_to_controller",
+                "params": {
+                    "situation": "normal"
+                }
+            }
+        ]
+    },
+    {
+        "conditions": {
+            "all": [
+                {
+                    "name": "active_instances",
+                    "operator": "less_than",
+                    "value": 1 
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "notify_situation_to_controller",
+                "params": {
+                    "situation": "idle"
+                }
+            }
+        ]
+    }
+]

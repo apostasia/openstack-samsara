@@ -50,7 +50,8 @@ libvirt_opts = [
 CONF = cfg.CONF
 CONF.register_opts(libvirt_opts, 'libvirt')
 
-instances_vcpu_time = None
+# Global dictionary that stores vcputime percore for each active instance in host
+previous_instances_vcpu_time = None
 
 class LibvirtDriver(object):
 
@@ -78,15 +79,15 @@ class LibvirtDriver(object):
         """Get a UUID from the host hardware
         Get a UUID for the host hardware reported by libvirt.
         This is typically from the SMBIOS data, unless it has
-        been overridden in /etc/libvirt/libvirtd.conf. Return an object lxml
+        been overridden in /etc/libvirt/libvirtd.conf. Returns an object lxml
         """
         conn = self.get_connection()
         capabilities = objectify.fromstring(conn.getCapabilities())
         return capabilities.host.uuid
 
 
-    def get_vm_usage_mips_percore(self,dom_id,interval=1):
-        """ Return the usage mips per core/cpu for  an VM in the interval
+    def get_vm_usage_mips_percore(self, dom_id, interval=1):
+        """ Returns the usage mips per core/cpu for an VM in the interval
         """
 
         host_compute_capacity_percore = get_max_mips_percore()
@@ -96,21 +97,25 @@ class LibvirtDriver(object):
 
         usage_percore = []
 
-        for compute_capacity,maxfreq,currentfreq,vm_utilized_cputime in zip(host_compute_capacity_percore,host_maxfreq_percore,host_currentfreq_percore,vm_utilized_cputime_percore):
-            usage_percore.append(int((((currentfreq * compute_capacity)/maxfreq) * vm_utilized_cputime)))
+        for compute_capacity, maxfreq, currentfreq, vm_utilized_cputime in zip(host_compute_capacity_percore, host_maxfreq_percore, host_currentfreq_percore, vm_utilized_cputime_percore):
+
+            core_usage = int((((currentfreq * compute_capacity)/maxfreq) * vm_utilized_cputime))
+
+            usage_percore.append(core_usage)
 
         return usage_percore
 
     def get_vm_usage_perc(self,dom_id):
-         host_compute_capacity_percore = get_max_mips_percore()
-         vm_usage_mips_percore         = get_vm_usage_mips_percore(dom_id)
+        """ Returns usage percentual for each instance (vm) """
+        host_compute_capacity_percore = get_max_mips_percore()
+        vm_usage_mips_percore         = get_vm_usage_mips_percore(dom_id)
 
-         usage_percore = []
+        usage_percore = []
 
-         for host_compute_capacity,vm_usage_mips in zip(host_compute_capacity_percore,vm_usage_mips_percore):
+        for host_compute_capacity,vm_usage_mips in zip(host_compute_capacity_percore, vm_usage_mips_percore):
              usage_percore.append((float(vm_usage_mips) * 100)/host_compute_capacity)
 
-         return sum(usage_percore)
+        return sum(usage_percore)
 
     def get_instance_allocated_memory(self,domain_id):
 
@@ -132,74 +137,82 @@ class LibvirtDriver(object):
         return dom.UUIDString()
 
     def list_instances(self):
+        """  Returns instance list """
 
         vm_list = []
 
-        conn = self.get_connection()
-        for domain_id in conn.listDomainsID():
+        for domain_id in self.conn.listDomainsID():
            vm_list.append(conn.lookupByID(domain_id))
 
         return vm_list
 
     def get_active_instancesID(self):
-        """ Return the active instaces ID list
+        """ Returns the active instaces ID list
         """
         return self.conn.listDomainsID()
 
     def get_active_instancesUUID(self):
-        """ Return an list with the active instaces UUID
-        """
+        """ Returns an list with the active instaces UUID """
+
         active_instances_uuid = []
+
         for instance_id in self.conn.listDomainsID():
             instance = self.conn.lookupByID(instance_id)
             active_instances_uuid.append(instance.UUIDString())
 
         return active_instances_uuid
 
-    def get_vcpu_time_percore(self,domain_id):
-        """ Return the busy time per core/cpu (in seconds) for an VM in the interval
+    def get_vcpu_time_percore(self, domain_id):
+        """ Returns the busy time per core/cpu (in seconds) for an VM in the interval
         """
-        conn = self.get_connection()
-        dom  = conn.lookupByID(domain_id)
 
-        #Get the cpu time intervals
+        dom  = self.conn.lookupByID(domain_id)
+
+        # Get the cpu time intervals
         vcpu_time_percore  = [float(phys_cpu['cpu_time']) for phys_cpu in dom.getCPUStats(False,0)]
 
         return vcpu_time_percore
 
     def get_vcpu_time_instances(self):
-        """ Return the vcpu time per core/cpu (in seconds) for all VMs
+        """ Returns the vcpu time per core/cpu (in seconds) for all VMs
+            :returns an dict with vcpu time percore for each instance.
         """
-        conn = self.get_connection()
-        vcpu_times_percore  = {domain_id:self.get_vcpu_time_percore(domain_id) for domain_id in conn.listDomainsID()}
+        vcpu_times_percore  = {domain_id:self.get_vcpu_time_percore(domain_id) for domain_id in self.conn.listDomainsID()}
+
         return vcpu_times_percore
 
-    def get_busytime_percore(self,domain_id):
-        """ Return the busy time per core/cpu (in seconds) for an VM in the interval
+    def get_busytime_percore(self, domain_id):
+        """ Returns the busy time per core/cpu (in seconds) for an VM in the interval
         """
         conn = self.get_connection()
         dom  = conn.lookupByID(domain_id)
 
-        global instances_vcpu_time
-        vcpu_time_instances = self.get_vcpu_time_instances()
+        global previous_instances_vcpu_time
 
-        # If all intances are removed or one has added
-        if instances_vcpu_time == None or len(instances_vcpu_time) == len(vcpu_time_instances):
-            instances_vcpu_time = vcpu_time_instances
 
-        vcpu_time_t0 = [float(vcpu) for vcpu in instances_vcpu_time[domain_id]]
-        vcpu_time_t1 = [float(phys_cpu['cpu_time']) for phys_cpu in dom.getCPUStats(False,0)]
+        # If exist vcputime values to instance
+        if previous_instances_vcpu_time and domain_id in previous_instances_vcpu_time:
 
-        # compute the delta time for each cpu, convert nanoseconds (10^-9) to seconds and generate an list
-        busytime_percore = [float(diff_time)/10000000000 for diff_time in map(sub,vcpu_time_t1,vcpu_time_t0)]
+            # Get previous vcputime
+            vcpu_time_t0 = [float(vcpu) for vcpu in previous_instances_vcpu_time[domain_id]]
+
+            # Get actual vcpu time percore
+            vcpu_time_t1 = [float(phys_cpu['cpu_time']) for phys_cpu in dom.getCPUStats(False,0)]
+
+            # compute the delta time for each cpu, convert nanoseconds (10^-9) to seconds and generate an list
+            busytime_percore = [float(diff_time)/10000000000 for diff_time in map(sub, vcpu_time_t1, vcpu_time_t0)]
+
+        else:
+            # Return zero busytime percore
+            busytime_percore = [float(0) for phys_cpu in dom.getCPUStats(False,0)]
 
         return busytime_percore
 
     def update_vcpu_time_instances(self, reset=False):
         """ Update the vcpu time per core/cpu (in seconds) for all VMs
         """
-        global instances_vcpu_time
+        global previous_instances_vcpu_time
         if reset:
-            instances_vcpu_time = None
+            previous_instances_vcpu_time = None
         else:
-            instances_vcpu_time = self.get_vcpu_time_instances()
+            previous_instances_vcpu_time = self.get_vcpu_time_instances()

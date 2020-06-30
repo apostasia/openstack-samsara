@@ -169,15 +169,17 @@ class HostContexts(base.BaseContext):
     def get_current_resources_usage(self):
 
         tag = "host_resources_usage"
-        context = collections.namedtuple(tag, ['compute_utilization',
+        context = collections.namedtuple(tag, ['hostname','compute_utilization',
         'memory_utilization',
         'created_at'])
 
+        hostname            = self.get_host_info().hostname
         compute_utilization = host_sensors.HostComputeUsageSensor.read_value()
         memory_utilization  = host_sensors.HostMemoryUsageSensor.read_value()
         created_at          = datetime.utcnow().isoformat()
 
-        return context(compute_utilization,
+        return context(hostname,
+                            compute_utilization,
                             memory_utilization,
                             created_at)
 
@@ -225,3 +227,20 @@ class HostContexts(base.BaseContext):
         created_at = datetime.utcnow().isoformat()
 
         return context(active_instances, created_at)
+
+    def get_native_current_resources_usage(self):
+
+        tag = "host_native_resources_usage"
+        context = collections.namedtuple(tag, ['hostname','compute_load',
+        'memory_utilization',
+        'created_at'])
+
+        hostname            = self.get_host_info().hostname
+        compute_load        = host_sensors.HostComputeNativeLoadSensor.read_value()
+        memory_utilization  = host_sensors.HostMemoryUsageSensor.read_value()
+        created_at          = datetime.utcnow().isoformat()
+
+        return context(hostname,
+                            compute_load,
+                            memory_utilization,
+                            created_at)

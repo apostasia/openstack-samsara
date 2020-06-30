@@ -1,0 +1,65 @@
+#!/bin/bash
+
+echo "+--------------------------------------------------------------+"
+echo "|            Samsara Karma: Iniciando Teste de Stress          |"
+echo "+--------------------------------------------------------------+"
+
+# Run during 120 minutes
+
+TIME_ELAPSED=0
+
+echo "[*] Executando primeira Rodada "
+#Wait 2min
+sleep 2m
+
+
+# First 30 min of misc load/time
+while [  $TIME_ELAPSED -lt 1800 ]; do
+        LOAD=$(shuf -i1-100 -n1)
+        TIME=$(shuf -i5-60 -n1)
+        let TIME_ELAPSED=$((TIME_ELAPSED + $TIME))
+        stress-ng -c0 -l$LOAD -t$TIME
+done
+TIME_ELAPSED=0
+
+# Full Load during 10 min
+stress-ng -c0 -l100 -t600
+
+# 7 min of misc load/time
+while [  $TIME_ELAPSED -lt 420 ]; do
+        LOAD=$(shuf -i1-100 -n1)
+        TIME=$(shuf -i5-60 -n1)
+        let TIME_ELAPSED=$((TIME_ELAPSED + $TIME))
+        stress-ng -c0 -l$LOAD -t$TIME
+done
+
+TIME_ELAPSED=0
+
+# Wait 10min (no execution)
+sleep 10m
+
+echo "[*] Executando segunda Rodada"
+# More 30 min of misc load/time
+while [  $TIME_ELAPSED -lt 1800 ]; do
+        LOAD=$(shuf -i1-100 -n1)
+        TIME=$(shuf -i5-60 -n1)
+        let TIME_ELAPSED=$((TIME_ELAPSED + $TIME))
+        stress-ng -c0 -l$LOAD -t$TIME
+done
+TIME_ELAPSED=0
+
+# Full Load during 10 min
+stress-ng -c0 -l100 -t600
+
+# 10 min of misc load/time
+while [  $TIME_ELAPSED -lt 600 ]; do
+        LOAD=$(shuf -i1-100 -n1)
+        TIME=$(shuf -i5-60 -n1)
+        let TIME_ELAPSED=$((TIME_ELAPSED + $TIME))
+        stress-ng -c0 -l$LOAD -t$TIME
+done
+
+# Wait 10min (no execution)
+sleep 10m
+
+echo "[*] Fim do Teste"

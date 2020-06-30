@@ -1,0 +1,87 @@
+[
+    {
+        "conditions": {
+            "all": [
+                {
+                    "name": "hosts_underload",
+                    "operator": "greater_than",
+                    "value": 0
+                },
+                {
+
+                    "name": "hosts_underload_time",
+                    "operator": "greater_than",
+                    "value": 300
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "notify_cell_situation",
+                "params": {
+                    "situation_description": "energy_inefficiency"
+                }
+            }
+        ]
+    },
+    {
+        "conditions": {
+            "all": [
+                {
+                    "name": "hosts_overload",
+                    "operator": "greater_than",
+                    "value": 0
+                },
+                {
+
+                    "name": "hosts_overload_time",
+                    "operator": "greater_than",
+                    "value": 90
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "notify_cell_situation",
+                "params": {
+                    "situation_description": "sla_violation"
+                }
+            }
+        ]
+    },
+    {
+        "conditions": {
+            "all": [
+                {
+                    "name": "hosts_overload",
+                    "operator": "less_than",
+                    "value": 1
+                },
+                {
+
+                    "name": "hosts_overload_time",
+                    "operator": "less_than",
+                    "value": 90
+                },
+                {
+                    "name": "hosts_underload",
+                    "operator": "less_than",
+                    "value": 1
+                },
+                {
+                    "name": "hosts_underload_time",
+                    "operator": "less_than",
+                    "value": 300
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "notify_cell_situation",
+                "params": {
+                    "situation_description": "energy_optimized"
+                }
+            }
+        ]
+    }
+]

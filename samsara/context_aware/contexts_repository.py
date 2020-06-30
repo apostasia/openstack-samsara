@@ -210,3 +210,15 @@ class GlobalContextsRepository(ContextsRepository):
             return next(iterator)
         except StopIteration:
             return None
+
+    def register_event(self, event, data):
+        """ Register an event in Context Repository """
+        # Set event tag
+        event_tag = "{0}_events".format(event)
+
+        # Prepare data
+        types = {'created_at':sqlalchemy.DateTime}
+        data['created_at'] = datetime.utcnow().isoformat()
+
+        # Store context or situation
+        self.repository[event_tag].insert(data, types)

@@ -1,0 +1,38 @@
+############################################################################
+# Install all the needed packages in one go.
+############################################################################
+- name: Install Required Packages
+  apt: name={{item}}
+       state=present
+  with_items:
+  - python-pip
+  - python-dev
+  - python-tox
+  - python-oslo.config
+  - python-psycopg2
+  - python-numpy
+  - git
+  - htop
+  - ipython
+  - python-libvirt
+
+############################################################################
+# Install Required PIP Packages
+############################################################################
+- name: Install Required PIP Packages
+  pip: name={{item}}
+  with_items:
+  - business-rules>=0.2.0
+  #- numpy
+  - openstacksdk
+  #- oslo.config - use distrib pkg
+  #- oslo.log
+  #- oslo.messaging
+  #- oslo.reports
+  #- oslo.i18n>=2.1.0
+  #- oslo.versionedobjects
+  - psutil
+  - subprocess32
+  - dataset
+  - pbr>=1.6
+  - shade

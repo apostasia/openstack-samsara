@@ -17,8 +17,9 @@ Client side of the samsara global manager RPC API.
 """
 
 from oslo_config import cfg
-
+from oslo_log import log as logging
 import oslo_messaging as messaging
+from oslo_serialization import jsonutils
 
 from samsara.common import context as samsara_context
 from samsara.objects import base as objects_base
@@ -80,7 +81,6 @@ class GlobalControllerAPI(object):
 
     def balance_workload(self, context, controller_hostname):
         ''' Run workload balancing.
-
         '''
         version = '1.0'
         cctxt = self.client.prepare(server="controller", version=version)

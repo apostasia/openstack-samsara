@@ -1,0 +1,47 @@
+[
+    {
+        "cpu_number": 1,
+        "mgmt_nic_speed": 100,
+        "uuid": "72e98c6b-43d7-46ab-a575-05a99d57ad19",
+        "available_compute": 1215.203,
+        "used_memory": 393216,
+        "mgmt_nic_hwaddr": "08:00:27:c1:d2:04",
+        "hostname": "compute-001",
+        "used_compute": 300,
+        "memory_capacity": 8388608,
+        "instances": "[{\"used_memory\": 131072, \"uuid\": \"0b7a1c1a-f54b-4e3c-8695-e72c91a91373\", \"used_compute\": 0}]",
+        "situation": "overloaded",
+        "compute_capacity": 6383.89,
+        "available_memory": 8388608
+    },
+    {
+        "cpu_number": 1,
+        "mgmt_nic_speed": 100,
+        "uuid": "dda7a6c2-123e-4ab3-978d-0b32658324e7",
+        "available_compute": 1215.203,
+        "used_memory": 393216,
+        "mgmt_nic_hwaddr": "08:00:27:33:5d:42",
+        "hostname": "compute-002",
+        "used_compute": 4860.812,
+        "memory_capacity": 8388608,
+        "instances": "[{\"used_memory\": 131072, \"uuid\": \"e3b7b25f-2464-409e-92c3-334547a6321d\", \"used_compute\": 1000}, {\"used_memory\": 131072, \"uuid\": \"12ee5795-6f04-4bda-9c41-a7e23ed04d43\", \"used_compute\": 500}]",
+        "situation": "overloaded",
+        "compute_capacity": 6376.14,
+        "available_memory": 8388608
+    },
+    {
+        "cpu_number": 1,
+        "mgmt_nic_speed": 100,
+        "uuid": "72e98c6b-43d7-46bb-a575-05a99d57ad19",
+        "available_compute": 6083,
+        "used_memory": 393216,
+        "mgmt_nic_hwaddr": "08:00:27:c1:d2:04",
+        "hostname": "compute-003",
+        "used_compute": 300,
+        "memory_capacity": 8388608,
+        "instances": "[]",
+        "situation": "normal",
+        "compute_capacity": 6383.89,
+        "available_memory": 8388608
+    }
+]

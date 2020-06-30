@@ -1,0 +1,46 @@
+[
+    {
+        "conditions": {
+            "all": [
+                {
+                    "name": "hosts_underload",
+                    "operator": "greater_than",
+                    "value": 0
+                },
+                {
+
+                    "name": "hosts_underload_time",
+                    "operator": "greater_than",
+                    "value": 120
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "start_consolidation"
+            }
+        ]
+    },
+    {
+        "conditions": {
+            "all": [
+                {
+                    "name": "hosts_overload",
+                    "operator": "equal_to",
+                    "value": 1
+                },
+                {
+
+                    "name": "hosts_overload_time",
+                    "operator": "greater_than",
+                    "value": 30
+                }
+            ]
+        },
+        "actions": [
+            {
+                "name": "start_load_balance"
+            }
+        ]
+    }
+]
