@@ -1,0 +1,14 @@
+
+[Unit]
+Description=Samsara Local Controller
+Requires=samsara-collector.service
+After=samsara-collector.service
+[Service]
+Type=simple
+User=root
+Restart=on-failure
+RestartSec=10
+EnvironmentFile=/etc/samsara/samsara.conf
+ExecStart=/usr/local/bin/samsara-local-controller
+[Install]
+WantedBy=multi-user.target 

@@ -1,0 +1,22 @@
+- name: reload systemd
+  become: yes
+  systemd:
+    daemon_reexec: yes
+
+- name: Enable Samsara-Collector and Samsara-Local-Controller
+  become: yes
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - samsara-collector
+    - samsara-local-controller
+
+- name: Start Samsara-Collector and Samsara-Local-Controller
+  become: yes
+  systemd:
+    name: "{{ item }}"
+    state: started
+  with_items:
+    - samsara-collector
+    - samsara-local-controller 

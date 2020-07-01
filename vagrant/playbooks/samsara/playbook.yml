@@ -15,6 +15,7 @@
     - include: tasks/install-deps.yml
     - include: tasks/samsara-common-config.yml
     - include: tasks/samsara-rules-config.yml
+    - include: tasks/install-samsara.yml
 ###############################################################################
 - hosts: controller
   gather_facts: yes
@@ -35,11 +36,5 @@
       - include: tasks/add-users-to-libvirtd-group.yml
       - include: tasks/samsara-hosts-rules.yml
       - include: tasks/install-compute-nodes-tools.yml
+      - include: tasks/start-samsara-compute-node.yml
 #      - include: tasks/cpuacct-ubuntu-fix.yml
-- hosts: all
-  gather_facts: yes
-  become: yes
-  vars_files:
-    - vars/main.yml
-  tasks:
-    - include: tasks/install-samsara.yml
