@@ -36,3 +36,10 @@
       - include: tasks/samsara-hosts-rules.yml
       - include: tasks/install-compute-nodes-tools.yml
 #      - include: tasks/cpuacct-ubuntu-fix.yml
+- hosts: all
+  gather_facts: yes
+  become: yes
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - include: tasks/install-samsara.yml

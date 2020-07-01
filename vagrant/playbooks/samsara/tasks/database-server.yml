@@ -3,16 +3,16 @@
 ###############################################################################
 
 - name: Create Databases
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   postgresql_db: name=samsara
 
 - name: Create Users
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   postgresql_user: name=samsara password=samsara state=present role_attr_flags=NOSUPERUSER,CREATEDB
 
 - name: Provide users with DB permissions
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   postgresql_user: user=samsara db=samsara priv=ALL
