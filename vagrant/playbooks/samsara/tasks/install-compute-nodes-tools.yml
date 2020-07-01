@@ -2,8 +2,8 @@
 # Install all the needed packages in one go.
 ############################################################################
 - name: Install Required Packages
-  apt: name={{item}}
-       state=present
-  with_items:
-  - stress-ng
-  - multitail
+  apt:
+    state: present
+    name:
+      - stress-ng
+      - multitail

@@ -1,7 +1,0 @@
-- name: Copy Samsara Common config file
-  template:
-      src: "samsara-common.conf.j2"
-      dest: "/etc/samsara/samsara.conf"
-      owner: root
-      group: root
-      mode: 0644

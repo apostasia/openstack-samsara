@@ -19,6 +19,7 @@
 ############################################################################
 # Install Required PIP Packages
 ############################################################################
+## awake is only for compute nodes
 - name: Install Required PIP Packages
   pip:
     name:
@@ -36,3 +37,5 @@
       - dataset
       - pbr>=1.6
       - shade
+      - awake
+

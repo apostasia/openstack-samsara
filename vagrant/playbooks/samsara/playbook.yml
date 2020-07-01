@@ -14,6 +14,7 @@
     - include: tasks/system-config.yml
     - include: tasks/install-deps.yml
     - include: tasks/samsara-common-config.yml
+    - include: tasks/samsara-rules-config.yml
 ###############################################################################
 - hosts: controller
   gather_facts: yes
@@ -23,6 +24,7 @@
   tasks:
       - include: tasks/database-server.yml
       - include: tasks/openstack-config-setup.yml
+      - include: tasks/samsara-cell-rules.yml
 - hosts: compute_group
   gather_facts: yes
   become: yes
@@ -31,4 +33,6 @@
   tasks:
       - include: tasks/rootwrap-config.yml
       - include: tasks/add-users-to-libvirtd-group.yml
+      - include: tasks/samsara-hosts-rules.yml
+      - include: tasks/install-compute-nodes-tools.yml
 #      - include: tasks/cpuacct-ubuntu-fix.yml
