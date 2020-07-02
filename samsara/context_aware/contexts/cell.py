@@ -144,11 +144,11 @@ class CellContexts(base.BaseContext):
              info = self._get_host_info(host_situation['uuid'])
 
              # Filter host info and host situation by fields
-             filtered_info = {k:v for k,v in info.iteritems() if not k in info_fields}
+             filtered_info = {k:v for k,v in info.items() if not k in info_fields}
 
-             filtered_situation = {k:v for k,v in host_situation.iteritems() if not k in situation_fields}
+             filtered_situation = {k:v for k,v in host_situation.items() if not k in situation_fields}
 
-             hosts.append(dict(filtered_info.items() + filtered_situation.items()))
+             hosts.append(dict(list(filtered_info.items()) + list(filtered_situation.items())))
 
 
          return hosts

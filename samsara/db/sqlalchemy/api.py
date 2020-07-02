@@ -2197,7 +2197,7 @@ def _exact_instance_filter(query, filters, legal_keys):
             column_attr = getattr(model, key)
             if isinstance(value, list):
                 for item in value:
-                    for k, v in item.iteritems():
+                    for k, v in item.items():
                         query = query.filter(column_attr.any(key=k))
                         query = query.filter(column_attr.any(value=v))
 
@@ -2517,7 +2517,7 @@ def _instance_update(context, session, instance_uuid, values, expected,
     else:
         # Coerce all single values to singleton lists
         expected = {k: [None] if v is None else sqlalchemyutils.to_list(v)
-                       for (k, v) in six.iteritems(expected)}
+                       for (k, v) in six.items(expected)}
 
     # Extract 'expected_' values from values dict, as these aren't actually
     # updates
@@ -2574,7 +2574,7 @@ def _instance_update(context, session, instance_uuid, values, expected,
 
         conflicts_expected = {}
         conflicts_actual = {}
-        for (field, expected_values) in six.iteritems(expected):
+        for (field, expected_values) in six.items(expected):
             actual = original[field]
             if actual not in expected_values:
                 conflicts_expected[field] = expected_values

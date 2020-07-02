@@ -25,10 +25,10 @@ from oslo_log import log as logging
 
 ssh_actuator_driver_opts = [
                cfg.StrOpt('username',
-               default="lups",
+               default="vagrant",
                help='SSH username to acess host.'),
                cfg.StrOpt('password',
-               default="lups999",
+               default="vagrant",
                help='SSH user password .'),
 ]
 CONF = cfg.CONF
@@ -54,7 +54,6 @@ class SSHDriver(object):
 
             # Send the command
             stdin, stdout, stderr = ssh_client.exec_command(cmd)
-
             LOG.info("Run command %s on %s host", command, host)
             return True
 
