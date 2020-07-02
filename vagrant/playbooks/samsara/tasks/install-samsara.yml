@@ -1,0 +1,11 @@
+- name: Build Samsara
+  become: yes
+  shell:
+    cmd: python3 setup.py build
+    chdir: /home/vagrant/samsara
+
+- name: Install Samsara
+  become: yes
+  shell:
+    cmd: python3 setup.py install
+    chdir: /home/vagrant/samsara

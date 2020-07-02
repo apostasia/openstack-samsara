@@ -56,6 +56,6 @@ class BaseECAReasonEngine(object):
 
         LOG.info('Load host rules')
         with open(path, 'r') as f:
-            rules = jsonutils.load(f)
+            rules = jsonutils.loads(f.read())
 
         return rules
