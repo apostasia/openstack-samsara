@@ -8,7 +8,7 @@
   file: path=/sys/fs/cgroup/cpu state=directory owner=root
 
 - name: Add cgroup entries to FSTAB
-  sudo: yes
+  become: yes
   shell: |
     su -c "cat >> /etc/fstab << EOF
                 # cgroup
@@ -18,11 +18,11 @@
             EOF
             "
 - name: Remount device
-  sudo: yes
+  become: yes
   shell: mount -av
 
 - name: Restart Nova Compute and libvirt Services
-  sudo: yes
+  become: yes
   service: name={{ item }} state=restarted
   with_items:
       - nova-compute
