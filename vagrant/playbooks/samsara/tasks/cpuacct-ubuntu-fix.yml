@@ -7,14 +7,6 @@
 - name: Creates /sys/fs/cgroup/cpu directory
   file: path=/sys/fs/cgroup/cpu state=directory owner=root
 
-<<<<<<< HEAD
-- name: Add cgroup entries to FSTAB
-  become: yes
-  shell: |
-    su -c "cat >> /etc/fstab << EOF
-                # cgroup
-                cgroup_cpuacct /sys/fs/cgroup/cpuacct cgroup rw,nosuid,nodev,noexec,relatime,cpuacct 0 0
-=======
 - name: Test for /etc/fstab entry
   shell: grep -c "^cgroup_cpuacct" /etc/fstab || true
   register: test_entry
@@ -27,7 +19,6 @@
     - cgroup_cpuacct /sys/fs/cgroup/cpuacct cgroup rw,nosuid,nodev,noexec,relatime,cpuacct 0 0
     - none /sys/fs/cgroup/cpu cgroup cpu 0 0
   when: test_entry.stdout == "0"
->>>>>>> fb7413f4f580e01e4c7844732489db312e5bb253
 
 - name: Remount device
   become: yes

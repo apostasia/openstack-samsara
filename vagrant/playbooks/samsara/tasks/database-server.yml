@@ -15,8 +15,4 @@
 - name: Provide users with DB permissions
   become: yes
   become_user: postgres
-<<<<<<< HEAD
   postgresql_user: user=samsara db=samsara priv=ALL
-=======
-  postgresql_user: user=samsara db=samsara priv=ALL
->>>>>>> fb7413f4f580e01e4c7844732489db312e5bb253
