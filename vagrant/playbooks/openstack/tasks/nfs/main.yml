@@ -1,3 +1,0 @@
----
-- include: nfs-server.yml
-- include: nfs-client.yml
