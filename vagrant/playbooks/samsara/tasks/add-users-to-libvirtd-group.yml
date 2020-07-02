@@ -8,7 +8,7 @@
 
 # - name: Add user samsara to libvirtd
 #   sudo: yes
-#   user: name=vagrant group=libvirtd
+#   user: name=samsara group=libvirtd
 
 - name: Restart Nova-Compute and Libvirtd Services
   become: yes
