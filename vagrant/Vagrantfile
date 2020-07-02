@@ -151,9 +151,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 vbox.customize ['modifyvm', :id, '--cpus', node[:cpu]]
 		        vbox.customize ['modifyvm', :id, "--nicpromisc2", "allow-all"]
                 vbox.customize ['modifyvm', :id, "--nicpromisc3", "allow-all"]
-                vbox.customize ["modifyvm", :id, "--cableconnected1", "on"]
-                vbox.customize ["modifyvm", :id, "--cableconnected2", "on"]
-                vbox.customize ["modifyvm", :id, "--cableconnected3", "on"]
                 
 		#
                 # Gluster Volume

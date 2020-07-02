@@ -63,3 +63,5 @@
 # Samsara fake_root
 
 fake_root/*
+
+*.sqlite

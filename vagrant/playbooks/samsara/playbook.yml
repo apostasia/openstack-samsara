@@ -26,6 +26,7 @@
       - include: tasks/database-server.yml
       - include: tasks/openstack-config-setup.yml
       - include: tasks/samsara-cell-rules.yml
+      - include: tasks/start-samsara-controller-node.yml
 - hosts: compute_group
   gather_facts: yes
   become: yes

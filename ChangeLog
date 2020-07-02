@@ -1,12 +1,99 @@
 CHANGES
 =======
 
+* fix some python3 issues and update credentials for samsara network driver
+* Fix Samsara Ansible(merge files)
+* Fix Samsara Ansible(merge files)
+* Fix Samsara Ansible
+* add systemd scripts to collector and local-controller
+* update local-controller
+* update samsara-collector
+* update ubuntu 20.04 mgmt\_nic
+* update samsara playbooks
+* fix tasks in samsara playbook
+* Adicionando arquivos do backup 2016
+* Modified run.sh
+* Adding modifications to the python3 migration
+* Add Rules Engine configuration files
+* Adjust Samsara dependencies
+* Remove fake\_root subdirectories
+* Update .gitignore
+* Added became:yes clause
+* Added post\_tasks and others adjusts
+* Add vagrant snapshot to run.sh
+* Migration to Ubuntu 20.04 LTS (Focal Fossa)
+* Redo Stack script add
+* update rabbitmq in samsara.conf template
+* update samsara local\_controller
+* update samsara-collector
+* add scripts to run openstack deploy
+* update samsara config files
+* update samsara main playbook
+* fix fstab path for nfs and demo credentials
+* remove root from libvirt, it only requires nova user permissions
+* add libvirt playbook
+* add playbook to launch instances
+* fix nova and neutron compute authtoken, add libvirt playbook
+* fix neutron parameters in nova.conf
+* fix neutron authtoken
+* fix vagrant interfaces bug
+* fix domain parameter in neutron user
+* changing bd permissions
+* fix /etc/hosts build
+* update nsf server/client config
+* minimal deployment for openstack ussuri
+* deprecated syntax fix, minimal deployment working :)
+* add chrony playbooks
+* add update compute playbooks
+* add neutron config to controller node
+* add some python dependencies, skip tasks to avoid duplicated entries
+* update nova install to controller
+* add placement playbook
+* update glance install
+* remove run\_once statement and add when statement to keystone
+* config memcached, etc and keystone
+* update database-server and rabbitmq-server tasks
+* update for .swp n .retry files
+* update to ubuntu bionic, update common and credentials tasks
+* update
+* Update tasks
+* Ajustandoo tamanho da memória das máquinas virtuais
+* Small adjusts
+* Cell Actuactor
+* Planner and Actuactor
+* Planner
+* Add .env and .tox
+* Add venv to gitignore
+* Planner
+* Consolidation
+* Implements Cell Reasoning
+* Implements Cell Reasoning
+* cell contexts
+* Add cell contexts
+* Small adjusts
+* Baremetal driver and host sensor modifications
+* Baremetal driver and host sensor modifications
+* Adjusts
+* Refactoring baremetal driver
+* improve drivers anda context repository api
+* Starting planner and refactoring contextual repositoy
+* Cell actuator
+* start cell actuactor
+* atuador do host funcionando
+* start actuactor
+* Cell
+* add cell, change vm context, add rebuild script, ..
+* add get\_mac\_address method to baremetal sensors, add cell context and sensors, change sensors organization lib, remove deprected stuffs, change samsara-compute.conf template
+* Corringindo captura do uso de CPU
+* ..
+* Implementando o armazenamento de situações
+* Add cpuacct fix to ansible
 * cpuacct fix and other stuffs
 * ..
 * Update
 * Fix conflict
 * Todo: fix cgroup issue
-* Add fake_root
+* Add fake\_root
 * playbook adjusts
 * Run!
 * Rules Handler

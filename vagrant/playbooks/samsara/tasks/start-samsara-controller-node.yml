@@ -1,0 +1,20 @@
+- name: reload systemd
+  become: yes
+  systemd:
+    daemon_reexec: yes
+
+- name: Enable Samsara-Global-Controller
+  become: yes
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - samsara-global-controller
+
+- name: Start Samsara-Global-Controller
+  become: yes
+  systemd:
+    name: "{{ item }}"
+    state: started
+  with_items:
+    - samsara-global-controller
