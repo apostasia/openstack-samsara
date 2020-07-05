@@ -43,7 +43,7 @@ class SSHDriver(object):
     def run_cmd(self, host, command):
         """Execute this command on host"""
 
-        cmd = 'sudo samsara-rootwrap /etc/samsara/rootwrap.conf %s' % command
+        cmd = 'sudo ' + command
         try:
             ssh_client =  paramiko.SSHClient()
             ssh_client.load_system_host_keys()

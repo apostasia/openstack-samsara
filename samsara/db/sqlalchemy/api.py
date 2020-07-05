@@ -97,6 +97,7 @@ api_db_opts = [
                default=3600,
                help='Timeout before idle SQL connections are reaped.'),
     cfg.IntOpt('max_pool_size',
+               default=30,
                help='Maximum number of SQL connections to keep open in a '
                     'pool.'),
     cfg.IntOpt('max_retries',
@@ -108,6 +109,7 @@ api_db_opts = [
                default=10,
                help='Interval between retries of opening a SQL connection.'),
     cfg.IntOpt('max_overflow',
+               default=15,
                help='If set, use this value for max_overflow with '
                     'SQLAlchemy.'),
     cfg.IntOpt('connection_debug',
@@ -118,6 +120,7 @@ api_db_opts = [
                 default=False,
                 help='Add Python stack traces to SQL as comment strings.'),
     cfg.IntOpt('pool_timeout',
+               default=300,
                help='If set, use this value for pool_timeout with '
                     'SQLAlchemy.'),
 ]
