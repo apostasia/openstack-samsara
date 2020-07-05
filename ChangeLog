@@ -1,6 +1,9 @@
 CHANGES
 =======
 
+* update branch to become master
+* clean branch to become master
+* add rootwrap filters and update parameters
 * fix some python3 issues and update credentials for samsara network driver
 * Fix Samsara Ansible(merge files)
 * Fix Samsara Ansible(merge files)

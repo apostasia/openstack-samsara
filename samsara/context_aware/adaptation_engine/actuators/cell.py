@@ -151,13 +151,11 @@ class CellActuator(base.BaseActuator):
                 return False
 
 
-
-
     def deactivate_host(self, hostname):
         """ Put physical node inactive state
         """
         actuactor_driver = samsara_network_driver.SSHDriver()
-        command = 'pm-hibernate'
+        command = 'systemctl hibernate'
 
         # TODO: update host situation method
         # If not instances on node
