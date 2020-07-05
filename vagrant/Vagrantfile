@@ -147,10 +147,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             #
             node_config.vm.provider :virtualbox do |vbox|
                 
-	    	    vbox.customize ['modifyvm', :id, '--memory', node[:memory]]
-                vbox.customize ['modifyvm', :id, '--cpus', node[:cpu]]
-		        vbox.customize ['modifyvm', :id, "--nicpromisc2", "allow-all"]
-                vbox.customize ['modifyvm', :id, "--nicpromisc3", "allow-all"]
+	    	vbox.customize ['modifyvm', :id, '--memory', node[:memory]]
+            vbox.customize ['modifyvm', :id, '--cpus', node[:cpu]]
+		    vbox.customize ['modifyvm', :id, "--nicpromisc2", "allow-all"]
+            vbox.customize ['modifyvm', :id, "--nicpromisc3", "allow-all"]
                 
 		#
                 # Gluster Volume

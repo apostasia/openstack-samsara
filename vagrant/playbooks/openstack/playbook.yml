@@ -16,9 +16,10 @@
   pre_tasks:
     # Make sure our VM's software is ~@Latest
     - name: Apt Update
-      apt: update_cache=yes
-          upgrade=dist
-          cache_valid_time=86400
+      apt:
+        update_cache: yes
+        upgrade: dist
+        force: yes
 
     - name: Adjusting Locale
       shell: locale-gen pt_BR.UTF-8
@@ -32,11 +33,11 @@
           - software-properties-common
           - ubuntu-cloud-keyring
 
-   # - name: Add OpenStack Repositories
-   #   shell: add-apt-repository cloud-archive:{{ openstack_release }}
+#    - name: Add OpenStack Repositories
+#      shell: add-apt-repository cloud-archive:ussuri
 
     - name: Update packages
-      apt: update_cache=yes upgrade=dist cache_valid_time=86400
+      apt: update_cache=yes
     
     - name: Install Openstack Client
       apt:

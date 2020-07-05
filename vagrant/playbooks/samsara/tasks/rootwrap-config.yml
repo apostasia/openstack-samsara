@@ -1,27 +1,29 @@
 # Add entry to samsara rootwrap and validate the sudoers file before saving
-- name: Add entry to samsara rootwrap into sudoers file
-  lineinfile: "dest=/etc/sudoers state=present regexp='^samsara ALL' line='samsara ALL = (root) NOPASSWD: /usr/local/bin/samsara-rootwrap /etc/samsara/rootwrap.conf *' validate='visudo -cf %s'"
+#- name: Add entry to samsara rootwrap into sudoers file
+#  lineinfile: "dest=/etc/sudoers state=present regexp='^samsara ALL' line='samsara ALL = (root) NOPASSWD: /usr/local/bin/samsara-rootwrap /etc/samsara/rootwrap.conf *' validate='visudo -cf %s'"
 
-- name: Add entry to vagrant rootwrap into sudoers file
-  lineinfile: "dest=/etc/sudoers state=present regexp='^vagrant ALL' line='vagrant ALL = (root) NOPASSWD: /usr/local/bin/samsara-rootwrap /etc/samsara/rootwrap.conf *' validate='visudo -cf %s'"
+# - name: Add entry to vagrant rootwrap into sudoers file
+#   lineinfile: "dest=/etc/sudoers state=present regexp='^vagrant ALL' line='vagrant ALL = (root) NOPASSWD: /usr/local/bin/samsara-rootwrap /etc/samsara/rootwrap.conf *' validate='visudo -cf %s'"
+  
+- name: Add entry to vagrant systemctl hibernate into sudoers file
+  lineinfile: "dest=/etc/sudoers state=present regexp='^vagrant ALL' line='vagrant ALL = (root) NOPASSWD: /usr/bin/systemctl hibernate' validate='visudo -cf %s'"
 
+# - name: Copy rootwrap config file
+#   template:
+#       src: "rootwrap.conf.j2"
+#       dest: "/etc/samsara/rootwrap.conf"
+#       owner: root
+#       group: root
+#       mode: 0644
 
-- name: Copy rootwrap config file
-  template:
-      src: "rootwrap.conf.j2"
-      dest: "/etc/samsara/rootwrap.conf"
-      owner: root
-      group: root
-      mode: 0644
+# # Create /etc/samsara directory
+# - name: Creates /etc/samsara/rootwrap.d directory
+#   file: path=/etc/samsara/rootwrap.d state=directory owner=samsara group=samsara mode=0775 recurse=yes
 
-# Create /etc/samsara directory
-- name: Creates /etc/samsara/rootwrap.d directory
-  file: path=/etc/samsara/rootwrap.d state=directory owner=samsara group=samsara mode=0775 recurse=yes
-
-- name: Copy rootwrap filters file
-  template:
-      src: "samsara-actuactor.filters.j2"
-      dest: "/etc/samsara/rootwrap.d/samsara-actuactor.filters"
-      owner: root
-      group: root
-      mode: 0644
+# - name: Copy rootwrap filters file
+#   template:
+#       src: "samsara-actuactor.filters.j2"
+#       dest: "/etc/samsara/rootwrap.d/samsara-actuactor.filters"
+#       owner: root
+#       group: root
+#       mode: 0644
