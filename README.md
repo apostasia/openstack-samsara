@@ -7,10 +7,9 @@ Samsara has been implemented as one of the modules of the OpenStack cloud platfo
 and considers the maximum allocation capacity of each physical machine, to consolidate 
 the workloads.
 
+--------
 
 ## Instalation
------------
-
 
 * Build package:
 
@@ -76,9 +75,10 @@ Features
     ```
 
 * PGAdmin3
-	```bash
+ 
+ ```bash
     $ sudo apt-get install pgadmin3
-    ```
+ ```
 
 ## Usando o OpenStack Samsara
 
