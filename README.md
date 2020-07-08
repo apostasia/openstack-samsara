@@ -1,13 +1,11 @@
 # OpenStack Samsara: An Energy Aware Architecture for VM Consolidation
 
-Please feel here a long description which must be at least 3 lines wrapped on
-80 cols, so that distribution package maintainers can use it in their packages.
-Note that this is a hard requirement.
-
-* Free software: Apache license
-* Documentation: http://docs.openstack.org/developer/samsara
-* Source: http://git.openstack.org/cgit/openstack/samsara
-* Bugs: http://bugs.launchpad.net/openstack-samsara
+The Samsara architecture provides energy-efficient computational cloud management 
+with a focus on optimizing the use of resources exploring situation awareness 
+strategies to operate autonomously, and with minimal human intervention. 
+Samsara has been implemented as one of the modules of the OpenStack cloud platform 
+and considers the maximum allocation capacity of each physical machine, to consolidate 
+the workloads.
 
 
 ## Instalation
