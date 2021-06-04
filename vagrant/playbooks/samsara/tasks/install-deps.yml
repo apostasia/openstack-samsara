@@ -38,4 +38,5 @@
       - pbr>=1.6
       - shade
       - awake
+      - psycopg2-events
 
