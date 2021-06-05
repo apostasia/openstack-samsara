@@ -29,7 +29,8 @@
     flavor: simp
     network: selfservice
   with_items:
-    - instance-002
+    - instance-000
+    - instance-001
 
 - name: Add Floating IPs to Instances
   environment: "{{ user_env }}"
@@ -41,4 +42,5 @@
     network: provider
     nat_destination: selfservice
   with_items:
-    - instance-002
+    - instance-000
+    - instance-001

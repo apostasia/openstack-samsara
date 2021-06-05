@@ -68,9 +68,7 @@
     flavor: nano
     network: selfservice
   with_items:
-    - instance_000
-    - instance_001
-    - instance_002
+    - instance_deploy
 
 - name: Add Floating IPs to Instances
   environment: "{{ user_env }}"
@@ -82,6 +80,4 @@
     network: provider
     nat_destination: selfservice
   with_items:
-    - instance_000
-    - instance_001
-    - instance_002
+    - instance_deploy
