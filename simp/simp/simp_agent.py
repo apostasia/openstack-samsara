@@ -67,10 +67,8 @@ def insert_into_host_situation(data):
     INSERTS INTO HOST SITUATION
 
     """
-    #	"time", hostname, uuid, used_compute, available_compute, used_memory, available_memory, created_at, instances, instances_number, last_change_at, situation
-    formatted_data = ', '.join(['NOW()', format_string_value(data[1]), format_string_value(data[2]),
-                                str(data[3]), str(data[4]), str(data[5]), str(data[6]), format_string_value(data[7]),
-                                format_string_value(data[8]), str(data[9]), format_string_value(data[10]), format_string_value(data[11])])
+    #   "time", hostname, uuid, used_compute, available_compute, used_memory, available_memory, created_at, instances, instances_number, last_change_at, situation
+    formatted_data = ', '.join(['NOW()', format_string_value(data[1]), format_string_value(data[2]), str(data[3]), str(data[4]), str(data[5]), str(data[6]), format_string_value(data[7]), format_string_value(data[8]), str(data[9]), format_string_value(data[10]), format_string_value(data[11])])
     cursor.execute("insert into host_situation values (" + formatted_data + ");")
     con.commit()
     print("insert into host_situation has been successfull.")
