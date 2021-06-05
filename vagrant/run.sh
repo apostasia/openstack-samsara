@@ -20,10 +20,10 @@ ansible-playbook -i playbooks/openstack/hosts playbooks/openstack/playbook.yml
 vagrant snapshot save openstack-clean
 
 # run ansible playbook - vagrant
-#ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory playbooks/openstack/playbook.yml 
+ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory playbooks/openstack/playbook.yml 
 
 # run ansible playbook - samsara
-#ansible-playbook -i playbooks/samsara/hosts playbooks/samsara/playbook.yml
+ansible-playbook -i playbooks/samsara/hosts playbooks/samsara/playbook.yml
 
 # Create snapshot Samsara clean.
-#vagrant snapshot save samsara-clean
+vagrant snapshot save samsara-clean
