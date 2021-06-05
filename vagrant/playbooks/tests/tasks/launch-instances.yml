@@ -5,7 +5,7 @@
     container_format: ova
     disk_format: vmdk
     state: present
-    filename: /home/vagrant/openstack-samsara/simp/images/ubuntinho-disk001.vmdk
+    filename: /home/vagrant/samsara/simp/images/ubuntinho-disk001.vmdk
     interface: public
     is_public: yes
   
@@ -16,7 +16,7 @@
     name: simp
     ram: 256
     vcpus: 1
-    disk: 1
+    disk: 20
 
 - name: Launch Instances in SelfService Network
   environment: "{{ user_env }}"
@@ -25,24 +25,20 @@
     name: "{{ item }}"
     image: ubuntinho
     key_name: mykey
-    timeout: 200
+    timeout: 2000
     flavor: simp
     network: selfservice
   with_items:
     - instance_003
-    - instance_004
-    - instance_005
 
 - name: Add Floating IPs to Instances
   environment: "{{ user_env }}"
   os_floating_ip:
     state: present
     server: "{{ item }}"
-    timeout: 200
+    timeout: 2000
     wait: true
     network: provider
     nat_destination: selfservice
   with_items:
     - instance_003
-    - instance_004
-    - instance_005

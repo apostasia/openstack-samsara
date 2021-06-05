@@ -6,8 +6,6 @@
   file: dest=/etc/samsara/rules/{{ item }} state=directory owner=samsara group=samsara mode=0775 recurse=yes
   with_items:
     - eca
-    - fuzzy
-
 
 - name: Copy default eca rules files
 

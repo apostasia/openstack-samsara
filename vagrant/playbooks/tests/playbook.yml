@@ -11,4 +11,4 @@
   vars_files:
     - vars/main.yml
   tasks:
-    - include: tasks/launch_instances.yml
+    - include: tasks/launch-instances.yml
