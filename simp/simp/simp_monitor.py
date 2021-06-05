@@ -21,12 +21,13 @@ class listener():
         self.password = password
         self.database = database
 
-    def listen(self, connection):
+    def listen(self):
         """
 
         LISTENS TO SAMSARA EVENTS
 
         """
+        connection = psycopg2.connect(database=self.database, user=self.user, password=self.password, host=self.host)
         connection.autocommit = True
 
         cursor = connection.cursor()
@@ -56,29 +57,21 @@ class listener():
             uninstall_trigger_function(connection)
             print('shutdown complete.')
 
-    def close_connect(self, connection):
+    # def close_connect(self, connection):
 
-        """
+    #     """
 
-        DISCONNECTS FROM SAMSARA
+    #     DISCONNECTS FROM SAMSARA
 
-        """
+    #     """
 
-        connection.close()
+    #     connection.close()
 
 def main():
 
     l = listener(simp_config.psql_samsara["host"], simp_config.psql_samsara["user"], simp_config.psql_samsara["password"], simp_config.psql_samsara["database"])
-    
-    try:
-            connection = psycopg2.connect(database=l.database, user=l.user, password=l.password, host=l.host)
-            print("success! welcome to samsara!")
-
-    except:
-        print("sorry couldn't connect to samsara")
-
-    l.listen(connection)
-    l.close_connect(connection)
+    l.listen()
+    # l.close_connect()
 
 if __name__ == "__main__":
 
