@@ -1,0 +1,26 @@
+- name: Launch Instances in SelfService Network
+  environment: "{{ user_env }}"
+  os_server:
+    state: present
+    name: "{{ item }}"
+    image: ubuntinho
+    key_name: mykey
+    timeout: 2000
+    flavor: simp
+    network: selfservice
+  with_items:
+    - instance-003
+    - instance-004
+
+- name: Add Floating IPs to Instances
+  environment: "{{ user_env }}"
+  os_floating_ip:
+    state: present
+    server: "{{ item }}"
+    timeout: 2000
+    wait: true
+    network: provider
+    nat_destination: selfservice
+  with_items:
+    - instance-003
+    - instance-004

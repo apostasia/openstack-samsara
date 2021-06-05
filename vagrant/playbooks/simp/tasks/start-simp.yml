@@ -1,0 +1,3 @@
+- name: Run SIMP in background
+  become: yes
+  shell: cd /home/vagrant/samsara/simp/simp; sudo -u samsara python3 simp_monitor.py > /home/vagrant/samsara/simp/simp/simp.log &

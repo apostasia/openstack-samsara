@@ -56,7 +56,7 @@ def insert_actions(event):
     print("getting action table!")
 
     if (event.table_name == 'cell_situation'):
-        cell_situation_insert_action(event.table_id, event.row_id)
+        cell_situation_insert_action(event.table_name, event.row_id)
     elif (event.table_name == 'migration_events'):
         migration_events_insert_action(event.table_name, event.row_id)
     elif (event.table_name == 'host_resources_usage'):
@@ -92,22 +92,6 @@ def cell_situation_update_action(table_name, row_id):
     print("handling update action for cell_situation!")
     controller_data = samsara_agent.get_event_row(table_name, row_id)
     simp_data = simp_agent.get_last_cell_situation_row()
-
-    ## active hosts
-    #if(controller_data[1] != simp_data[1]):
-    #    print("active hosts changed!")
-
-    ## inactive hosts
-    #if(controller_data[2] != simp_data[2]):
-    #    print("inactive hosts changed!")
-
-    ## underloaded hosts
-    #if(controller_data[3] != simp_data[3]):
-    #    print("underloaded hosts changed!")
-
-    ## overload hosts
-    #if(controller_data[4] != simp_data[4]):
-    #    print("overload hosts changed!")
 
     simp_agent.insert_into_cell_situation(controller_data)
 
