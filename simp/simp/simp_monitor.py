@@ -38,7 +38,7 @@ class listener():
         
         for t in tables:
             install_trigger(connection, str(t[0]))
-        register_event_channel(connection)
+            register_event_channel(connection)
 
         try:
             print('listening to events...')
@@ -56,22 +56,12 @@ class listener():
             unregister_event_channel(connection)
             uninstall_trigger_function(connection)
             print('shutdown complete.')
-
-    # def close_connect(self, connection):
-
-    #     """
-
-    #     DISCONNECTS FROM SAMSARA
-
-    #     """
-
-    #     connection.close()
+            connection.close()
 
 def main():
 
     l = listener(simp_config.psql_samsara["host"], simp_config.psql_samsara["user"], simp_config.psql_samsara["password"], simp_config.psql_samsara["database"])
     l.listen()
-    # l.close_connect()
 
 if __name__ == "__main__":
 
