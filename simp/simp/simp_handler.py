@@ -107,6 +107,12 @@ def cell_situation_insert_action(table_name, row_id):
 
     simp_agent.insert_into_cell_situation(controller_data)
 
+    host_situation_data = samsara_agent.get_last_row('host_situation')
+    simp_agent.insert_into_host_situation(host_situation_data)
+
+    migration_events_data = samsara_agent.get_last_row('migration_events')
+    simp_agent.insert_into_migration_events(migration_events_data)
+
 
 def migration_events_insert_action(table_name, row_id):
     """
