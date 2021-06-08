@@ -28,5 +28,5 @@ def get_last_row(table_name):
     GETS LAST ROW ENTRY
 
     """
-    cursor.execute("select * from " + str(table_name) + " WHERE id=(SELECT max(id) FROM "+ str(table_name) +");")
+    cursor.execute("select * from" + str(table_name) + "order by id desc limit 1;")
     return cursor.fetchone()
