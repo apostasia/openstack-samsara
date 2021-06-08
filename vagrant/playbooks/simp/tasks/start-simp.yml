@@ -5,4 +5,4 @@
     enabled: yes
 
 - name: start simp
-  shell: sudo -u samsara python3 /home/vagrant/samsara/simp/simp/simp_monitor.py
+  shell: cd /home/vagrant/samsara/simp/simp/ && sudo -u samsara python3 simp_monitor.py

@@ -154,6 +154,9 @@ class CellActuator(base.BaseActuator):
     def deactivate_host(self, hostname):
         """ Put physical node inactive state
         """
+
+        return True
+        
         actuactor_driver = samsara_network_driver.SSHDriver()
         command = 'systemctl hibernate'
 
