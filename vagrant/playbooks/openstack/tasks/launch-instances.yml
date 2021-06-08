@@ -81,3 +81,50 @@
     nat_destination: selfservice
   with_items:
     - instance_deploy
+
+- name: Add SIMP Image to Openstack
+  environment: "{{ admin_env }}"
+  os_image:
+    name: ubuntinho
+    container_format: ova
+    disk_format: vmdk
+    state: present
+    filename: /home/vagrant/samsara/simp/images/ubuntinho-disk001.vmdk
+    interface: public
+    is_public: yes
+  
+- name: Create simp flavor
+  environment: "{{ admin_env }}"
+  os_nova_flavor:
+    state: present
+    name: simp
+    ram: 256
+    vcpus: 1
+    disk: 20
+
+- name: Launch Instances in SelfService Network
+  environment: "{{ user_env }}"
+  os_server:
+    state: present
+    name: "{{ item }}"
+    image: ubuntinho
+    key_name: mykey
+    timeout: 2000
+    flavor: simp
+    network: selfservice
+  with_items:
+    - instance-000
+    - instance-001
+
+- name: Add Floating IPs to Instances
+  environment: "{{ user_env }}"
+  os_floating_ip:
+    state: present
+    server: "{{ item }}"
+    timeout: 2000
+    wait: true
+    network: provider
+    nat_destination: selfservice
+  with_items:
+    - instance-000
+    - instance-001

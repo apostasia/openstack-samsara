@@ -25,5 +25,8 @@ ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inve
 # run ansible playbook - samsara
 ansible-playbook -i playbooks/samsara/hosts playbooks/samsara/playbook.yml
 
+# run ansible playbook - simp
+ansible-playbook -i playbooks/simp/hosts playbooks/simp/playbook.yml
+
 # Create snapshot Samsara clean.
 vagrant snapshot save samsara-clean

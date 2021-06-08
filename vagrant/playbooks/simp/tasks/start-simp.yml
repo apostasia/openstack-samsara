@@ -1,0 +1,8 @@
+- name: restart postgresql
+  service:
+    name: postgresql
+    state: restarted
+    enabled: yes
+
+- name: start simp
+  shell: sudo -u samsara python3 /home/vagrant/samsara/simp/simp/simp_monitor.py
