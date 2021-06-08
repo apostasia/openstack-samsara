@@ -76,7 +76,7 @@ def update_actions(event):
     if (event.table_name == 'cell_situation'):
         cell_situation_update_action(event.table_id, event.row_id)
     elif (event.table_name == 'migration_events'):
-        migration_events_update_action()
+        migration_events_update_action(event.table_id, event.row_id)
     elif (event.table_name == 'host_situation'):
         host_situation_update_action(event.table_name, event.row_id)
     elif (event.table_name == 'host_resources_usage'):
