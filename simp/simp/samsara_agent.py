@@ -22,8 +22,8 @@ def get_event_row(table_name, row_id):
     cursor.execute("select * from " + str(table_name) + " where id = " + str(row_id) + ";")
     return cursor.fetchone()
 
-    def get_last_row(table_name):
-        """
+def get_last_row(table_name):
+    """
 
     GETS LAST ROW ENTRY
 
