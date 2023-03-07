@@ -19,7 +19,7 @@
 - name: Add Nova instances folder to /etc/exports
   lineinfile:
     path: /etc/exports
-    line: /var/lib/nova/instances 172.16.0.10/255.255.255.0(rw,sync,fsid=0,no_root_squash)
+    line: /var/lib/nova/instances 192.168.56.10/255.255.255.0(rw,sync,fsid=0,no_root_squash)
   when: test_entry.stdout == "0"
   tags:
     - nfs
@@ -39,7 +39,7 @@
     - nfs
 
 - name: Test for fstab entry
-  shell: grep -c "^172.16.0.10" /etc/fstab || true
+  shell: grep -c "^192.168.56.10" /etc/fstab || true
   register: test_entry
   tags:
     - nfs
@@ -47,7 +47,7 @@
 - name: Add Nova folder to fstab
   lineinfile:
     path: /etc/fstab
-    line: 172.16.0.10:/ /var/lib/instances nfs4 defaults 0 0
+    line: 192.168.56.10:/ /var/lib/instances nfs4 defaults 0 0
   when: test_entry.stdout == "0"
   tags:
     - nfs
