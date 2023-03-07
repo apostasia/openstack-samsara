@@ -5,14 +5,8 @@
 VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    #config.vm.box = 'ubuntu/bionic64'
-    config.vm.box = 'bento/ubuntu-20.04'
+    config.vm.box = 'bento/ubuntu-22.04'
     
-    #config.vm.box_version = '20151218.0.1'
-
-    #config.vm.box = 'openstack-base-trusty64'
-    #config.vm.box_version = '20151218.0.1'
-
     all_group = []
 
     if Vagrant.has_plugin?("vagrant-cachier")
@@ -90,11 +84,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Define openstack nodes
 
     nodes = [
-        { name: 'controller', os_mgmt_ip: '172.16.0.10', os_flat_ip: '172.16.1.10', cpu: '2', memory: '4096' },
+        { name: 'controller', os_mgmt_ip: '192.168.56.10', os_flat_ip: '192.168.56.20', cpu: '2', memory: '4096' },
 
-        { name: 'compute-001', os_mgmt_ip: '172.16.0.21', os_flat_ip: '172.16.1.21', cpu: '1', memory: '1536' },
+        { name: 'compute-001', os_mgmt_ip: '192.168.56.11', os_flat_ip: '192.168.56.21', cpu: '1', memory: '1536' },
 
-        { name: 'compute-002', os_mgmt_ip: '172.16.0.22', os_flat_ip: '172.16.1.22', cpu: '1', memory: '1536' }
+        { name: 'compute-002', os_mgmt_ip: '192.168.56.12', os_flat_ip: '192.168.56.22', cpu: '1', memory: '1536' }
     ]
 
     compute_group = []
