@@ -31,6 +31,7 @@
         pkg:
           - software-properties-common
           - ubuntu-cloud-keyring
+          - acl
 
    # - name: Add OpenStack Repositories
    #   shell: add-apt-repository cloud-archive:{{ openstack_release }}
