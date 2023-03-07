@@ -187,17 +187,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Start provision after all nodes up
         # all_group = controller_group + compute_group
 
-        # # OpenStack
-        # config.vm.provision "openstack", type: "ansible" do |ansible|
-        #     ansible.playbook = 'playbooks/openstack/playbook.yml'
-        #     #ansible.verbose = 'vvvv'
-        #     ansible.verbose = true
-        #     ansible.groups = {
-        #     'controller_group' => ["controller"],
-        #     'compute_group' => compute_group,
-        #     'all' => ["compute-001","compute-002", "controller"]
-        #     }
-        # end
+        # OpenStack
+        config.vm.provision "openstack", type: "ansible" do |ansible|
+            ansible.playbook = 'playbooks/openstack/playbook.yml'
+            #ansible.verbose = 'vvvv'
+            ansible.verbose = true
+            ansible.groups = {
+            'controller_group' => ["controller"],
+            'compute_group' => compute_group,
+            'all' => ["compute-001","compute-002", "controller"]
+            }
+            ansible.inventory_path = 'playbooks/openstack/hosts'
+        end
 
         # # Samsara
         # config.vm.provision "samsara", type: "ansible" do |ansible|
