@@ -12,17 +12,21 @@ the workloads.
 ## Instalation
 
 * Build package:
-
+```bash
 python setup.py build
+```
 
 * Instalation
 
+```bash
 sudo python setup.py install
+```
 
 * Uninstall
 
+```bash
 sudo pip uninstall samsara
-
+```
 
 
 Features
