@@ -1,5 +1,5 @@
 - name: Install Horizon packages
-  sudo: yes
+  become: yes
   apt: pkg={{ item }} state=installed update_cache=yes
   with_items:
       - openstack-dashboard
@@ -8,5 +8,5 @@
   template: src=local_settings.py dest=/etc/openstack-dashboard/local_settings.py
 
 - name: restart apache
-  sudo: yes
+  become: yes
   service: name=apache2 state=restarted
