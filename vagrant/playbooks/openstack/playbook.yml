@@ -67,18 +67,19 @@
   handlers:
     - include: handlers/main.yml
   tasks:
-    -  include: tasks/chrony-controller.yml
-    -  include: tasks/database-server.yml
-    -  include: tasks/rabbitmq-server.yml
-    -  include: tasks/memcached.yml
-    -  include: tasks/etcd.yml
-    -  include: tasks/keystone.yml
-    -  include: tasks/glance.yml
-    -  include: tasks/placement.yml
-    -  include: tasks/nova-controller.yml
-    -  include: tasks/neutron-controller.yml
-#    -  include: tasks/horizon.yml
-    -  include: tasks/nfs-server.yml
+    -  include_tasks: tasks/chrony-controller.yml
+    -  include_tasks: tasks/database-server.yml
+    -  include_tasks: tasks/rabbitmq-server.yml
+    -  include_tasks: tasks/memcached.yml
+    -  include_tasks: tasks/etcd.yml
+    -  include_tasks: tasks/keystone.yml
+    -  include_tasks: tasks/glance.yml
+    -  include_tasks: tasks/placement.yml
+    -  include_tasks: tasks/nova-controller.yml
+    -  include_tasks: tasks/linuxbridge.yml
+    -  include_tasks: tasks/neutron-controller.yml
+    -  include_tasks: tasks/horizon.yml
+    -  include_tasks: tasks/nfs-server.yml
 
 - hosts: compute_group
   become: yes
@@ -88,12 +89,13 @@
   handlers:
     - include: handlers/main.yml
   tasks:
-    -  include: tasks/chrony-compute.yml
-    -  include: tasks/nova-compute.yml
-    -  include: tasks/neutron-compute.yml
-    -  include: tasks/nfs-client.yml
-    -  include: tasks/libvirt.yml
-    -  include: tasks/compute_node_live_migration_config.yml
+    -  include_tasks: tasks/chrony-compute.yml
+    -  include_tasks: tasks/nova-compute.yml
+    -  include_tasks: tasks/linuxbridge.yml
+    -  include_tasks: tasks/neutron-compute.yml
+    -  include_tasks: tasks/nfs-client.yml
+    -  include_tasks: tasks/libvirt.yml
+    -  include_tasks: tasks/compute_node_live_migration_config.yml
 
 - hosts: controller
   become: yes
@@ -103,6 +105,6 @@
   handlers:
     - include: handlers/main.yml
   tasks:
-    -  include: tasks/create-networks.yml
-    -  include: tasks/create-instances.yml
+    -  include_tasks: tasks/create-networks.yml
+    -  include_tasks: tasks/create-instances.yml
 
