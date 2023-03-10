@@ -8,7 +8,12 @@
       - qemu-kvm
   tags:
     - libvirt
-    
+
+- name: Stop service libvirtd, if running
+  ansible.builtin.systemd:
+    name: libvirtd
+    state: stopped
+
 - name: Libvirt System Socket Activation
   become: yes
   shell: systemctl start libvirtd-tcp.socket
