@@ -5,7 +5,7 @@
 # vagrant version: 2.2.9
 
 # create vagrant env
-vagrant up
+vagrant up --no-provision
 
 # copy vagrant-ssh config to solve references in ansible playbook
 vagrant ssh-config > ~/.ssh/config

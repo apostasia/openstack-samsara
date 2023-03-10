@@ -1,6 +1,6 @@
 - name: Install Horizon packages
   become: yes
-  apt: pkg={{ item }} state=installed update_cache=yes
+  apt: pkg={{ item }} state=present update_cache=yes
   with_items:
       - openstack-dashboard
 

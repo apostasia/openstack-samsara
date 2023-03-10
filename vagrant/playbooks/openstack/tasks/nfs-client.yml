@@ -5,7 +5,7 @@
     - nfs
 
 - name: Test for /etc/fstab entry
-  shell: grep -c "^172.16.0.10" /etc/fstab || true
+  shell: grep -c "^192.168.56.10" /etc/fstab || true
   register: test_entry
   tags:
     - nfs
@@ -13,7 +13,7 @@
 - name: Add Nova instances folder to FSTAB
   lineinfile:
     path: /etc/fstab
-    line: 172.16.0.10:/ /var/lib/nova/instances nfs4 defaults 0 0
+    line: 192.168.56.10:/ /var/lib/nova/instances nfs4 defaults 0 0
   when: test_entry.stdout == "0"
   tags:
     - nfs

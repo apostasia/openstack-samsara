@@ -9,41 +9,9 @@
   tags:
     - libvirt
     
-- name: Mask Libvirt systemd
+- name: Libvirt System Socket Activation
   become: yes
-  shell: systemctl mask libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket libvirtd-tls.socket libvirtd-tcp.socket
-  tags:
-    - libvirt
-
-- name: Enable TCP
-  lineinfile:
-      dest:  "/etc/libvirt/libvirtd.conf"
-      regexp: "^#listen_tcp"
-      line: "listen_tcp = 1"
-  tags:
-    - libvirt
-
-- name: Disable TLS
-  lineinfile:
-      dest:  "/etc/libvirt/libvirtd.conf"
-      regexp: "^#listen_tls"
-      line: "listen_tls = 0"
-  tags:
-   - libvirt
-
-- name: Disable auth connections
-  lineinfile:
-      dest:  "/etc/libvirt/libvirtd.conf"
-      regexp: '^#auth_tcp ='
-      line: 'auth_tcp = "none"'
-  tags:
-    - libvirt
-
-- name: Enable libvirt TCP listen
-  lineinfile:
-    dest:  "/etc/default/libvirtd"
-    regexp: '#libvirtd_opts'
-    line: 'libvirtd_opts="-l"'
+  shell: systemctl start libvirtd-tcp.socket
   tags:
     - libvirt
 
