@@ -95,7 +95,8 @@
     -  include_tasks: tasks/neutron-compute.yml
     -  include_tasks: tasks/nfs-client.yml
     -  include_tasks: tasks/libvirt.yml
-    -  include_tasks: tasks/compute_node_live_migration_config.yml
+    # -  include_tasks: tasks/compute_node_live_migration_config.yml
+    -  include_tasks: tasks/live_migration_config.yml
 
 - hosts: controller
   become: yes

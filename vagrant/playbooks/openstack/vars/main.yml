@@ -113,6 +113,6 @@ virt_type_option: qemu
 
 
 ####### OpenStack Network Interfaces Config
-provider_interface_name: eth2
+provider_interface_name: enp0s9
 overlay_interface_ip_address: 192.168.56.10
 metadata_secret: metadata_secret
