@@ -6,6 +6,8 @@
 - hosts: controller
   become: yes
   user: vagrant
+  vars_files:
+      - vars/main.yml
   tasks:
     -  include_tasks: tasks/create-networks.yml
     -  include_tasks: tasks/create-instances.yml

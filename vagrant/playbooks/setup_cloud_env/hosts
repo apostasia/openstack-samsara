@@ -2,9 +2,9 @@
 ansible_python_interpreter=/usr/bin/python3
 
 [controllers_group]
-controller nic_1=enp0s8 nic_2=enp0s9 nic_1_addr=192.168.56.10/24 ansible_host=192.168.56.10
+controller
 
 [compute_group]
-compute-001 nic_1=enp0s8 nic_2=enp0s9 nic_1_addr=192.168.56.11/24 ansible_host=192.168.56.11
-compute-002 nic_1=enp0s8 nic_2=enp0s9 nic_1_addr=192.168.56.12/24 ansible_host=192.168.56.12
+compute-001
+compute-002 
 
