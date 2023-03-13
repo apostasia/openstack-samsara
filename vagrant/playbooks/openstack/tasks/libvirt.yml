@@ -20,6 +20,14 @@
   tags:
     - libvirt
 
+- name: Disable auth connections
+  lineinfile:
+      dest:  "/etc/libvirt/libvirtd.conf"
+      regexp: '^#auth_tcp ='
+      line: 'auth_tcp = "none"'
+  tags:
+    - libvirt
+
 - name: Restart Nova-compute and Libvirtd
   become: yes
   service: name={{ item }} state=restarted
