@@ -1,0 +1,12 @@
+---
+###############################################################################
+# This ansible playbook TODO
+#
+
+- hosts: controller
+  become: yes
+  user: vagrant
+  tasks:
+    -  include_tasks: tasks/create-networks.yml
+    -  include_tasks: tasks/create-instances.yml
+

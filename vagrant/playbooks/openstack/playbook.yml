@@ -98,14 +98,3 @@
     # -  include_tasks: tasks/compute_node_live_migration_config.yml
     -  include_tasks: tasks/live_migration_config.yml
 
-- hosts: controller
-  become: yes
-  user: vagrant
-  vars_files:
-    - vars/main.yml
-  handlers:
-    - include: handlers/main.yml
-  tasks:
-    -  include_tasks: tasks/create-networks.yml
-    -  include_tasks: tasks/create-instances.yml
-
