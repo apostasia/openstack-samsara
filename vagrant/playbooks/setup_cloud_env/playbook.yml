@@ -10,5 +10,6 @@
       - vars/main.yml
   tasks:
     -  include_tasks: tasks/create-networks.yml
+    -  include_tasks: tasks/prepare-images.yml
     -  include_tasks: tasks/create-instances.yml
 

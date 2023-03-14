@@ -1,0 +1,26 @@
+- name: Download Cirros image
+  get_url:
+    url: http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
+    dest: /tmp/cirros.img
+
+- name: Add Cirros Image to Openstack
+  environment: "{{ admin_env }}"
+  os_image:
+    name: cirros
+    container_format: bare
+    disk_format: qcow2
+    state: present
+    filename: /tmp/cirros.img
+    interface: public
+    kernel: cirros-vmlinuz
+    ramdisk: cirros-initrd
+    is_public: yes
+  
+- name: Create nano flavor
+  environment: "{{ admin_env }}"
+  os_nova_flavor:
+    state: present
+    name: nano
+    ram: 64
+    vcpus: 1
+    disk: 1
