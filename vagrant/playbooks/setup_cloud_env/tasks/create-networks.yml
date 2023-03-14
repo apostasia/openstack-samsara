@@ -1,7 +1,7 @@
-- include_task: create-provider-network.yml
+- include_tasks: create-provider-network.yml
   tags:
     create-networks
 
-- include_task: create-selfservice-network.yml
+- include_tasks: create-selfservice-network.yml
   tags:
     create-networks
