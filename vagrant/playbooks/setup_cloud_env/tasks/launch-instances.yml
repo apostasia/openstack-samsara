@@ -1,5 +1,5 @@
 - name: Generate SSH Key
-  environment: "{{ user_env }}"
+  environment: "{{ admin_env }}"
   openssh_keypair:
     path: /home/vagrant/.ssh/id_rsa
     owner: vagrant
@@ -7,31 +7,15 @@
   register: new_ssh_key
 
 - name: Add public keypair
-  environment: "{{ user_env }}"
+  environment: "{{ admin_env }}"
   os_keypair:
     state: present
     name: mykey
     public_key_file: /home/vagrant/.ssh/id_rsa.pub
   when: new_ssh_key is changed
 
-- name: Enable ICPM to default Security Group
-  environment: "{{ user_env }}"
-  os_security_group_rule:
-    security_group: default
-    protocol: icmp
-    remote_ip_prefix: 0.0.0.0/0
-
-- name: Enable SSH to default Security Group
-  environment: "{{ user_env }}"
-  os_security_group_rule:
-    security_group: default
-    protocol: tcp
-    port_range_min: 22
-    port_range_max: 22
-    remote_ip_prefix: 0.0.0.0/0
-
 - name: Launch Instances in SelfService Network
-  environment: "{{ user_env }}"
+  environment: "{{ admin_env }}"
   os_server:
     state: present
     name: "{{ item }}"
@@ -46,7 +30,7 @@
     - instance_002
 
 - name: Add Floating IPs to Instances
-  environment: "{{ user_env }}"
+  environment: "{{ admin_env }}"
   os_floating_ip:
     state: present
     server: "{{ item }}"

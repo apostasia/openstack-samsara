@@ -4,8 +4,8 @@
   with_items:
       - openstack-dashboard
 
-#- name: Copy Horizon Config File Template
-#  template: src=local_settings.py dest=/etc/openstack-dashboard/local_settings.py
+- name: Copy Horizon Config File Template
+  template: src=local_settings.py dest=/etc/openstack-dashboard/local_settings.py
 
 - name: restart apache
   become: yes

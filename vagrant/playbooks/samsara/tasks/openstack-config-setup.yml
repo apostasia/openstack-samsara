@@ -2,7 +2,27 @@
 #   environment: "{{ admin_env }}"
 #   command: openstack user create --password "{{ samsara_password }}" samsara
 
-# O usuário samsara está sendo criado no deploy do OS.
+- name: Create Samsara User
+  environment: "{{ admin_env }}"
+  command: openstack user create --domain default --password {{ openstack_users['samsara_password'] }} samsara
+  register: create_samsara_user
+  ignore_errors: true
+
+- name: Create Samsara Demo Project
+  environment: "{{ admin_env }}"
+  command: openstack project create --domain default --description "Demo Project" samsaraproject
+  when: create_samsara_user is succeeded
+
+- name: Create Samsara Role
+  environment: "{{ admin_env }}"
+  command: openstack role create samsararole
+  when: create_samsara_user is succeeded
+
+- name: Add Samsara Role to Samsara User
+  environment: "{{ admin_env }}"
+  command: openstack role add --project samsaraproject --user samsara samsararole
+  when: create_samsara_user is succeeded
+
 
 - name: Add admin role to Samsara user and service project
   environment: "{{ admin_env }}"

@@ -148,6 +148,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		        vbox.customize ['modifyvm', :id, "--nicpromisc2", "allow-all"]
                 vbox.customize ['modifyvm', :id, "--nicpromisc3", "allow-all"]
                 
+                # Nome da VM no Virtualbox
+                vbox.name = node[:name]
 		        #
                 # Gluster Volume
                 #
