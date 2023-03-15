@@ -1,6 +1,38 @@
 CHANGES
 =======
 
+* Alterações do dia
+* Ajustes
+* fix error
+* fix error
+* ajustes
+* organizando as ações
+* Disable auth connections
+* alterações do dia
+* teste
+* ajustes na configuração do libvirt
+* alterações
+* correção de erro
+* task para adicionar a linuxbridge
+* adicionando configuração da interface anonima
+* refatorando e adicionando task
+* Ajustes
+* ajuste no endereço do servidor
+* Ajuste nos endereços de rede
+* alterando a versão do postgres
+* alterando a versão do openstack
+* adicionado pacote acl
+* Ativando o provisionamento via vagrant-ansible
+* Ajustes
+* apagando vagrant\_old
+* Ajustando README.md
+* atualizando Vagrantfile
+* Update README.md
+* add project description
+* Removing unnecessary files
+* update branch to become master
+* clean branch to become master
+* add rootwrap filters and update parameters
 * fix some python3 issues and update credentials for samsara network driver
 * Fix Samsara Ansible(merge files)
 * Fix Samsara Ansible(merge files)

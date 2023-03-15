@@ -6,11 +6,11 @@
     state: present
     name:
       - python3-pip
-      - python-dev
+      - python3-dev
       - tox
       - python3-oslo.config
       - python3-psycopg2
-      - python-numpy
+      - python3-numpy
       - git
       - htop
       - ipython3
