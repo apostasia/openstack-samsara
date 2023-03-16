@@ -71,7 +71,7 @@ class VirtualMachineComputeUsageSensor(base.BaseSensor):
 
 
 
-        # Todo: Explain code
+        # Todo: Explain the code
         for compute_capacity, maxfreq,currentfreq, vm_utilized_cputime in zip(host_compute_capacity_percore,
                                                                              host_maxfreq_percore,
                                                                              host_currentfreq_percore,
