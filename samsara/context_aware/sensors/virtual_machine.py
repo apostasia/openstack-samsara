@@ -77,7 +77,7 @@ class VirtualMachineComputeUsageSensor(base.BaseSensor):
                                                                              host_currentfreq_percore,
                                                                              vm_utilized_cputime_percore):
 
-            compute_usage_percore.append(int((((currentfreq * compute_capacity)/maxfreq) * vm_utilized_cputime)) / time_interval)
+            compute_usage_percore.append((((currentfreq * compute_capacity)/maxfreq) * vm_utilized_cputime) / time_interval)
 
         return sum(compute_usage_percore)
 

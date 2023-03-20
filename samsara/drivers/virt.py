@@ -171,7 +171,8 @@ class LibvirtDriver(object):
         # Get the cpu time intervals
         # (old) vcpu_time_percore  = [float(phys_cpu['cpu_time']) for phys_cpu in dom.getCPUStats(False,0)]
         vcpu_time          = dom.getCPUStats(True)[0]['cpu_time']
-        vcpu_time_percore  = [float(vcpu_time/os.cpu_count()) for phys_cpu in range(os.cpu_count())]
+        cpu_count          = os.cpu_count()
+        vcpu_time_percore  = [float(vcpu_time/cpu_count) for phys_cpu in range(cpu_count)]
 
         return vcpu_time_percore
 
@@ -186,8 +187,9 @@ class LibvirtDriver(object):
     def get_busytime_percore(self, domain_id):
         """ Returns the busy time per core/cpu (in seconds) for an VM in the interval
         """
-        conn = self.get_connection()
-        dom  = conn.lookupByID(domain_id)
+        # (old)
+        # conn = self.get_connection()
+        # dom  = conn.lookupByID(domain_id)
 
         global previous_instances_vcpu_time
 
@@ -203,7 +205,7 @@ class LibvirtDriver(object):
             vcpu_time_t1 = self.get_vcpu_time_instances()
 
             # compute the delta time for each cpu, convert nanoseconds (10^-9) to seconds and generate an list
-            busytime_percore = [float(diff_time)/10000000000 for diff_time in map(sub, vcpu_time_t1, vcpu_time_t0)]
+            busytime_percore = [float(diff_time/10000000000) for diff_time in map(sub, vcpu_time_t1, vcpu_time_t0)]
 
         else:
             # Return zero busytime percore
