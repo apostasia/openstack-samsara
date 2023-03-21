@@ -202,7 +202,7 @@ class LibvirtDriver(object):
 
             # Get actual vcpu time percore
             # (OLD) vcpu_time_t1 = [float(phys_cpu['cpu_time']) for phys_cpu in dom.getCPUStats(False,0)]
-            vcpu_time_t1 = self.get_vcpu_time_instances()
+            vcpu_time_t1 = self.get_vcpu_time_percore(domain_id)
 
             # compute the delta time for each cpu, convert nanoseconds (10^-9) to seconds and generate an list
             busytime_percore = [float(diff_time/10000000000) for diff_time in map(sub, vcpu_time_t1, vcpu_time_t0)]
