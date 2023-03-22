@@ -13,13 +13,13 @@ the workloads.
 
 * Build package:
 ```bash
-python setup.py build
+python3 setup.py build
 ```
 
 * Instalation
 
 ```bash
-sudo python setup.py install
+sudo python3 setup.py install
 ```
 
 * Uninstall
