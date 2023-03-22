@@ -83,19 +83,19 @@ class CollectorManager(manager.Manager):
 
         # Store into repository
         self.ctx_repository.store_context(ctx_host_resources_usage)
-        LOG.info('Store host resources usage context into local repository')
+        LOG.info('Store host resources usage context into the local repository')
 
         self.ctx_global_repository.store_context(ctx_host_resources_usage)
-        LOG.info('Store host resources usage context into global repository')
+        LOG.info('Store host resources usage context into the global repository')
 
 
 
     @periodic_task.periodic_task(spacing=CONF.collector.instances_collect_contexts_period, run_immediately=True)
     def _get_instances_context(self,context):
-        """ Get Virtual Machine Resource Usage Contexts and store into repository"""
+        """ Get Virtual Machine Resource Usage Contexts and store into the repository"""
 
         # Get Virtual Machines Contexts and store local repository
-        LOG.info('Get Virtual Machines Contexts and store local repository')
+        LOG.info('Get Virtual Machines Contexts and store into the local repository')
         if virt_driver.get_active_instancesID():
             for vm_id in virt_driver.get_active_instancesID():
 
